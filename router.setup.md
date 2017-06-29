@@ -42,7 +42,7 @@ opkg install openssh-sftp-server
 
 #### Add rsync daemon
 * Add below to `/etc/rsyncd.conf`
-```
+```shell
 pid file = /var/run/rsyncd.pid
 log file = /var/log/rsyncd.log
 lock file = /var/run/rsync.lock
@@ -55,7 +55,7 @@ read only = no
 path = /mnt/usb1
 comment = Nexus 5X Storage Sync
 list = yes
-hosts allow = IP_ADDRESSES_SEPARATED_BY_COMMA
+hosts allow = {IP_ADDRESSES_SEPARATED_BY_COMMA}
 ```
 * Add `rsync --daemon` to `/etc/rc.local`
 
@@ -68,4 +68,3 @@ hosts allow = IP_ADDRESSES_SEPARATED_BY_COMMA
 * Setting up a USB drive for storage on OpenWRT: http://www.brendangrainger.com/entries/13
 * Samba (smb): https://wiki.openwrt.org/doc/uci/samba
 * Share USB Hard-drive with Samba using the Luci web-interface: https://wiki.openwrt.org/doc/recipes/usb-storage-samba-webinterface
-* 
