@@ -23,13 +23,14 @@ network={
 * `sudo mkdir /root/.ssh`
 * Add ssh keys to `~/.ssh/authorized_keys`
 * Add ssh keys to `/root/.ssh/authorized_keys`
+* `sudo apt install apt-cacher-ng`
 * Add `Acquire::http::Proxy "http://rpi1:3142";` to `/etc/apt/apt.conf.d/00proxy`
 * `sudo apt-get autoremove --purge wolfram* sonic-pi libreoffice*`
 * `sudo apt-get autoremove --purge`
 * `sudo apt update`
 * `sudo apt upgrade`
 * `sudo apt dist-upgrade`
-* `sudo apt install screen aria2 python-dev apt-cacher-ng`
+* `sudo apt install screen aria2 python-dev`
 * `wget https://bootstrap.pypa.io/get-pip.py`
 * `sudo python3 get-pip.py`
 * `sudo python2 get-pip.py`
