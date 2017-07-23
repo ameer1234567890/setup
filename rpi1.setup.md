@@ -41,9 +41,6 @@ network={
 * `cd pi-scripts`
 * `./install-python-modules.sh`
 * `cd ..`
-* `git clone https://github.com/ameer1234567890/pi-scripts/web-irsend`
-* `sudo pip3 install Flask`
-* `sudo pip2 install Flask`
 * Add IFTTT maker key to `~/.maker_key`
 * Add Weather Underground My PWS station ID and key to `~/.wu_config.py`. Format is specified at `.wu_config.py`
 * Copy `client_secret.json` into `pi-scripts` directory.
@@ -57,3 +54,23 @@ network={
 #### Setup remot3.it
 * `sudo apt-get install weavedconnectd`
 * `sudo weavedinstaller`
+
+#### Setup TV Remote
+* `sudo apt-get install lirc`
+* Add `dtoverlay=lirc-rpi,gpio_out_pin=17` to `/boot/config.txt`
+* `sudo curl -o /etc/lirc/lircd.conf http://lirc.sourceforge.net/remotes/sony/RM-870`
+* Add below to `/etc/lirc/hardware.conf`
+```
+LIRCD_ARGS="--uinput"
+LOAD_MODULES=true
+DRIVER="default"
+DEVICE="/dev/lirc0"
+MODULES="lirc_rpi"
+LIRCD_CONF=""
+LIRCMD_CONF=""
+```
+* Reboot
+* Test LIRC using `irsend SEND_ONCE RM_870 KEY_MUTE`
+* `git clone https://github.com/ameer1234567890/web-irsend`
+* `sudo pip3 install Flask`
+* `sudo pip2 install Flask`
