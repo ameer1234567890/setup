@@ -6,7 +6,7 @@
 * Change Locale > Add `en_US.UTF8`
 * Change Timezone to `Indian Ocean > Maldives`
 * Change Keyoard Layout to `Dell > Other > English (US) > English (US)`
-* Interfacing Options > enable SSH and i2c
+* Interfacing Options > enable SSH, i2c and 1-Wire
 * Overclock to `Turbo`
 * Advanced Options > Expand Filesystem
 * `sudo reboot`
