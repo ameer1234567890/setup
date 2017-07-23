@@ -42,6 +42,8 @@ network={
 * `./install-python-modules.sh`
 * `cd ..`
 * `git clone https://github.com/ameer1234567890/pi-scripts/web-irsend`
+* Add IFTTT maker key to `~/.maker_key`
+* Add Weather Underground My PWS station ID and key to `~/.wu_config.py`. Format is specified at `.wu_config.py`
 * Restore crontab from `~/pi-scripts/raspberrypi.crontab`
 * Restore `/etc/rc.local` from `~/pi-scripts/raspberrypi.rc-local`
 * `git config --global user.email "ameer1234567890@gmail.com"`
