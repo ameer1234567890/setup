@@ -1,0 +1,3 @@
+class Config():
+    STATION_ID = "STATION_ID_HERE"
+    STATION_KEY = "STATION_KEY_HERE"
