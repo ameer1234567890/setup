@@ -47,3 +47,4 @@ network={
 * `git config --global user.email "ameer1234567890@gmail.com"`
 * `git config --global user.name "Ameer Dawood"`
 * `git config --global credential.helper store`
+* `git config --global push.default simple`
