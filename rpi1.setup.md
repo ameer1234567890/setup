@@ -48,3 +48,7 @@ network={
 * `git config --global user.name "Ameer Dawood"`
 * `git config --global credential.helper store`
 * `git config --global push.default simple`
+
+#### Setup remot3.it
+* `sudo apt-get install weavedconnectd`
+* `sudo weavedinstaller`
