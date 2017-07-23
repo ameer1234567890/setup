@@ -44,3 +44,6 @@ network={
 * `git clone https://github.com/ameer1234567890/pi-scripts/web-irsend`
 * Restore crontab from `~/pi-scripts/raspberrypi.crontab`
 * Restore `/etc/rc.local` from `~/pi-scripts/raspberrypi.rc-local`
+* `git config --global user.email "ameer1234567890@gmail.com"`
+* `git config --global user.name "Ameer Dawood"`
+* `git config --global credential.helper store`
