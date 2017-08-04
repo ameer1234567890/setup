@@ -39,7 +39,8 @@ network={
 * `sudo pip2 uninstall -y blinker chardet colorama Flask gpiozero html5lib itsdangerous Jinja2 lxkeymap MarkupSafe mcpi ndg-httpsclient numpy picamera picraft pifacecommon pifacedigitalio pigpio Pillow pyasn1 pygame pygobject pyinotify pyOpenSSL pyserial python-apt RTIMULib sense-emu sense-hat smbus spidev twython urllib3 Werkzeug automationhat blinkt Cap1xxx drumhat envirophat ExplorerHAT fourletterphat microdotphat mote motephat phatbeat pianohat piglow rainbowhat scrollphat scrollphathd skywriter sn3218 touchphat`
 * `git clone https://github.com/ameer1234567890/pi-scripts`
 * `cd pi-scripts`
-* `./install-python-modules.sh`
+* `./install-python2-modules.sh`
+* `./install-python3-modules.sh`
 * `cd ..`
 * Add IFTTT maker key to `~/.maker_key`
 * Add Weather Underground My PWS station ID and key to `~/.wu_config.py`. Format is specified at `.wu_config.py`
