@@ -51,6 +51,7 @@ network={
 * `git config --global user.name "Ameer Dawood"`
 * `git config --global credential.helper store`
 * `git config --global push.default simple`
+* Add `dtparam=act_led_gpio=25` to `/boot/config.txt`
 
 #### Setup remot3.it
 * `sudo apt-get install weavedconnectd`
