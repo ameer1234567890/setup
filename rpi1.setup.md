@@ -3,10 +3,11 @@
 * Change User Password
 * Change hostname
 * Change Boot Options to Console Autologin
+* Change Boot Options to Disable Splash Screen
 * Change Locale > Add `en_US.UTF8`
 * Change Timezone to `Indian Ocean > Maldives`
 * Change Keyoard Layout to `Dell > Other > English (US) > English (US)`
-* Interfacing Options > enable SSH, i2c and 1-Wire
+* Interfacing Options > enable SSH, SPI, i2c and 1-Wire
 * Overclock to `Turbo`
 * Advanced Options > Expand Filesystem
 * `sudo reboot`
