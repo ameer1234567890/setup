@@ -3,6 +3,7 @@
 * Ativate viber
 * Activate Duo
 * Activate BML Mobile Pay
+* Restore SMS and Call Logs
 * Restore financisto data
 * Sync storage via rsync
 * Update all apps
