@@ -3,7 +3,6 @@
 * Change User Password
 * Change hostname
 * Change Boot Options to Console Autologin
-* Change Boot Options to Disable Splash Screen
 * Change Locale > Add `en_US.UTF8`
 * Change Timezone to `Indian Ocean > Maldives`
 * Change Keyoard Layout to `Dell > Other > English (US) > English (US)`
@@ -26,18 +25,18 @@ network={
 * Add ssh keys to `/root/.ssh/authorized_keys`
 * `sudo apt install apt-cacher-ng`
 * Add `Acquire::http::Proxy "http://rpi1:3142";` to `/etc/apt/apt.conf.d/00proxy`
-* `sudo apt-get autoremove --purge wolfram* sonic-pi libreoffice*`
-* `sudo apt-get autoremove --purge`
 * `sudo apt update`
 * `sudo apt upgrade`
 * `sudo apt dist-upgrade`
-* `sudo apt install screen aria2 python-dev`
+* `sudo apt install screen git python-dev python3-dev`
 * `wget https://bootstrap.pypa.io/get-pip.py`
 * `sudo python3 get-pip.py`
 * `sudo python2 get-pip.py`
 * `rm get-pip.py`
-* `sudo pip3 uninstall -y chardet codebug-i2c-tether codebug-tether colorama html5lib mcpi numpy pgzero picamera picraft pifacecommon pifacedigitalio pygame pygobject pyinotify python-apt python-debian RTIMULib sense-emu sense-hat twython automationhat blinkt Cap1xxx drumhat envirophat ExplorerHAT fourletterphat microdotphat mote motephat phatbeat pianohat piglow rainbowhat scrollphat scrollphathd skywriter sn3218 touchphat`
-* `sudo pip2 uninstall -y blinker chardet colorama html5lib lxkeymap mcpi ndg-httpsclient numpy picamera picraft pifacecommon pifacedigitalio pygame pygobject pyinotify python-apt RTIMULib sense-emu sense-hat twython automationhat blinkt Cap1xxx drumhat envirophat ExplorerHAT fourletterphat microdotphat mote motephat phatbeat pianohat piglow rainbowhat scrollphat scrollphathd skywriter sn3218 touchphat`
+* `git config --global user.email "ameer1234567890@gmail.com"`
+* `git config --global user.name "Ameer Dawood"`
+* `git config --global credential.helper store`
+* `git config --global push.default simple`
 * `git clone https://github.com/ameer1234567890/pi-scripts`
 * `cd pi-scripts`
 * `./install-python2-modules.sh`
@@ -48,10 +47,6 @@ network={
 * Copy `client_secret.json` into `pi-scripts` directory.
 * Restore crontab from `~/pi-scripts/raspberrypi.crontab`
 * Restore `/etc/rc.local` from `~/pi-scripts/raspberrypi.rc-local`
-* `git config --global user.email "ameer1234567890@gmail.com"`
-* `git config --global user.name "Ameer Dawood"`
-* `git config --global credential.helper store`
-* `git config --global push.default simple`
 * Add `dtparam=act_led_gpio=25` to `/boot/config.txt`
 
 #### Setup remot3.it
