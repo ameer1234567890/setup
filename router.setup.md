@@ -74,6 +74,7 @@ config 'sambashare'
 8. Restart Samba server by running `/etc/init.d/samba restart`
 
 #### Add rsync daemon
+* `opkg install rsync`
 * Add below to `/etc/rsyncd.conf`
 ```shell
 pid file = /var/run/rsyncd.pid
