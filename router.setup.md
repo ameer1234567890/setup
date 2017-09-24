@@ -34,11 +34,10 @@ opkg install openssh-sftp-server
 4. Set “Protocol” to “TCP”.
 5. Set “External zone” to “wan”
 6. Set “External port” to “9999”
-7. Enter “22” as the “External Port”.
-8. Leave “Internal IP address” blank.
-9. Enter “80” as the “Internal Port”.
-10. Click “Add”.
-11. Click “Save and Apply”.
+7. Leave “Internal IP address” blank.
+8. Enter “80” as the “Internal Port”.
+9. Click “Add”.
+10. Click “Save and Apply”.
 
 #### Add rsync daemon
 * Add below to `/etc/rsyncd.conf`
