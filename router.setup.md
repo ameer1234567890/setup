@@ -51,6 +51,27 @@ opkg install openssh-sftp-server
 9. `mkdir /mnt/usb1`
 10. `mount /dev/sda1 /mnt/usb1`
 11. `touch /mnt/usb1/USB_NOT_MOUNTED`
+12. Add mount point in System > Mount Points, with `rw,sync,umask=000` options.
+
+#### Add Samba Support
+1. `opkg install samba36-server`
+2. `opkg install luci-app-samba`
+3. Edit `/etc/config/samba` as required
+4. Add user to `/etc/passwd` in the format `user:x:501:501:user:/home/user:/bin/ash`
+5. Assign a password to the user just created by running `passwd user`
+6. Add Samba user by running `smbpasswd -a user`
+7. Add below to `/etc/config/samba`
+```shell
+config 'sambashare'
+        option 'name' 'usb1'
+        option 'path' '/mnt/usb1'
+        option 'users' 'user'
+        option 'guest_ok' 'yes'
+        option 'create_mask' '0700'
+        option 'dir_mask' '0700'
+        option 'read_only' 'no'
+```
+8. Restart Samba server by running `/etc/init.d/samba restart`
 
 #### Add rsync daemon
 * Add below to `/etc/rsyncd.conf`
