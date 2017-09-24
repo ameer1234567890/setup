@@ -39,6 +39,19 @@ opkg install openssh-sftp-server
 9. Click “Add”.
 10. Click “Save and Apply”.
 
+#### Add USB Storage Device
+1. `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils`
+2. `insmod usbcore`
+3. `insmod ehci-hcd`
+4. `insmod usb-ohci`
+5. `opkg install kmod-usb-storage`
+6. `opkg install kmod-fs-ext4`
+7. `opkg install block-mount`
+8. `opkg install kmod-scsi-core`
+9. `mkdir /mnt/usb1`
+10. `mount /dev/sda1 /mnt/usb1`
+11. `touch /mnt/usb1/USB_NOT_MOUNTED`
+
 #### Add rsync daemon
 * Add below to `/etc/rsyncd.conf`
 ```shell
