@@ -58,24 +58,6 @@ hosts allow = {IP_ADDRESSES_SEPARATED_BY_COMMA}
 ```
 * Add `rsync --daemon` to `/etc/rc.local`
 
-#### Modules needed for my Sandisk Ultra USB 3.0 drive in vfat mode
-```
-kmod-fs-vfat
-kmod-nls-cp437
-kmod-nls-iso8859-1
-```
-
-#### Mount config `/etc/config/fstab` for USB auto mount in vfat mode
-```
-config mount
-        option target '/mnt/usb1'
-        option device '/dev/sda1'
-        option fstype 'vfat'
-        option options 'rw,umask=000,dmask=000,fmask=000,uid=65534,gid=65534'
-        option enabled '1'
-        option enabled_fsck '0'
-```
-
 #### Important Links
 * Configure a guest WLAN: https://wiki.openwrt.org/doc/recipes/guest-wlan-webinterface
 * Enabling remote management: https://aiotutorials.wordpress.com/2016/06/28/openwrt-remote-access/
