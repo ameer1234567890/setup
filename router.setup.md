@@ -45,8 +45,8 @@ opkg install openssh-sftp-server
 * `insmod ehci-hcd`
 * `insmod usb-ohci`
 * `mkdir /mnt/usb1`
-* `mount /dev/sda1 /mnt/usb1`
 * `touch /mnt/usb1/USB_NOT_MOUNTED`
+* `mount /dev/sda1 /mnt/usb1`
 * Add mount point in System > Mount Points, with `rw,sync,umask=000` options.
 
 #### Add Samba Support
