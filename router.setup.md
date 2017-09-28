@@ -17,50 +17,46 @@ opkg install openssh-sftp-server
 ```
 
 #### Enabling remote SSH access
-1. Go to the System / Administration page.
-2. Under “SSH Access”, for the default “Dropbear instance”, set “Interface” to “unspecified”.
-3. Go to the Network / Firewall / Traffic Rules.
-4. Scroll down to the “Open ports on router” section.
-5. Enter a name for this rule, e.g. “Allow-SSH-WAN”.
-6. Set “Protocol” to “TCP”.
-7. Enter “22” as the “External Port”.
-8. Click “Add”.
-9. Click “Save and Apply”.
+* Go to the System / Administration page.
+* Under “SSH Access”, for the default “Dropbear instance”, set “Interface” to “unspecified”.
+* Go to the Network / Firewall / Traffic Rules.
+* Scroll down to the “Open ports on router” section.
+* Enter a name for this rule, e.g. “Allow-SSH-WAN”.
+* Set “Protocol” to “TCP”.
+* Enter “22” as the “External Port”.
+* Click “Add”.
+* Click “Save and Apply”.
 
 #### Enabling remote management
-1. Go to the Network / Firewall / Port Forwards.
-2. Scroll down to the “New port forward” section.
-3. Enter a name for this rule, e.g. “luci-remote”.
-4. Set “Protocol” to “TCP”.
-5. Set “External zone” to “wan”
-6. Set “External port” to “9999”
-7. Leave “Internal IP address” blank.
-8. Enter “80” as the “Internal Port”.
-9. Click “Add”.
-10. Click “Save and Apply”.
+* Go to the Network / Firewall / Port Forwards.
+* Scroll down to the “New port forward” section.
+* Enter a name for this rule, e.g. “luci-remote”.
+* Set “Protocol” to “TCP”.
+* Set “External zone” to “wan”
+* Set “External port” to “9999”
+* Leave “Internal IP address” blank.
+* Enter “80” as the “Internal Port”.
+* Click “Add”.
+* Click “Save and Apply”.
 
 #### Add USB Storage Device
-1. `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils`
-2. `insmod usbcore`
-3. `insmod ehci-hcd`
-4. `insmod usb-ohci`
-5. `opkg install kmod-usb-storage`
-6. `opkg install kmod-fs-ext4`
-7. `opkg install block-mount`
-8. `opkg install kmod-scsi-core`
-9. `mkdir /mnt/usb1`
-10. `mount /dev/sda1 /mnt/usb1`
-11. `touch /mnt/usb1/USB_NOT_MOUNTED`
-12. Add mount point in System > Mount Points, with `rw,sync,umask=000` options.
+* `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils kmod-usb-storage kmod-fs-ext4 block-mount kmod-scsi-core`
+* `insmod usbcore`
+* `insmod ehci-hcd`
+* `insmod usb-ohci`
+* `mkdir /mnt/usb1`
+* `mount /dev/sda1 /mnt/usb1`
+* `touch /mnt/usb1/USB_NOT_MOUNTED`
+* Add mount point in System > Mount Points, with `rw,sync,umask=000` options.
 
 #### Add Samba Support
-1. `opkg install samba36-server`
-2. `opkg install luci-app-samba`
-3. Edit `/etc/config/samba` as required
-4. Add user to `/etc/passwd` in the format `user:x:501:501:user:/home/user:/bin/ash`
-5. Assign a password to the user just created by running `passwd user`
-6. Add Samba user by running `smbpasswd -a user`
-7. Add below to `/etc/config/samba`
+* `opkg install samba36-server`
+* `opkg install luci-app-samba`
+* Edit `/etc/config/samba` as required
+* Add user to `/etc/passwd` in the format `user:x:501:501:user:/home/user:/bin/ash`
+* Assign a password to the user just created by running `passwd user`
+* Add Samba user by running `smbpasswd -a user`
+* Add below to `/etc/config/samba`
 ```shell
 config 'sambashare'
         option 'name' 'usb1'
@@ -71,7 +67,7 @@ config 'sambashare'
         option 'dir_mask' '0700'
         option 'read_only' 'no'
 ```
-8. Restart Samba server by running `/etc/init.d/samba restart`
+*. Restart Samba server by running `/etc/init.d/samba restart`
 
 #### Add rsync daemon
 * `opkg install rsync`
