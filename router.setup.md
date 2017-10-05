@@ -91,6 +91,8 @@ hosts allow = {IP_ADDRESSES_SEPARATED_BY_COMMA}
 
 #### Important Links
 * Configure a guest WLAN: https://wiki.openwrt.org/doc/recipes/guest-wlan-webinterface
+* Guest Network for Guest WiFi: https://lede-project.org/docs/user-guide/guestwifi_configuration
+* Smartphone tethering: https://lede-project.org/docs/user-guide/smartphone-usb-tether
 * Enabling remote management: https://aiotutorials.wordpress.com/2016/06/28/openwrt-remote-access/
 * USB Basic Support: https://wiki.openwrt.org/doc/howto/usb.essentials
 * USB Storage: https://wiki.openwrt.org/doc/howto/usb.storage
