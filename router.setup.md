@@ -67,7 +67,7 @@ config 'sambashare'
         option 'dir_mask' '0700'
         option 'read_only' 'no'
 ```
-*. Restart Samba server by running `/etc/init.d/samba restart`
+* Restart Samba server by running `/etc/init.d/samba restart`
 
 #### Add rsync daemon
 * `opkg install rsync`
