@@ -57,7 +57,7 @@ opkg install openssh-sftp-server
 * Assign a password to the user just created by running `passwd user`
 * Add Samba user by running `smbpasswd -a user`
 * Add below to `/etc/config/samba`
-```shell
+```
 config 'sambashare'
         option 'name' 'usb1'
         option 'path' '/mnt/usb1'
@@ -72,7 +72,7 @@ config 'sambashare'
 #### Add rsync daemon
 * `opkg install rsync`
 * Add below to `/etc/rsyncd.conf`
-```shell
+```
 pid file = /var/run/rsyncd.pid
 log file = /var/log/rsyncd.log
 lock file = /var/run/rsync.lock
