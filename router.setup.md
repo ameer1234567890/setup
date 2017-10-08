@@ -76,7 +76,7 @@ config 'sambashare'
 pid file = /var/run/rsyncd.pid
 log file = /var/log/rsyncd.log
 lock file = /var/run/rsync.lock
-use chroot = yes
+use chroot = no
 uid = user
 gid = 501
 read only = no
