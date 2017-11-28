@@ -24,25 +24,11 @@ scripts/install-deps.sh
 ```
 
 #### My modifications
-* Add ding.wav to `/home/pi` (https://raw.githubusercontent.com/warchildmd/google-assistant-hotword-raspi/master/resources/ding.wav)
-* Add dong.wav to `/home/pi` (https://raw.githubusercontent.com/warchildmd/google-assistant-hotword-raspi/master/resources/dong.wav)
-* Add below patches in `src/main.py`
+* Add below patch in `src/main.py`
 ```python
 def process_event(assistant, event):
     status_ui = aiy.voicehat.get_status_ui()
     if event.type == EventType.ON_START_FINISHED:
         status_ui.status('ready')
 +       aiy.audio.say('Hi')
-        if sys.stdout.isatty():
-            print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
-
-    elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
-        status_ui.status('listening')
-+       aiy.audio.play_wave('/home/pi/ding.wav')
-```
-* and also....
-```python
-    elif event.type == EventType.ON_CONVERSATION_TURN_FINISHED:
-+       aiy.audio.play_wave('/home/pi/dong.wav')
-        status_ui.status('ready')
 ```
