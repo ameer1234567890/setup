@@ -24,7 +24,8 @@ scripts/install-deps.sh
 ```
 
 #### My modifications
-* Add ding.wav to `/home/pi` (https://github.com/warchildmd/google-assistant-hotword-raspi/blob/master/resources/ding.wav)
+* Add ding.wav to `/home/pi` (https://raw.githubusercontent.com/warchildmd/google-assistant-hotword-raspi/master/resources/ding.wav)
+* Add dong.wav to `/home/pi` (https://raw.githubusercontent.com/warchildmd/google-assistant-hotword-raspi/master/resources/dong.wav)
 * Add below patches in `src/main.py`
 ```python
 def process_event(assistant, event):
@@ -38,4 +39,10 @@ def process_event(assistant, event):
     elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         status_ui.status('listening')
 +       aiy.audio.play_wave('/home/pi/ding.wav')
+```
+* and also....
+```python
+    elif event.type == EventType.ON_CONVERSATION_TURN_FINISHED:
++       aiy.audio.play_wave('/home/pi/dong.wav')
+        status_ui.status('ready')
 ```
