@@ -24,6 +24,7 @@ scripts/install-deps.sh
 ```
 
 #### My modifications
+* Download ding sound with `curl -Lb gcokie "https://drive.google.com/uc?export=download&confirm=Uq6r&id=0B6mVphrY3XTFSGlUeWhmc0dnUlE" -o "ding.wav"`
 * Add below patch in `src/main.py`
 ```python
 def process_event(assistant, event):
@@ -31,4 +32,10 @@ def process_event(assistant, event):
     if event.type == EventType.ON_START_FINISHED:
         status_ui.status('ready')
 +       aiy.audio.say('Hi')
+        if sys.stdout.isatty():
+            print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
+
+    elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
++       aiy.audio.play_wave('/home/pi/ding.wav')
+        status_ui.status('listening')
 ```
