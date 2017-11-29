@@ -36,6 +36,6 @@ def process_event(assistant, event):
             print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
 
     elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
-+       aiy.audio.play_wave('/home/pi/ding.wav')
         status_ui.status('listening')
++       aiy.audio.play_wave('/home/pi/ding.wav')
 ```
