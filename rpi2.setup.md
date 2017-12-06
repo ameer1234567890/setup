@@ -23,7 +23,7 @@ network={
 * `sudo mkdir /root/.ssh`
 * Add ssh keys to `~/.ssh/authorized_keys`
 * Add ssh keys to `/root/.ssh/authorized_keys`
-* Add `Acquire::http::Proxy "http://rpi2:3142";` to `/etc/apt/apt.conf.d/00proxy`
+* Add `Acquire::http::Proxy "http://rpi1:3142";` to `/etc/apt/apt.conf.d/00proxy`
 * `sudo apt-get autoremove --purge wolfram* sonic-pi libreoffice*`
 * `sudo apt-get autoremove --purge`
 * `sudo apt update`
