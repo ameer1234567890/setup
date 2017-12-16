@@ -1,6 +1,6 @@
 #### How to start using the backup phone in the event of ultimate disaster
 * Swap SIM ard
-* Ativate viber
+* Ativate Viber and restore Viber backup
 * Activate Duo
 * Activate BML Mobile Pay
 * Restore SMS and Call Logs
