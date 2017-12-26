@@ -1,25 +1,32 @@
 ### Google AIY Voice Kit
 * Setup Instructions: https://aiyprojects.withgoogle.com/voice
 * Github Repo: https://github.com/google/aiyprojects-raspbian
-* Software Setup Instructions: https://www.raspberrypi.org/forums/viewtopic.php?t=188958
+* Software Setup Instructions: https://github.com/google/aiyprojects-raspbian/blob/aiyprojects/HACKING.md
 
 #### Setting up software on Raspberry Pi
 ```bash
-git clone https://github.com/google/aiyprojects-raspbian.git ~/voice-recognizer-raspi
-cd ~/voice-recognizer-raspi
+git clone https://github.com/google/aiyprojects-raspbian.git ~/AIY-projects-python
+cd ~/AIY-projects-python
 scripts/install-deps.sh
 sudo scripts/install-services.sh
 cp src/assistant_library_with_local_commands_demo.py src/main.py
 sudo systemctl enable voice-recognizer.service
 ```
 
+#### Testing
+```bash
+cd ~/AIY-projects-python
+source env/bin/activate
+python3 src/main.py
+```
+
 #### How to Update
 To update the Assistant API on Raspbian to a newer version, run these commands:
 ```bash
-cd ~/voice-recognizer-raspi
-git checkout voicekit
-git pull origin voicekit
-rm -rf ~/voice-recognizer-raspi/env
+cd ~/AIY-projects-python
+git checkout aiyprojects
+git pull origin aiyprojects
+rm -rf env
 scripts/install-deps.sh
 ```
 
