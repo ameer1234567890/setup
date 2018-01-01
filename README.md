@@ -5,3 +5,4 @@ These are sets of setup instrutions for some of my devices
 * My Raspberry Pi (rpi1)
 * My Raspberry Pi (rpi2)
 * My Backup Phone
+* My AIY Voice Kit (rpi3)
