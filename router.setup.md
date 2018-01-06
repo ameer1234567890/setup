@@ -87,9 +87,9 @@ read only = no
 
 [usb1]
 path = /mnt/usb1
-comment = Nexus 5X Storage Sync
+comment = NAS of Ameer
 list = yes
-hosts allow = {IP_ADDRESSES_SEPARATED_BY_COMMA}
+hosts allow = 192.168.7.1/24
 ```
 * Add `rsync --daemon` to `/etc/rc.local`
 
