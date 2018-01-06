@@ -32,9 +32,9 @@ opkg install openssh-sftp-server
 * Scroll down to the “New port forward” section.
 * Enter a name for this rule, e.g. “luci-remote”.
 * Set “Protocol” to “TCP”.
-* Set “External zone” to “wan”
-* Set “External port” to “9999”
-* Set “Internal zone” to “lan”
+* Set “External zone” to “wan”.
+* Set “External port” to “9999”.
+* Set “Internal zone” to “lan”.
 * Leave “Internal IP address” blank.
 * Enter “80” as the “Internal Port”.
 * Click “Add”.
@@ -50,6 +50,15 @@ opkg install openssh-sftp-server
 * `touch /mnt/usb1/USB_NOT_MOUNTED`
 * `mount /dev/sda1 /mnt/usb1`
 * Add mount point in System > Mount Points, with `rw,sync` options.
+
+#### Add USB Mount Point
+* Go to System / Mount Points.
+* Scroll down to Mount Points.
+* Click “Add” button.
+* Keep UUID and Label as it is.
+* Select `/dev/sda1` from Device.
+* Select `custom` from Mount Point and type `/mnt/usb1`.
+* Click “Save and Apply”.
 
 #### Add Samba Support
 * `opkg install samba36-server`
