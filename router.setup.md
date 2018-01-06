@@ -55,6 +55,7 @@ opkg install openssh-sftp-server
 * Go to System / Mount Points.
 * Scroll down to Mount Points.
 * Click “Add” button.
+* Select “Enable this mount”.
 * Keep UUID and Label as it is.
 * Select `/dev/sda1` from Device.
 * Select `custom` from Mount Point and type `/mnt/usb1`.
