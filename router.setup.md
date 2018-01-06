@@ -34,6 +34,7 @@ opkg install openssh-sftp-server
 * Set “Protocol” to “TCP”.
 * Set “External zone” to “wan”
 * Set “External port” to “9999”
+* Set “Internal zone” to “lan”
 * Leave “Internal IP address” blank.
 * Enter “80” as the “Internal Port”.
 * Click “Add”.
@@ -41,6 +42,7 @@ opkg install openssh-sftp-server
 
 #### Add USB Storage Device
 * `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils kmod-usb-storage kmod-fs-ext4 block-mount kmod-scsi-core`
+* Reboot
 * `insmod usbcore`
 * `insmod ehci-hcd`
 * `insmod usb-ohci`
