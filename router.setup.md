@@ -16,6 +16,11 @@ opkg update
 opkg install openssh-sftp-server
 ```
 
+#### Install and set nano as default editor
+* `opkg update`
+* `opkg install nano`
+* Add `export EDITOR=nano` to `/etc/profile`
+
 #### Enabling remote SSH access
 * Go to the System / Administration page.
 * Under “SSH Access”, for the default “Dropbear instance”, set “Interface” to “unspecified”.
