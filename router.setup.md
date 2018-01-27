@@ -16,6 +16,12 @@ opkg update
 opkg install openssh-sftp-server
 ```
 
+#### Log on to corporate network every 6 hours
+* Add below line to `crontab` or under System / Scheduled Tasks
+```
+0 */6 * * * wget -O - http://10.38.28.19/Auth/Status/
+```
+
 #### Install and set nano as default editor
 * `opkg update`
 * `opkg install nano`
