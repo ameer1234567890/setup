@@ -5,11 +5,16 @@
 
 #### Setting up software on Raspberry Pi
 ```bash
+sudo pip3 install virtualenv
+sudo pip3 install RPi.GPIO
+virtualenv env
+source env/bin/activate
+pip3 install google_auth_oauthlib
 git clone https://github.com/google/aiyprojects-raspbian.git ~/AIY-projects-python
 cd ~/AIY-projects-python
 scripts/install-deps.sh
 sudo scripts/install-services.sh
-cp src/assistant_library_with_local_commands_demo.py src/main.py
+cp src/examples/voice/assistant_library_with_local_commands_demo.py src/main.py
 sudo systemctl enable voice-recognizer.service
 ```
 
