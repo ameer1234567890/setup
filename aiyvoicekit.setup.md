@@ -54,19 +54,19 @@ def process_event(assistant, event):
 ```
 * Then adjust volume with `alsamixer`
 * Comment out below line:
-```
+```python
         elif text == 'reboot':
             #assistant.stop_conversation()
             reboot_pi()
 ```
 * Comment out below line and add `time.sleep`
-```
+```python
 def reboot_pi():
     #aiy.audio.say('See you in a bit!')
     time.sleep(4)
     subprocess.call('sudo reboot', shell=True)
 ```
 * Add `time` module after `sys` module:
-```
+```python
 import time
 ```
