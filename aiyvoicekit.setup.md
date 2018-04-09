@@ -12,6 +12,7 @@ source env/bin/activate
 pip3 install google_auth_oauthlib numpy pysocks
 git clone https://github.com/google/aiyprojects-raspbian.git ~/AIY-projects-python
 cd ~/AIY-projects-python
+pip3 install -r requirements.txt
 scripts/install-deps.sh
 sudo scripts/install-services.sh
 cp src/examples/voice/assistant_library_with_local_commands_demo.py src/main.py
@@ -51,3 +52,4 @@ def process_event(assistant, event):
         status_ui.status('listening')
 +       aiy.audio.play_wave('/home/pi/ding.wav')
 ```
+* Then adjust volume with `alsamixer`
