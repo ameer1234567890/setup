@@ -5,8 +5,8 @@
 
 #### Setting up software on Raspberry Pi
 ```bash
-sudo pip3 install virtualenv
-sudo pip3 install RPi.GPIO
+sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils
+sudo pip3 install virtualenv RPi.GPIO numpy pysocks
 virtualenv env
 source env/bin/activate
 pip3 install google_auth_oauthlib
