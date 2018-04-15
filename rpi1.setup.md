@@ -45,8 +45,14 @@ network={
 * Add IFTTT maker key to `~/.maker_key`
 * Add Weather Underground My PWS station ID and key to `~/.wu_config.py`. Format is specified at `.wu_config.py`
 * Copy `client_secret.json` into `pi-scripts` directory.
-* Restore crontab from `~/pi-scripts/raspberrypi.crontab`
-* Restore `/etc/rc.local` from `~/pi-scripts/raspberrypi.rc-local`
+* Test all required scripts.
+* Add all required scripts to systemd via `sudo ./install-service.sh {script.py}`
+* Add below to `/etc/rc.local` before the exit.
+```bash
+#echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+echo pcf8563 0x51 > /sys/class/i2c-adapter/i2c-1/new_device
+sudo hwclock -s
+```
 * Add `dtparam=act_led_gpio=25` to `/boot/config.txt`
 
 #### Setup remot3.it
