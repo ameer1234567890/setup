@@ -19,6 +19,8 @@ pip3 install -r requirements.txt
 scripts/install-deps.sh
 sudo scripts/install-services.sh
 cp src/examples/voice/assistant_library_with_local_commands_demo.py src/main.py
+sudo scripts/configure-driver.sh
+sudo reboot
 sudo systemctl enable voice-recognizer.service
 ```
 
