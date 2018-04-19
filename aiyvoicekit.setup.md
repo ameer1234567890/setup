@@ -5,7 +5,7 @@
 
 #### Setting up software on Raspberry Pi
 ```bash
-sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils
+sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils git
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 sudo pip3 install virtualenv RPi.GPIO
