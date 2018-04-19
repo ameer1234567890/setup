@@ -4,6 +4,7 @@
 * Software Setup Instructions: https://github.com/google/aiyprojects-raspbian/blob/aiyprojects/HACKING.md
 
 #### Setting up software on Raspberry Pi
+* Copy credentials file to `/home/pi/assistant.json`
 ```bash
 sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils git
 wget https://bootstrap.pypa.io/get-pip.py
