@@ -8,12 +8,12 @@
 sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils git
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
-sudo pip3 install virtualenv RPi.GPIO
+sudo pip3 install virtualenv
 git clone https://github.com/google/aiyprojects-raspbian.git ~/AIY-projects-python
 cd ~/AIY-projects-python
 virtualenv env
 source env/bin/activate
-pip3 install google_auth_oauthlib numpy pysocks
+pip3 install google_auth_oauthlib numpy pysocks RPi.GPIO
 pip3 install -r requirements.txt
 scripts/install-deps.sh
 sudo scripts/install-services.sh
