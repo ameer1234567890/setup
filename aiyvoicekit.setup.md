@@ -75,3 +75,13 @@ def reboot_pi():
 ```python
 import time
 ```
+
+#### Troubleshooting
+* If no voice from the assistant, fix it by saying `OK Google, set volume to 80%`
+* If alsa volume resets occationally, run the below:
+```bash
+sudo alsactl store
+sudo systemctl add-wants sound.target alsa-restore.service
+sudo systemctl daemon-reload
+sudo systemctl enable alsa-restore.service
+```
