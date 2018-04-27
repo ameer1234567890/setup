@@ -114,6 +114,11 @@ hosts allow = 192.168.7.1/24
 ```
 * Add `rsync --daemon` to `/etc/rc.local`
 
+#### Setting up WonderShaper
+* `opkg install wshaper`
+* `opkg install luci-app-wshaper`
+* Set bandwidth limits in LuCI Network / Wondershaper
+
 #### Important Links
 * Configure a guest WLAN: https://wiki.openwrt.org/doc/recipes/guest-wlan-webinterface
 * Guest Network for Guest WiFi: https://lede-project.org/docs/user-guide/guestwifi_configuration
