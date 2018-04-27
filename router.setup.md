@@ -130,3 +130,4 @@ hosts allow = 192.168.7.1/24
 * Setting up a USB drive for storage on OpenWRT: http://www.brendangrainger.com/entries/13
 * Samba (smb): https://wiki.openwrt.org/doc/uci/samba
 * Share USB Hard-drive with Samba using the Luci web-interface: https://wiki.openwrt.org/doc/recipes/usb-storage-samba-webinterface
+* Block a Device Based in MAC Address: https://bokunokeiken.wordpress.com/2015/06/27/how-to-block-device-on-openwrt-based-on-mac-address/
