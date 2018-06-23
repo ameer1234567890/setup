@@ -77,7 +77,7 @@ opkg install openssh-sftp-server
 * `opkg install luci-app-samba`
 * Edit `/etc/config/samba` as required
 * Edit `/etc/samba/smb.conf.template` as required
-* Add `min protocol = SMB2` to `/etc/samba/samba.conf.template`
+* Add `min protocol = SMB2` to `/etc/samba/smb.conf.template`
 * Add user to `/etc/passwd` in the format `user:x:501:501:user:/home/user:/bin/ash`
 * Assign a password to the user just created by running `passwd user`
 * Add Samba user by running `smbpasswd -a user`
