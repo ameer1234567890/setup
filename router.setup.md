@@ -1,7 +1,12 @@
-#### Technical Details
+#### Technical Details (Primary Router)
+* Router Model: Xiaomi MiWiFi Mini
+* SOC: MediaTek MT7620A
+* OpenWRT Page: https://openwrt.org/toh/hwdata/xiaomi/xiaomi_mini_v1
+
+#### Technical Details (Backup Router)
 * Router Model: ZBT WR8305RT
 * SOC: MediaTek MT7620N
-* OpenWRT Page: https://wiki.openwrt.org/toh/zbt/wr8305rt
+* OpenWRT Page: https://openwrt.org/toh/hwdata/zbt/zbt_wr8305rt
 
 #### Notify on router startup (via IFTTT)
 Add below line to `/etc/rc.local` or under Local Startup at System / Startup in LuCI
@@ -26,6 +31,16 @@ opkg install openssh-sftp-server
 * `opkg update`
 * `opkg install nano`
 * Add `export EDITOR=nano` to `/etc/profile`
+
+#### Secure LuCI (HTTPS)
+* `opkg install luci-ssl`
+```shell
+uci set uhttpd.main.listen_http=192.168.7.1:80
+uci set uhttpd.main.listen_https='192.168.7.1:443'
+uci set uhttpd.main.redirect_https='1'
+uci commit
+```
+* `/etc/init.d/uhttpd restart`
 
 #### Enabling remote SSH access
 * Go to the System / Administration page.
