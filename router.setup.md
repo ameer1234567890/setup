@@ -1,12 +1,14 @@
 #### Technical Details (Primary Router)
 * Router Model: Xiaomi MiWiFi Mini
 * SOC: MediaTek MT7620A
-* OpenWRT Page: https://openwrt.org/toh/hwdata/xiaomi/xiaomi_mini_v1
+* OpenWRT Page: https://wiki.openwrt.org/toh/xiaomi/mini
+* OpenWRT Hardware Data: https://openwrt.org/toh/hwdata/xiaomi/xiaomi_mini_v1
 
 #### Technical Details (Backup Router)
 * Router Model: ZBT WR8305RT
 * SOC: MediaTek MT7620N
-* OpenWRT Page: https://openwrt.org/toh/hwdata/zbt/zbt_wr8305rt
+* OpenWRT Page: https://wiki.openwrt.org/toh/zbt/wr8305rt
+* OpenWRT Hardware Data: https://openwrt.org/toh/hwdata/zbt/zbt_wr8305rt
 
 #### Notify on router startup (via IFTTT)
 Add below line to `/etc/rc.local` or under Local Startup at System / Startup in LuCI
