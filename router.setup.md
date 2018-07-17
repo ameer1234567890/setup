@@ -71,12 +71,14 @@ uci commit
 #### Add USB Storage Device
 * `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils kmod-usb-storage kmod-fs-ext4 block-mount kmod-scsi-core`
 * Reboot
-* `insmod usbcore`
-* `insmod ehci-hcd`
-* `insmod usb-ohci`
-* `mkdir /mnt/usb1`
-* `touch /mnt/usb1/USB_NOT_MOUNTED`
-* `mount /dev/sda1 /mnt/usb1`
+```shell
+insmod usbcore
+insmod ehci-hcd
+insmod usb-ohci
+mkdir /mnt/usb1
+touch /mnt/usb1/USB_NOT_MOUNTED
+mount /dev/sda1 /mnt/usb1
+```
 * Add mount point in System > Mount Points, with `rw,sync` options.
 
 #### Add USB Mount Point
