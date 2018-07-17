@@ -136,7 +136,7 @@ hosts allow = 192.168.7.1/24
 #### Setting up WonderShaper
 * `opkg install wshaper`
 * `opkg install luci-app-wshaper`
-* Set bandwidth limits in LuCI Network / Wondershaper
+* Set bandwidth limits in LuCI: Network / Wondershaper
 
 #### Important Links
 * Configure a guest WLAN: https://wiki.openwrt.org/doc/recipes/guest-wlan-webinterface
