@@ -42,14 +42,15 @@ scripts/install-deps.sh
 ```
 
 #### My modifications
-* Download ding sound with `curl -Lb gcokie "https://drive.google.com/uc?export=download&confirm=Uq6r&id=0B6mVphrY3XTFSGlUeWhmc0dnUlE" -o "ding.wav"`
+* Download ding sound with `curl https://raw.githubusercontent.com/ameer1234567890/setup/master/ding.wav -o ding.wav`
+* Download boot sound with `curl https://raw.githubusercontent.com/ameer1234567890/setup/master/boot_mono.wav -o boot_mono.wav`
 * Add below patch in `src/main.py`
 ```python
 def process_event(assistant, event):
     status_ui = aiy.voicehat.get_status_ui()
     if event.type == EventType.ON_START_FINISHED:
         status_ui.status('ready')
-+       aiy.audio.say('Hi')
++       aiy.audio.play_wave('/home/pi/boot_mono.wav')
         if sys.stdout.isatty():
             print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
 
