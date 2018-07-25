@@ -50,7 +50,9 @@ def process_event(assistant, event):
     status_ui = aiy.voicehat.get_status_ui()
     if event.type == EventType.ON_START_FINISHED:
         status_ui.status('ready')
++       subprocess.call('amixer sset \'Master\' 140,140', shell=True)
 +       aiy.audio.play_wave('/home/pi/boot_mono.wav')
++       subprocess.call('amixer sset \'Master\' 204,204', shell=True)
         if sys.stdout.isatty():
             print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
 
