@@ -150,3 +150,5 @@ hosts allow = 192.168.7.1/24
 * Samba (smb): https://wiki.openwrt.org/doc/uci/samba
 * Share USB Hard-drive with Samba using the Luci web-interface: https://wiki.openwrt.org/doc/recipes/usb-storage-samba-webinterface
 * Block a Device Based in MAC Address: https://bokunokeiken.wordpress.com/2015/06/27/how-to-block-device-on-openwrt-based-on-mac-address/
+* Secure your router's access: https://openwrt.org/docs/guide-user/security/secure.access
+* How to get rid of LuCI https certificate warnings: https://openwrt.org/docs/guide-user/luci/getting-rid-of-luci-https-certificate-warnings
