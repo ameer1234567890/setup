@@ -139,17 +139,17 @@ hosts allow = 192.168.7.1/24
 * Set bandwidth limits in LuCI: Network / Wondershaper
 
 #### Important Links
-* Configure a guest WLAN: https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface
-* Configure a guest WLAN: https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan
-* Smartphone USB Tethering to an OpenWrt router: https://openwrt.org/docs/guide-user/network/wan/smartphone.usb.tethering
-* Enabling remote management: https://aiotutorials.wordpress.com/2016/06/28/openwrt-remote-access/
-* Installing USB Drivers: https://openwrt.org/docs/guide-user/storage/usb-installing
-* Using storage devices: https://openwrt.org/docs/guide-user/storage/usb-drives
-* Partitioning, Formatting and Mounting Storage Devices: https://wiki.openwrt.org/doc/howto/storage
-* Setting up a USB drive for storage on OpenWRT: http://www.brendangrainger.com/entries/13
-* Samba (smb): https://openwrt.org/docs/guide-user/services/nas/samba
-* Share USB Hard-drive with Samba using the Luci web-interface: https://openwrt.org/docs/guide-user/services/nas/usb-storage-samba-webinterface
-* Block a Device Based in MAC Address: https://bokunokeiken.wordpress.com/2015/06/27/how-to-block-device-on-openwrt-based-on-mac-address/
-* Secure your router's access: https://openwrt.org/docs/guide-user/security/secure.access
-* How to get rid of LuCI https certificate warnings: https://openwrt.org/docs/guide-user/luci/getting-rid-of-luci-https-certificate-warnings
-* Getting Chrome to accept self-signed localhost certificate: https://stackoverflow.com/questions/7580508/getting-chrome-to-accept-self-signed-localhost-certificate/43666288#43666288
+* [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface)
+* [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan)
+* [Smartphone USB Tethering to an OpenWrt router](https://openwrt.org/docs/guide-user/network/wan/smartphone.usb.tethering)
+* [Enabling remote management](https://aiotutorials.wordpress.com/2016/06/28/openwrt-remote-access/)
+* [Installing USB Drivers](https://openwrt.org/docs/guide-user/storage/usb-installing)
+* [Using storage devices](https://openwrt.org/docs/guide-user/storage/usb-drives)
+* [Partitioning, Formatting and Mounting Storage Devices](https://wiki.openwrt.org/doc/howto/storage)
+* [Setting up a USB drive for storage on OpenWRT](http://www.brendangrainger.com/entries/13)
+* [Samba (smb)](https://openwrt.org/docs/guide-user/services/nas/samba)
+* [Share USB Hard-drive with Samba using the Luci web-interface](https://openwrt.org/docs/guide-user/services/nas/usb-storage-samba-webinterface)
+* [Block a Device Based in MAC Address](https://bokunokeiken.wordpress.com/2015/06/27/how-to-block-device-on-openwrt-based-on-mac-address/)
+* [Secure your router's access](https://openwrt.org/docs/guide-user/security/secure.access)
+* [How to get rid of LuCI https certificate warnings](https://openwrt.org/docs/guide-user/luci/getting-rid-of-luci-https-certificate-warnings)
+* [Getting Chrome to accept self-signed localhost certificate](https://stackoverflow.com/questions/7580508/getting-chrome-to-accept-self-signed-localhost-certificate/43666288#43666288)
