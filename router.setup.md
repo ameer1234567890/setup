@@ -113,6 +113,12 @@ uci set uhttpd.main.redirect_https='1'
 uci commit
 ```
 * `/etc/init.d/uhttpd restart`
+* Go to the Services / uHTTPd.
+* In the field for HTTPS Certificate, paste /etc/ssl/miwifimini.crt
+* In the field for HTTPS Private Key, paste /etc/ssl/device.key
+* Hit save and apply.
+* `/etc/init.d/uhttpd restart`
+* Add `/etc/ssl/rootCA.pem` to Chrome's root certificates.
 
 #### Enabling remote SSH access
 * Go to the System / Administration page.
