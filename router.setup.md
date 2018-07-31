@@ -145,12 +145,37 @@ uci commit
 * Click “Save and Apply”.
 
 #### Add USB Storage Device
-* `opkg install kmod-usb-core kmod-usb-ohci kmod-usb-uhci kmod-usb2 kmod-usb3 usbutils kmod-usb-storage kmod-fs-ext4 block-mount kmod-scsi-core`
-* Reboot
+* First install required packages for usb storage:
 ```shell
+opkg install kmod-usb-core usbutils kmod-usb-storage kmod-fs-ext4 block-mount
 insmod usbcore
+```
+* For USB 3.0:
+```shell
+opkg install kmod-usb3
+insmod xhci-hcd
+```
+* For USB 2.0:
+```shell
+opkg install kmod-usb2
 insmod ehci-hcd
-insmod usb-ohci
+```
+* For USB 1.1 OHCI:
+```shell
+opkg install kmod-usb-ohci
+insmod ohci
+```
+* For USB 1.1 UHCI:
+```shell
+opkg install kmod-usb-uhci
+insmod uhci
+```
+* For USB 1.0:
+```shell
+
+```
+* Create mount directory, touch empty file, and mount:
+```shell
 mkdir /mnt/usb1
 touch /mnt/usb1/USB_NOT_MOUNTED
 mount /dev/sda1 /mnt/usb1
