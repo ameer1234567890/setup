@@ -180,7 +180,6 @@ mkdir /mnt/usb1
 touch /mnt/usb1/USB_NOT_MOUNTED
 mount /dev/sda1 /mnt/usb1
 ```
-* Add mount point in System > Mount Points, with `rw,sync` options.
 
 #### Add USB Mount Point
 * Go to System / Mount Points.
@@ -190,6 +189,7 @@ mount /dev/sda1 /mnt/usb1
 * Keep UUID and Label as it is.
 * Select `/dev/sda1` from Device.
 * Select `custom` from Mount Point and type `/mnt/usb1`.
+* Go to Advanced Settings and enter `rw,sync` in Mount options.
 * Click “Save and Apply”.
 
 #### Add Samba Support
