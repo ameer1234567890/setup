@@ -103,8 +103,9 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = %%DOMAIN%%
 ```
-* Run `/etc/ssl/create_root_cert_and_key.sh`
-* Run `/etc/ssl/create_certificate_for_domain.sh miwifimini miwifimini`
+* Run `cd /etc/ssl`
+* Run `./create_root_cert_and_key.sh`
+* Run `./create_certificate_for_domain.sh miwifimini miwifimini`
 
 ```shell
 uci set uhttpd.main.listen_http='0.0.0.0:80'
