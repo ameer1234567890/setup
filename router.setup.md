@@ -239,6 +239,13 @@ hosts allow = 192.168.7.1/24
 * `opkg install luci-app-sqm`
 * Set bandwidth limits in LuCI: Network / SQM QoS
 
+#### Adding Private Key to Dropbear
+* Copy private key file to `/root` directory.
+* `opkg install dropbearconvert`
+* `dropbearconvert openssh dropbear /root/id_rsa /root/.ssh/id_rsa`
+* `rm /root/id_rsa`
+* Add `alias ssh='ssh -i /root/.ssh/id_rsa'` to `/etc/profile`
+
 #### Important Links
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface)
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan)
