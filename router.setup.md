@@ -102,6 +102,9 @@ subjectAltName = @alt_names
 
 [alt_names]
 DNS.1 = %%DOMAIN%%
+DNS.2 = localhost
+IP.1 = 127.0.0.1
+IP.2 = 192.168.7.1
 ```
 * Run `cd /etc/ssl`
 * Run `./create_root_cert_and_key.sh`
