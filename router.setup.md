@@ -174,12 +174,9 @@ insmod ohci
 opkg install kmod-usb-uhci
 insmod uhci
 ```
-* For USB 1.0:
-```shell
-
-```
 * Create mount directory, touch empty file, and mount:
 ```shell
+opkg install block-mount
 mkdir /mnt/usb1
 touch /mnt/usb1/USB_NOT_MOUNTED
 mount /dev/sda1 /mnt/usb1
