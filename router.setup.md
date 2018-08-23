@@ -35,7 +35,7 @@ opkg install openssh-sftp-server
 * Add `export EDITOR=nano` to `/etc/profile`
 
 #### Secure LuCI (HTTPS)
-* `opkg install luci-ssl openssl-util luci-app-uhttpd`
+* `opkg install luci-ssl-openssl openssl-util luci-app-uhttpd`
 * Add below to `/etc/ssl/create_root_cert_and_key.sh`
 ```shell
 openssl genrsa -out rootCA.key 2048
