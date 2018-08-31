@@ -6,20 +6,27 @@
 #### Setting up software on Raspberry Pi
 * Copy credentials file to `/home/pi/assistant.json`
 ```bash
-sudo apt install alsa-utils python3-all-dev rsync ntpdate libttspico-utils git
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py
-sudo pip3 install virtualenv
-git clone https://github.com/google/aiyprojects-raspbian.git ~/AIY-projects-python
-cd ~/AIY-projects-python
-virtualenv env
-source env/bin/activate
-pip3 install google_auth_oauthlib numpy pysocks RPi.GPIO
-pip3 install -r requirements.txt
-scripts/install-deps.sh
-sudo scripts/install-services.sh
-cp src/examples/voice/assistant_library_with_local_commands_demo.py src/main.py
-sudo scripts/configure-driver.sh
+echo "deb https://dl.google.com/aiyprojects/deb stable main" | sudo tee -a /etc/apt/sources.list.d/aiyprojects.list
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo apt update
+sudo apt upgrade
+sudo reboot
+sudo apt install pulseaudio
+mkdir -p ~/.config/pulse/
+echo "default-sample-rate = 48000" > ~/.config/pulse/daemon.conf
+sudo mkdir -p /usr/lib/systemd/system/
+sudo apt install libatlas-base-dev # Required for numpy
+sudo apt install libjpeg-dev # Required for Pillow
+sudo apt install aiy-dkms aiy-voicebonnet-soundcard-dkms aiy-voicebonnet-routes
+sudo reboot
+sudo apt install git
+git clone https://github.com/google/aiyprojects-raspbian.git AIY-projects-python
+virtualenv AIY-projects-python/env
+source AIY-projects-python/env/bin/activate
+pip install google_auth_oauthlib
+pip install numpy
+pip install -e AIY-projects-python/src
+cp ~/AIY-projects-python/src/examples/voice/assistant_library_with_local_commands_demo.py ~/AIY-projects-python/src/main.py
 sudo reboot
 sudo systemctl enable voice-recognizer.service
 ```
@@ -87,4 +94,13 @@ sudo alsactl store
 sudo systemctl add-wants sound.target alsa-restore.service
 sudo systemctl daemon-reload
 sudo systemctl enable alsa-restore.service
+```
+
+* If alsamixer volume levels are being ignored, backup and remove below files:
+```bash
+/root/.config/pulse
+/etc/pulse
+/home/pi/.config/pulse
+/run/alsa/.config/pulse
+/run/user/1000/pulse
 ```
