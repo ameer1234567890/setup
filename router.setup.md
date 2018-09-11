@@ -245,6 +245,34 @@ hosts allow = 192.168.7.1/24
 * `dropbearconvert openssh dropbear /root/id_rsa /root/.ssh/id_dropbear`
 * `rm /root/id_rsa`
 
+#### Add serveo.net remote ssh
+* Add below to `/etc/init.d/serveo`
+```shell
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+  echo "Starting serveo service..."
+  /usr/bin/ssh -y -R ameer:22:localhost:22 serveo.net < /dev/ptmx &
+}
+
+stop() {
+  echo "Stopping serveo service..."
+  pids="$(pgrep -f serveo.net)"
+  for pid in $pids; do
+    /bin/kill "$pid"
+  done
+}
+
+restart() {
+  stop
+  start
+}
+```
+* Run `/etc/init.d/serveo enable`
+* Run `/etc/init.d/serveo start`
+
 #### Important Links
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface)
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan)
