@@ -21,11 +21,11 @@ sudo apt install aiy-dkms aiy-voicebonnet-soundcard-dkms aiy-voicebonnet-routes
 sudo reboot
 sudo apt install git
 git clone https://github.com/google/aiyprojects-raspbian.git AIY-projects-python
-virtualenv AIY-projects-python/env
-source AIY-projects-python/env/bin/activate
+virtualenv ~/AIY-projects-python/env
+source ~/AIY-projects-python/env/bin/activate
 pip install google_auth_oauthlib
 pip install numpy
-pip install -e AIY-projects-python/src
+pip install -e ~/AIY-projects-python/src
 cp ~/AIY-projects-python/src/examples/voice/assistant_library_with_local_commands_demo.py ~/AIY-projects-python/src/main.py
 sudo reboot
 sudo systemctl enable voice-recognizer.service
