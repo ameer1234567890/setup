@@ -270,6 +270,7 @@ restart() {
   start
 }
 ```
+* chmod +x /etc/init.d/serveo
 * Run `/etc/init.d/serveo enable`
 * Run `/etc/init.d/serveo start`
 
