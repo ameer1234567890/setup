@@ -246,6 +246,7 @@ hosts allow = 192.168.7.1/24
 * `rm /root/id_rsa`
 
 #### Add serveo.net remote ssh
+* `opkg install autossh`
 * Add below to `/etc/init.d/serveo`
 ```shell
 #!/bin/sh /etc/rc.common
@@ -254,7 +255,7 @@ START=99
 
 start() {
   echo "Starting serveo service..."
-  /usr/bin/ssh -y -R ameer:22:localhost:22 serveo.net < /dev/ptmx &
+  /usr/sbin/autossh -M 22 -y -R ameer:22:localhost:22 serveo.net < /dev/ptmx &
 }
 
 stop() {
