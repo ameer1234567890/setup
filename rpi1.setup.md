@@ -78,3 +78,11 @@ LIRCMD_CONF=""
 * `git clone https://github.com/ameer1234567890/web-irsend`
 * `sudo pip3 install Flask`
 * `sudo pip2 install Flask`
+
+#### Faster SSh Connections
+* Add below to `/etc/ssh/sshd_config`
+```
+VerifyReverseMapping no
+UseDNS no
+```
+* Restart sshd with `/etc/init.d/ssh restart`
