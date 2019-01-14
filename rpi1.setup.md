@@ -85,4 +85,4 @@ LIRCMD_CONF=""
 VerifyReverseMapping no
 UseDNS no
 ```
-* Restart sshd with `/etc/init.d/ssh restart`
+* Restart sshd with `sudo /etc/init.d/ssh restart`
