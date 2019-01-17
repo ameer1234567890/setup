@@ -56,11 +56,11 @@ if [ ! -f rootCA.pem ]; then
   exit;
 fi
 if [ ! -f v3.ext ]; then
-  echo 'Please download the "v3.ext" file and try again!'
+  echo 'Please create "v3.ext" file and try again!'
   exit;
 fi
 
-# Create a new private key if one doesnt exist, or use the xeisting one if it does
+# Create a new private key if one doesnt exist, or use the existing one if it does
 if [ -f device.key ]; then
   KEY_OPT="-key"
 else
