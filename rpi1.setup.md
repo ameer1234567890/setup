@@ -79,10 +79,17 @@ LIRCMD_CONF=""
 * `sudo pip3 install Flask`
 * `sudo pip2 install Flask`
 
-#### Faster SSh Connections
+#### Faster SSH Connections
 * Add below to `/etc/ssh/sshd_config`
 ```
 VerifyReverseMapping no
 UseDNS no
 ```
 * Restart sshd with `sudo /etc/init.d/ssh restart`
+
+#### Disable Password Logins via SSH
+* Add below to `/etc/ssh/sshd_config`
+```
+PasswordAuthentication no
+```
+* Run `sudo service ssh reload`
