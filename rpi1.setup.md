@@ -82,7 +82,6 @@ LIRCMD_CONF=""
 #### Faster SSH Connections
 * Add below to `/etc/ssh/sshd_config`
 ```
-VerifyReverseMapping no
 UseDNS no
 ```
 * Restart sshd with `sudo /etc/init.d/ssh restart`
