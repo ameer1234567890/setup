@@ -176,7 +176,6 @@ insmod uhci
 ```
 * Create mount directory, touch empty file, and mount:
 ```shell
-opkg install block-mount
 mkdir /mnt/usb1
 touch /mnt/usb1/USB_NOT_MOUNTED
 mount /dev/sda1 /mnt/usb1
@@ -271,7 +270,7 @@ restart() {
   start
 }
 ```
-* chmod +x /etc/init.d/serveo
+* `chmod +x /etc/init.d/serveo`
 * Run `/etc/init.d/serveo enable`
 * Run `/etc/init.d/serveo start`
 
