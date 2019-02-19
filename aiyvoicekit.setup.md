@@ -87,6 +87,11 @@ import time
 ```
 
 #### Troubleshooting
+* If there is no sound from `aplay`, copy below to `/boot/config.txt`
+```bash
+dtoverlay=googlevoicehat-soundcard
+```
+
 * If no voice from the assistant, fix it by saying `OK Google, set volume to 80%`
 * If alsa volume resets occationally, run the below:
 ```bash
