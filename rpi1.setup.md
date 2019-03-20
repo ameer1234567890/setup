@@ -90,5 +90,7 @@ UseDNS no
 * Add below to `/etc/ssh/sshd_config`
 ```
 PasswordAuthentication no
+Match address 192.168.100.0/24
+    PasswordAuthentication yes
 ```
 * Run `sudo service ssh reload`
