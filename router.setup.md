@@ -278,6 +278,35 @@ restart() {
 * Run `/etc/init.d/serveo enable`
 * Run `/etc/init.d/serveo start`
 
+#### Setup aria2 and webui-aria2
+* `opkg install luci-app-aria2 webui-aria2 sudo`
+* `mkdir -p /home/user`
+* `chown user.501 /home/user`
+* `sudo -u user mkdir /home/user/.aria2`
+* `sudo -u user touch /home/user/.aria2/session`
+* `sudo -u user nano /home/user/.aria2/aria2.conf` and add below:
+```
+dir=/mnt/usb1/aria2
+file-allocation=prealloc
+continue=true
+save-session=/root/.aria2/session
+input-file=/root/.aria2/session
+save-session-interval=10
+force-save=true
+max-connection-per-server=10
+enable-rpc=true
+rpc-listen-all=true
+rpc-secret=_notmysecret_
+rpc-listen-port=6800
+rpc-allow-origin-all=true
+```
+* `sudo -u user mkdir /mnt/usb1/aria2`
+* `/etc/init.d/aria2 disable`
+* Add below to `/etc/rc.local`
+```
+sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &
+```
+
 #### Important Links
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface)
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan)
