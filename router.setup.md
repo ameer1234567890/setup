@@ -305,6 +305,7 @@ rpc-allow-origin-all=true
 * Add below to `/etc/rc.local`
 ```
 sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &
+* Reboot
 ```
 
 #### Important Links
