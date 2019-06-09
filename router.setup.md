@@ -214,6 +214,10 @@ config 'sambashare'
 ```
 * Restart Samba server by running `/etc/init.d/samba restart`
 
+#### Make samba accessible from outside (WAN)
+* Change `bind interfaces only` to `no` at `/etc/samba/smb.conf.template`
+* Restart Samba server by running `/etc/init.d/samba restart`
+
 #### Add rsync daemon
 * `opkg install rsync`
 * Add below to `/etc/rsyncd.conf`
