@@ -308,6 +308,9 @@ sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &
 * Reboot
 ```
 
+#### Scheduling aria2
+* [Schedule download at particular time](https://github.com/ziahamza/webui-aria2/issues/126)
+
 #### Important Links
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan-webinterface)
 * [Configure a guest WLAN](https://openwrt.org/docs/guide-user/network/wifi/guestwifi/guest-wlan)
