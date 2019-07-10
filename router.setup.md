@@ -299,14 +299,26 @@ rpc-listen-all=true
 rpc-secret=_notmysecret_
 rpc-listen-port=6800
 rpc-allow-origin-all=true
+on-download-complete=/home/user/.aria2/hook-complete.sh
+on-download-error=/home/user/.aria2/hook-error.sh
 ```
 * `sudo -u user mkdir /mnt/usb1/aria2`
 * `/etc/init.d/aria2 disable`
 * Add below to `/etc/rc.local`
 ```
 sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &
-* Reboot
 ```
+* `sudo -u user nano /home/user/.aria2/hook-complete.sh`
+```
+#!/bin/bash
+curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$3'"}' https://maker.ifttt.com/trigger/aria2_complete/with/key/{IFTTT_KEY}
+```
+* `sudo -u user nano /home/user/.aria2/hook-error.sh`
+```
+#!/bin/bash
+curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$3'"}' https://maker.ifttt.com/trigger/aria2_error/with/key/{IFTTT_KEY}
+```
+* Reboot
 
 #### Scheduling aria2
 * [Schedule download at particular time](https://github.com/ziahamza/webui-aria2/issues/126)
