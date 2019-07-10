@@ -289,8 +289,8 @@ restart() {
 dir=/mnt/usb1/aria2
 file-allocation=prealloc
 continue=true
-save-session=/root/.aria2/session
-input-file=/root/.aria2/session
+save-session=/user/.aria2/session
+input-file=/user/.aria2/session
 save-session-interval=10
 force-save=true
 max-connection-per-server=10
