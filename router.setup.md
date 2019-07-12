@@ -248,6 +248,13 @@ hosts allow = 192.168.7.1/24
 * `dropbearconvert openssh dropbear /root/id_rsa /root/.ssh/id_dropbear`
 * `rm /root/id_rsa`
 
+#### Disable Password Authentication in Dropbear
+```
+uci set dropbear.@dropbear[0].PasswordAuth='off'
+uci commit dropbear
+service dropbear restart
+```
+
 #### Add serveo.net remote ssh
 * `opkg install autossh`
 * Add below to `/etc/init.d/serveo`
