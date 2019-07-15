@@ -299,34 +299,10 @@ while { echo -en "$RESPONSE"; } | ncat -l "${1:-8080}"; do
 done
 ```
 * `chmod +x /root/shinatra.sh`
-* Copy below to `/etc/init.d/shinatra`
+* Add below to `/etc/rc.local`
 ```
-#!/bin/sh /etc/rc.common
-
-START=99
-
-start() {
-  echo "Starting shinatra service..."
-  /root/shinatra.sh 8008 "Rebooting Google Home Mini" < /dev/ptmx &
-}
-
-stop() {
-  echo "Stopping shinatra service..."
-  pids="$(pgrep -f shinatra)"
-  for pid in $pids; do
-    /bin/kill "$pid"
-  done
-}
-
-restart() {
-  stop
-  start
-}
+bash /root/shinatra.sh 8008 rebooting
 ```
-* `chmod +x /etc/init.d/shinatra`
-* `service shinatra enable`
-* `service shinatra start`
-
 #### Setup aria2 and webui-aria2
 * `opkg install luci-app-aria2 webui-aria2 sudo`
 * `mkdir -p /home/user`
