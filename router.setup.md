@@ -270,7 +270,7 @@ start() {
 
 stop() {
   echo "Stopping serveo service..."
-  pids="$(pgrep -f serveo.net)"
+  pids="$(pgrep -f ameer)"
   for pid in $pids; do
     /bin/kill "$pid"
   done
