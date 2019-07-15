@@ -285,6 +285,58 @@ restart() {
 * Run `/etc/init.d/serveo enable`
 * Run `/etc/init.d/serveo start`
 
+#### Setup Google Home Reboot Service
+* `opkg update`
+* `opkg install ncat bash`
+* Copy below to `/root/shinatra.sh`
+```
+#!/usr/bin/env bash
+logger -t shinatra "Starting shinatra..."
+RESPONSE="HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n\r\n${2:-"OK"}\r\n"
+while { echo -en "$RESPONSE"; } | ncat -l "${1:-8080}"; do
+  curl --header "Content-Type: application/json" --request POST --data '{"params":"now"}' http://192.168.100.36:8008/setup/reboot
+  logger -t shinatra "Rebooting Google Home Mini"
+  echo "================================================"
+done
+```
+* `chmod +x /root/shinatra.sh`
+* Copy below to `/etc/init.d/shinatra`
+```
+#!/usr/bin/env bash
+logger -t shinatra "Starting shinatra..."
+RESPONSE="HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n\r\n${2:-"OK"}\r\n"
+while { echo -en "$RESPONSE"; } | ncat -l "${1:-8080}"; do
+  curl --header "Content-Type: application/json" --request POST --data '{"params":"now"}' http://192.168.100.36:8008/setup/reboot
+  logger -t shinatra "Rebooting Google Home Mini"
+  echo "================================================"
+done
+root@miwifimini:~# cat /etc/init.d/shinatra
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+  echo "Starting shinatra service..."
+  /root/shinatra.sh 8008 "Rebooting Google Home Mini" < /dev/ptmx &
+}
+
+stop() {
+  echo "Stopping shinatra service..."
+  pids="$(pgrep -f shinatra)"
+  for pid in $pids; do
+    /bin/kill "$pid"
+  done
+}
+
+restart() {
+  stop
+  start
+}
+```
+* `chmod +x /etc/init.d/shinatra`
+* `service shinatra enable`
+* `service shinatra start`
+
 #### Setup aria2 and webui-aria2
 * `opkg install luci-app-aria2 webui-aria2 sudo`
 * `mkdir -p /home/user`
