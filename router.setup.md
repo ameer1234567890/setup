@@ -287,21 +287,22 @@ restart() {
 
 #### Setup Google Home Reboot Service
 * `opkg update`
-* `opkg install ncat bash`
-* Copy below to `/root/shinatra.sh`
+* `opkg install socat bash`
+* `curl -o bashttpd https://raw.githubusercontent.com/avleen/bashttpd/master/bashttpd`
+* `chmod +x bashttpd`
+* Add below to `/root/bashttpd.conf`
 ```
-#!/usr/bin/env bash
-RESPONSE="HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n\r\n${2:-"OK"}\r\n"
-while { echo -en "$RESPONSE"; } | ncat -l "${1:-8080}"; do
+reboot_gh() {
   curl --header "Content-Type: application/json" --request POST --data '{"params":"now"}' http://192.168.100.36:8008/setup/reboot
-  logger -t shinatra "Rebooting Google Home Mini"
-  echo "================================================"
-done
+  logger -t bashttpd "Rebooting Google Home Mini"
+  add_response_header "Content-Type" "text/plain"
+  send_response_ok_exit <<< "Rebooting!"
+}
+on_uri_match '^/ghreboot$' reboot_gh
 ```
-* `chmod +x /root/shinatra.sh`
 * Add below to `/etc/rc.local`
 ```
-bash /root/shinatra.sh 8008 rebooting &
+/usr/bin/socat TCP4-LISTEN:8008,fork EXEC:/root/bashttpd &
 ```
 #### Setup aria2 and webui-aria2
 * `opkg install luci-app-aria2 webui-aria2 sudo`
