@@ -301,7 +301,7 @@ done
 * `chmod +x /root/shinatra.sh`
 * Add below to `/etc/rc.local`
 ```
-bash /root/shinatra.sh 8008 rebooting
+bash /root/shinatra.sh 8008 rebooting &
 ```
 #### Setup aria2 and webui-aria2
 * `opkg install luci-app-aria2 webui-aria2 sudo`
