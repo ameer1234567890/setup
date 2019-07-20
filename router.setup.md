@@ -339,11 +339,13 @@ sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &
 #!/bin/bash
 curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$3'"}' https://maker.ifttt.com/trigger/aria2_complete/with/key/{IFTTT_KEY}
 ```
+* `chmod +x /home/user/.aria2/hook-complete.sh`
 * `sudo -u user nano /home/user/.aria2/hook-error.sh`
 ```
 #!/bin/bash
 curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$3'"}' https://maker.ifttt.com/trigger/aria2_error/with/key/{IFTTT_KEY}
 ```
+* `chmod +x /home/user/.aria2/hook-error.sh`
 * Reboot
 
 #### Scheduling aria2
