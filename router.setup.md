@@ -312,6 +312,7 @@ on_uri_match '^/ghreboot$' reboot_gh
 * `sudo -u user touch /home/user/.aria2/session`
 * `sudo -u user nano /home/user/.aria2/aria2.conf` and add below:
 ```
+daemon=true
 dir=/mnt/usb1/aria2
 file-allocation=prealloc
 continue=true
@@ -326,6 +327,7 @@ rpc-secret=_notmysecret_
 rpc-listen-port=6800
 rpc-allow-origin-all=true
 on-download-complete=/home/user/.aria2/hook-complete.sh
+on-bt-download-complete=/home/user/.aria2/hook-complete.sh
 on-download-error=/home/user/.aria2/hook-error.sh
 ```
 * `sudo -u user mkdir /mnt/usb1/aria2`
