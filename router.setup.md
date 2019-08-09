@@ -208,8 +208,8 @@ config 'sambashare'
         option 'path' '/mnt/usb1'
         option 'users' 'user'
         option 'guest_ok' 'yes'
-        option 'create_mask' '0700'
-        option 'dir_mask' '0700'
+        option 'create_mask' '0644'
+        option 'dir_mask' '0644'
         option 'read_only' 'no'
 ```
 * Restart Samba server by running `/etc/init.d/samba restart`
