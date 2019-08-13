@@ -189,7 +189,7 @@ mount /dev/sda1 /mnt/usb1
 * Keep UUID and Label as it is.
 * Select `/dev/sda1` from Device.
 * Select `custom` from Mount Point and type `/mnt/usb1`.
-* Go to Advanced Settings and enter `rw,sync` in Mount options.
+* Go to Advanced Settings and enter `rw,async,noatime` in Mount options.
 * Click “Save and Apply”.
 
 #### Add Samba Support
