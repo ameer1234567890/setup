@@ -178,7 +178,7 @@ insmod uhci
 ```shell
 mkdir /mnt/usb1
 touch /mnt/usb1/USB_NOT_MOUNTED
-mount /dev/sda1 /mnt/usb1
+mount -t ext4 -o rw,async,noatime /dev/sda1 /mnt/usb1
 ```
 
 #### Add USB Mount Point
