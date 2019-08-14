@@ -352,6 +352,8 @@ curl -X POST -H "Content-Type: application/json" -d '{"value1":"'$3'"}' https://
 * Reboot
 
 #### Scheduling aria2
+* `service cron enable`
+* `service cron start`
 * [Schedule download at particular time](https://github.com/ziahamza/webui-aria2/issues/126)
 
 #### Important Links
