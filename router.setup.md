@@ -287,7 +287,7 @@ restart() {
 
 #### Setup Google Home Reboot Service
 * `opkg update`
-* `opkg install socat bash`
+* `opkg install socat bash curl`
 * `curl -o bashttpd https://raw.githubusercontent.com/avleen/bashttpd/master/bashttpd`
 * `chmod +x bashttpd`
 * Add below to `/root/bashttpd.conf`
@@ -305,7 +305,7 @@ on_uri_match '^/ghreboot$' reboot_gh
 /usr/bin/socat TCP4-LISTEN:8008,fork EXEC:/root/bashttpd &
 ```
 #### Setup aria2 and webui-aria2
-* `opkg install luci-app-aria2 webui-aria2 sudo`
+* `opkg install aria2 webui-aria2 sudo`
 * `mkdir -p /home/user`
 * `chown user.501 /home/user`
 * `sudo -u user mkdir /home/user/.aria2`
