@@ -238,6 +238,15 @@ hosts allow = 192.168.7.1/24
 ```
 * Add `rsync --daemon` to `/etc/rc.local`
 
+#### Setting up extroot
+* These steps should be performed after setting up USB mount
+* `tar -vC /overlay/ -c . -f - | tar -vC /mnt/usb1/ -xf -`
+* Go to System / Mount Points.
+* Scroll down to Mount Points.
+* Change USB Mount Point to `/overlay`.
+* Click “Save and Apply”.
+* Reboot
+
 #### Setting up SQM
 * `opkg install luci-app-sqm`
 * Set bandwidth limits in LuCI: Network / SQM QoS
