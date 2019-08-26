@@ -725,18 +725,18 @@ setup_extroot() {
 
 
 #### tasks to run. comment out any tasks that are not required.
-# notify_on_startup
-# install_openssh_sftp_server
-# set_nano_default
-# setup_usb_storage
-# setup_samba
-# make_samba_wan_accessible
-# setup_rsync
-# disable_dropbear_password_auth
-# setup_remote_ssh
-# setup_aria2
-# setup_aria2_scheduling
-# setup_extroot
+notify_on_startup
+install_openssh_sftp_server
+set_nano_default
+setup_usb_storage
+setup_samba
+make_samba_wan_accessible
+setup_rsync
+disable_dropbear_password_auth
+setup_remote_ssh
+setup_aria2
+setup_aria2_scheduling
+setup_extroot
 
 
 if [ $REBOOT_REQUIRED = true ]; then
