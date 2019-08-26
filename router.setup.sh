@@ -150,8 +150,6 @@ update_opkg() {
 # check if opkg update is required, and perform update if required
 printf " \e[34m•\e[0m Checking if opkg update is required... "
 result="$(opkg find zsh 2>/dev/null)" # replace zsh with any tool that is definitely not installed
-bg_pid="$!"
-show_progress "$bg_pid"
 if [ "$result" != "" ]; then
   printf "\e[32mNo!\e[0m\n"
 else
