@@ -792,7 +792,7 @@ setup_thingspeak_ping() {
     assert_status
   fi
 
-  printf " \e[34m•\e[0m Adding thingspeak ping tasks to crontab... "
+  printf " \e[34m•\e[0m Adding thingspeak ping task to crontab... "
   if [ "$(crontab -l | grep "curl \"https://api.thingspeak.com/update" 2>/dev/null)" != "" ]; then
     showoff
     print_already
