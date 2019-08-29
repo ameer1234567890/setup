@@ -672,6 +672,8 @@ setup_aria2_scheduling() {
     status_one="$?"
     echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"40K\"}]}'" >> crontab.txt
     status_two="$?"
+    echo "0 0 1 * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.pauseAll\", \"params\":[\"token:$ARIA2_RPC_TOKEN\"]}'" >> crontab.txt
+    status_three="$?"
     crontab crontab.txt >/dev/null 2>&1
     status_install="$?"
     rm crontab.txt >/dev/null 2>&1
@@ -679,6 +681,7 @@ setup_aria2_scheduling() {
     if [ "$status_list" != 0 ] \
     || [ "$status_one" != 0 ] \
     || [ "$status_two" != 0 ] \
+    || [ "$status_three" != 0 ] \
     || [ "$status_install" != 0 ] \
     || [ "$status_delete" != 0 ]; then
       wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
