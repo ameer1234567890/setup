@@ -156,9 +156,9 @@ update_opkg() {
 printf " \e[34m•\e[0m Checking if opkg update is required... "
 result="$(opkg find zsh 2>/dev/null)" # replace zsh with any tool that is definitely not installed
 if [ "$result" != "" ]; then
-  printf "\e[32mNo!\e[0m\n"
+  printf "\e[36mNo!\e[0m\n"
 else
-  printf "\e[33mYes!\e[0m\n"
+  printf "\e[32mYes!\e[0m\n"
   update_opkg
 fi
 
@@ -374,6 +374,7 @@ setup_samba() {
 
 
 make_samba_wan_accessible() {
+  samba_restart_required=false
   printf " \e[34m•\e[0m Making samba accessible from WAN... "
   if [ "$(grep "bind interfaces only = no" /etc/samba/smb.conf.template)" != "" ]; then
     showoff
@@ -382,14 +383,19 @@ make_samba_wan_accessible() {
     sed -i '/\tbind interfaces only = yes/ c\ \tbind interfaces only = no' /etc/samba/smb.conf.template >/dev/null 2>&1
     showoff
     assert_status
+    samba_restart_required=true
   fi
 
   printf " \e[34m•\e[0m Restarting samba... "
-  /etc/init.d/samba restart >/dev/null 2>&1 &
-  bg_pid="$!"
-  show_progress "$bg_pid"
-  wait "$bg_pid"
-  assert_status
+  if [ $samba_restart_required = true ]; then
+    /etc/init.d/samba restart >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  else
+    print_not_required
+  fi
 }
 
 
@@ -440,6 +446,7 @@ setup_rsync() {
 
 
 disable_dropbear_password_auth() {
+  dropbear_restart_required=false
   printf " \e[34m•\e[0m Disabling password authentication in dropbear... "
   if [ "$(uci get dropbear.@dropbear[0].PasswordAuth)" = "off" ]; then
     showoff
@@ -449,14 +456,19 @@ disable_dropbear_password_auth() {
     uci commit dropbear >/dev/null 2>&1
     showoff
     assert_status
+    dropbear_restart_required=true
   fi
 
   printf " \e[34m•\e[0m Restarting dropbear... "
-  /etc/init.d/dropbear restart >/dev/null 2>&1 &
-  bg_pid="$!"
-  show_progress "$bg_pid"
-  wait "$bg_pid"
-  assert_status
+  if [ $dropbear_restart_required = true ]; then
+    /etc/init.d/dropbear restart >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  else
+    print_not_required
+  fi
 }
 
 
