@@ -79,7 +79,7 @@ assert_status() {
 
 
 print_already() {
-  printf "\e[32mAlready Done!\e[0m\n"
+  printf "\e[36mAlready Done!\e[0m\n"
 }
 
 
