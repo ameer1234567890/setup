@@ -703,7 +703,7 @@ setup_aria2_scheduling() {
     assert_status
   fi
 
-  printf " \e[34m•\e[0m Adding tasks to crontab... "
+  printf " \e[34m•\e[0m Adding aria2 scheduling tasks to crontab... "
   if [ "$(crontab -l | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
     showoff
     print_already
@@ -770,6 +770,55 @@ setup_extroot() {
 }
 
 
+setup_thingspeak_ping() {
+  printf " \e[34m•\e[0m Starting up cron service... "
+  if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
+    showoff
+    print_already
+  else
+    /etc/init.d/cron start >/dev/null 2>&1
+    showoff
+    assert_status
+  fi
+
+  printf " \e[34m•\e[0m Enabling autostart of cron service... "
+  # shellcheck disable=SC2010
+  if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
+    showoff
+    print_already
+  else
+    /etc/init.d/cron enable >/dev/null 2>&1
+    showoff
+    assert_status
+  fi
+
+  printf " \e[34m•\e[0m Adding thingspeak ping tasks to crontab... "
+  if [ "$(crontab -l | grep "curl \"https://api.thingspeak.com/update" 2>/dev/null)" != "" ]; then
+    showoff
+    print_already
+  else
+    crontab -l > crontab.txt 2>/dev/null
+    status_list="$?"
+    echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=9QY15FLFX4REDCQ5&field1=$(grep MemFree /proc/meminfo | awk '{print $2}')\"" >> crontab.txt
+    status_one="$?"
+    crontab crontab.txt >/dev/null 2>&1
+    status_install="$?"
+    rm crontab.txt >/dev/null 2>&1
+    status_delete="$?"
+    if [ "$status_list" != 0 ] \
+    || [ "$status_one" != 0 ] \
+    || [ "$status_install" != 0 ] \
+    || [ "$status_delete" != 0 ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    showoff
+    assert_status
+  fi
+}
+
+
 #### tasks to run. comment out any tasks that are not required.
 notify_on_startup
 install_openssh_sftp_server
@@ -783,6 +832,7 @@ setup_remote_ssh
 setup_aria2
 setup_aria2_scheduling
 setup_extroot
+setup_thingspeak_ping
 
 
 if [ $REBOOT_REQUIRED = true ]; then
