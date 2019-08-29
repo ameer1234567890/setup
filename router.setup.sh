@@ -519,9 +519,15 @@ setup_remote_ssh() {
   fi
 
   printf " \e[34m•\e[0m Enabling autostart of serveo service... "
-  /etc/init.d/serveo enable >/dev/null 2>&1
-  showoff
-  assert_status
+  # shellcheck disable=SC2010
+  if [ "$(ls -l /etc/rc.d | grep ../init.d/serveo)" != "" ]; then
+    showoff
+    print_already
+  else
+    /etc/init.d/serveo enable >/dev/null 2>&1
+    showoff
+    assert_status
+  fi
 }
 
 
@@ -644,10 +650,16 @@ setup_aria2() {
     assert_status
   fi
 
-  printf " \e[34m•\e[0m Disabling un-needed aria2 service... "
-  /etc/init.d/aria2 disable >/dev/null 2>&1
-  showoff
-  assert_status
+  printf " \e[34m•\e[0m Disabling un-needed autostart of aria2 service... "
+  # shellcheck disable=SC2010
+  if [ "$(ls -l /etc/rc.d | grep ../init.d/aria2)" = "" ]; then
+    showoff
+    print_already
+  else
+    /etc/init.d/aria2 disable >/dev/null 2>&1
+    showoff
+    assert_status
+  fi
 
   printf " \e[34m•\e[0m Starting up aria2 daemon... "
   if [ "$(pgrep -f "aria2c --conf-path=/home/user/.aria2/aria2.conf" 2>/dev/null)" != "" ]; then
@@ -680,10 +692,16 @@ setup_aria2_scheduling() {
     assert_status
   fi
 
-  printf " \e[34m•\e[0m Enabling cron service... "
-  /etc/init.d/cron enable >/dev/null 2>&1
-  showoff
-  assert_status
+  printf " \e[34m•\e[0m Enabling autostart of cron service... "
+  # shellcheck disable=SC2010
+  if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
+    showoff
+    print_already
+  else
+    /etc/init.d/cron enable >/dev/null 2>&1
+    showoff
+    assert_status
+  fi
 
   printf " \e[34m•\e[0m Adding tasks to crontab... "
   if [ "$(crontab -l | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
