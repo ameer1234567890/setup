@@ -866,7 +866,7 @@ setup_extroot # preferrably, this should be done last
 
 
 if [ $REBOOT_REQUIRED = true ]; then
-  printf "\n\e[33mReboot required! Do you want to reboot now? \e[0m\n"
+  printf "\n\e[33mReboot required! Do you want to reboot now? (Y/N) \e[0m\n"
   read -r opt
   if [ "$opt" = "Y" ] || [ "$opt" = "y" ] || [ "$opt" = "yes" ] || [ "$opt" = "YES" ] || [ "$opt" = "Yes" ]; then
     echo "Rebooting now..."
