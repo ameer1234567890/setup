@@ -819,6 +819,35 @@ setup_thingspeak_ping() {
 }
 
 
+setup_bash_default() {
+  printf " \e[34m•\e[0m Installing bash... "
+  if [ "$(opkg list-installed 2>/dev/null | grep bash)" != "" ]; then
+    showoff
+    print_already
+  elif [ -f /var/lock/opkg.lock ]; then
+    showoff
+    print_opkg_busy
+  else
+    opkg install bash >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  fi
+
+  printf " \e[34m•\e[0m Setting bash as default shell for future sessions... "
+  if [ "$(sed -n '1p' /etc/passwd 2>/dev/null)" != "root:x:0:0:root:/root:/bin/ash" ]; then
+    showoff
+    print_already
+  else
+    showoff
+    sed -i '1 c root:x:0:0:root:/root:/bin/bash' /etc/passwd >/dev/null 2>&1
+    assert_status
+    REBOOT_REQUIRED=true
+  fi
+}
+
+
 #### tasks to run. comment out any tasks that are not required.
 notify_on_startup
 install_openssh_sftp_server
@@ -831,8 +860,9 @@ disable_dropbear_password_auth
 setup_remote_ssh
 setup_aria2
 setup_aria2_scheduling
-setup_extroot
 setup_thingspeak_ping
+setup_bash_default
+setup_extroot # preferrably, this should be done last
 
 
 if [ $REBOOT_REQUIRED = true ]; then
