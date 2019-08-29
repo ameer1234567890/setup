@@ -84,7 +84,12 @@ print_already() {
 
 
 print_opkg_busy() {
-  printf "\e[91mopkg busy!\e[0m\n"
+  printf "\e[91mopkg Busy!\e[0m\n"
+}
+
+
+print_not_required() {
+  printf "\e[36mNot Required!\e[0m\n"
 }
 
 
@@ -286,6 +291,7 @@ setup_usb_storage() {
 
 
 setup_samba() {
+  samba_restart_required=false
   packages="samba36-server luci-app-samba"
   for package in $packages; do
     printf " \e[34m•\e[0m Installing required packages for samba (%s)... " "$package"
@@ -312,6 +318,7 @@ setup_samba() {
     printf "config samba\n\toption workgroup 'WORKGROUP'\n\toption homes '1'\n\toption name 'miwifimini'\n\toption description 'miwifimini'\n\nconfig 'sambashare'\n\toption 'name' 'usb1'\n\toption 'path' '/mnt/usb1'\n\toption 'users' 'user'\n\toption 'guest_ok' 'yes'\n\toption 'create_mask' '0644'\n\toption 'dir_mask' '0777'\n\toption 'read_only' 'no'\n" > /etc/config/samba 2>/dev/null
     showoff
     assert_status
+    samba_restart_required=true
   fi
 
   printf " \e[34m•\e[0m Setting up smb.conf.template... "
@@ -322,6 +329,7 @@ setup_samba() {
     sed -i '$ a \\n\tmin protocol = SMB2\n' /etc/samba/smb.conf.template >/dev/null 2>&1
     showoff
     assert_status
+    samba_restart_required=true
   fi
 
   printf " \e[34m•\e[0m Setting up samba system user... "
@@ -353,11 +361,15 @@ setup_samba() {
   fi
 
   printf " \e[34m•\e[0m Restarting samba... "
-  /etc/init.d/samba restart >/dev/null 2>&1 &
-  bg_pid="$!"
-  show_progress "$bg_pid"
-  wait "$bg_pid"
-  assert_status
+  if [ $samba_restart_required = true ]; then
+    /etc/init.d/samba restart >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  else
+    print_not_required
+  fi
 }
 
 
