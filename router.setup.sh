@@ -848,6 +848,29 @@ setup_bash_default() {
 }
 
 
+change_hostname() {
+  printf " \e[34m•\e[0m Changing hostname... "
+  if [ "$(uci get system.@system[0].hostname 2>/dev/null)" = "miwifimini" ]; then
+    showoff
+    print_already
+  else
+    uci set system.@system[0].hostname='miwifimini' > /dev/null 2>&1
+    status_set="$?"
+    uci commit > /dev/null 2>&1
+    status_commit="$?"
+    if [ "$status_set" != 0 ] \
+    || [ "$status_commit" != 0 ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    showoff
+    assert_status
+    REBOOT_REQUIRED=true
+  fi
+}
+
+
 #### tasks to run. comment out any tasks that are not required.
 notify_on_startup
 install_openssh_sftp_server
@@ -862,6 +885,7 @@ setup_aria2
 setup_aria2_scheduling
 setup_thingspeak_ping
 setup_bash_default
+change_hostname
 setup_extroot # preferrably, this should be done last
 
 
