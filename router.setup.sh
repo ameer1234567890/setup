@@ -139,16 +139,11 @@ show_progress() {
 
 update_opkg() {
   printf " \e[34m•\e[0m Running opkg update... "
-  if [ "$(ls /var/opkg-lists/ 2>/dev/null)" != "" ]; then
-    showoff
-    print_already
-  else
-    opkg update >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
-    assert_status
-  fi
+  opkg update >/dev/null 2>&1 &
+  bg_pid="$!"
+  show_progress "$bg_pid"
+  wait "$bg_pid"
+  assert_status
 }
 
 
