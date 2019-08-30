@@ -154,12 +154,20 @@ update_opkg() {
 
 # check if opkg update is required, and perform update if required
 printf " \e[34m•\e[0m Checking if opkg update is required... "
-result="$(opkg find zsh 2>/dev/null)" # replace zsh with any tool that is definitely not installed
-if [ "$result" != "" ]; then
-  printf "\e[36mNo!\e[0m\n"
+opkg find zsh > opkgstatus.txt 2>/dev/null & # replace zsh with any tool that is definitely not installed
+bg_pid="$!"
+show_progress "$bg_pid"
+wait "$bg_pid"
+status="$?"
+if [ "$status" = 0 ]; then
+  if [ "$(cat opkgstatus.txt 2>/dev/null)" != "" ]; then
+    printf "\e[36mNo!\e[0m\n"
+  else
+    printf "\e[32mYes!\e[0m\n"
+    update_opkg
+  fi
 else
-  printf "\e[32mYes!\e[0m\n"
-  update_opkg
+  printf "\e[91mFailed!\e[0m\n"
 fi
 
 
