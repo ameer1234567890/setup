@@ -169,6 +169,7 @@ if [ "$status" = 0 ]; then
 else
   printf "\e[91mFailed!\e[0m\n"
 fi
+rm opkgstatus.txt >/dev/null 2>&1
 
 
 notify_on_startup() {
