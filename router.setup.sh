@@ -170,6 +170,7 @@ notify_on_startup() {
     print_already
   else
     sed -i -e '$i \sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/'"$IFTTT_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
+    showoff
     assert_status
   fi
 }
