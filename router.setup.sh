@@ -168,6 +168,7 @@ if [ "$status" = 0 ]; then
   fi
 else
   printf "\e[91mFailed!\e[0m\n"
+  update_opkg
 fi
 rm opkgstatus.txt >/dev/null 2>&1
 
