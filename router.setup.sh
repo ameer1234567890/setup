@@ -1,6 +1,7 @@
 #!/bin/sh
 
 REBOOT_REQUIRED=false
+aria2_ok=false
 
 clear
 echo ""
@@ -678,6 +679,7 @@ setup_remote_ssh() {
 
 
 setup_aria2() {
+  aria2_ok=false
   proceed=true
   packages="aria2 sudo"
   for package in $packages; do
@@ -923,16 +925,21 @@ setup_aria2() {
     if [ "$(grep "sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
+      aria2_ok=true
     else
       sed -i -e '$i \sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &\n' /etc/rc.local >/dev/null 2>&1
       assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        aria2_ok=true
+      fi
     fi
   fi
 }
 
 
 setup_aria2_scheduling() {
-  if [ "$(opkg list-installed 2>/dev/null | grep "samba36-server")" != "" ]; then
+  if [ $aria2_ok = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Starting up cron service... "
     if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
@@ -1003,7 +1010,7 @@ setup_aria2_scheduling() {
   else
     printf " \e[34m•\e[0m Setting up aria2 scheduling service... "
     showoff
-    printf "\e[33maria2 not installed!\e[0m\n"
+    printf "\e[33maria2 not setup completely!\e[0m\n"
   fi
 }
 
