@@ -42,22 +42,24 @@ trap kill_tools 1 2 3 15
 
 help() {
   echo ""
-  echo "Usage: $0 [-k KEY] [-t TOKEN]"
+  echo "Usage: $0 -k KEY -t TOKEN -s API_KEY"
   echo ""
   echo "Run my customized setup process on OpenWRT"
   echo ""
   printf "\t-k KEY\t\tIFTTT webhook key\n"
   printf "\t-t TOKEN\tRPC token to be used in aria2\n"
+  printf "\t-s API_KEY\tThingSpeak API key\n"
   printf "\t-h\t\tshow help message and exit\n"
   echo ""
   exit
 }
 
 
-while getopts "k:t:h" opt; do
+while getopts "k:t:s:h" opt; do
   case "$opt" in
     k ) IFTTT_KEY="$OPTARG" ;;
     t ) ARIA2_RPC_TOKEN="$OPTARG" ;;
+    s ) THINGSPEAK_API_KEY="$OPTARG" ;;
     h ) help ;;
     ? ) help ;;
   esac
@@ -1163,7 +1165,7 @@ setup_thingspeak_ping() {
     else
       crontab -l > crontab.txt 2>/dev/null
       status_list="$?"
-      echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=9QY15FLFX4REDCQ5&field1=\$(grep MemFree /proc/meminfo | awk '{print \$2}')\"" >> crontab.txt
+      echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(grep MemFree /proc/meminfo | awk '{print \$2}')\"" >> crontab.txt
       status_one="$?"
       crontab crontab.txt >/dev/null 2>&1
       status_install="$?"
