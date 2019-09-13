@@ -1097,6 +1097,25 @@ install_htop() {
   fi
 }
 
+
+install_screen() {
+  printf " \e[34m•\e[0m Installing screen... "
+  if [ "$(opkg list-installed 2>/dev/null | grep "screen")" != "" ]; then
+    showoff
+    print_already
+  elif [ -f /var/lock/opkg.lock ]; then
+    showoff
+    print_opkg_busy
+  else
+    opkg install screen >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  fi
+}
+
+
 setup_thingspeak_ping() {
   proceed=false
   printf " \e[34m•\e[0m Installing curl... "
@@ -1305,6 +1324,7 @@ setup_aria2
 setup_aria2_scheduling
 setup_aria2_webui
 install_htop
+install_screen
 setup_thingspeak_ping
 setup_bash_default
 setup_hostname
