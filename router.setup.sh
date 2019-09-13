@@ -1253,14 +1253,23 @@ setup_timezone() {
 
 
 setup_external_git() {
-  printf " \e[34m•\e[0m Setting up external git... "
+  printf " \e[34m•\e[0m Setting up external git for current session... "
+  if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
+    showoff
+    print_already
+  else
+    printf "export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH" >> /etc/profile
+    showoff
+    assert_status
+  fi
+
+  printf " \e[34m•\e[0m Setting up external git for future sessions... "
   if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
     showoff
     print_already
   else
-    printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
     showoff
-    assert_status
+    printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
   fi
 }
 
