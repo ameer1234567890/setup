@@ -1253,7 +1253,7 @@ setup_timezone() {
 
 
 setup_external_git() {
-  printf " \e[34m•\e[0m Setting up external git for current session... "
+  printf " \e[34m•\e[0m Setting up external git for future session... "
   if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
     showoff
     print_already
@@ -1263,7 +1263,7 @@ setup_external_git() {
     assert_status
   fi
 
-  printf " \e[34m•\e[0m Setting up external git for future sessions... "
+  printf " \e[34m•\e[0m Setting up external git for current sessions... "
   if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
     showoff
     print_already
