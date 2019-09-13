@@ -1252,6 +1252,19 @@ setup_timezone() {
 }
 
 
+setup_external_git() {
+  printf " \e[34m•\e[0m Setting up external git... "
+  if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
+    showoff
+    print_already
+  else
+    export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:$PATH
+    showoff
+    assert_status
+  fi
+}
+
+
 #### tasks to run. comment out any tasks that are not required.
 notify_on_startup
 install_openssh_sftp_server
@@ -1269,6 +1282,7 @@ setup_thingspeak_ping
 setup_bash_default
 setup_hostname
 setup_timezone
+setup_external_git
 # setup_extroot # preferrably, this should be done last
 
 
