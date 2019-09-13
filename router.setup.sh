@@ -1258,7 +1258,7 @@ setup_external_git() {
     showoff
     print_already
   else
-    export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:$PATH
+    printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
     showoff
     assert_status
   fi
