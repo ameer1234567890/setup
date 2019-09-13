@@ -1,7 +1,7 @@
 #!/bin/sh
 
 REBOOT_REQUIRED=false
-aria2_ok=false
+ARIA2_OK=false
 
 clear
 echo ""
@@ -679,9 +679,9 @@ setup_remote_ssh() {
 
 
 setup_aria2() {
-  aria2_ok=false
+  ARIA2_OK=false
   proceed=true
-  packages="aria2 sudo"
+  packages="aria2 sudo curl"
   for package in $packages; do
     printf " \e[34m•\e[0m Installing required packages for aria2 (%s)... " "$package"
     if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
@@ -925,13 +925,13 @@ setup_aria2() {
     if [ "$(grep "sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
-      aria2_ok=true
+      ARIA2_OK=true
     else
       sed -i -e '$i \sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &\n' /etc/rc.local >/dev/null 2>&1
       assert_status
       status="$?"
       if [ "$status" = 0 ]; then
-        aria2_ok=true
+        ARIA2_OK=true
       fi
     fi
   fi
@@ -939,7 +939,7 @@ setup_aria2() {
 
 
 setup_aria2_scheduling() {
-  if [ $aria2_ok = true ]; then
+  if [ $ARIA2_OK = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Starting up cron service... "
     if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
@@ -1063,20 +1063,60 @@ setup_extroot() {
 }
 
 
+install_htop() {
+  printf " \e[34m•\e[0m Installing htop... "
+  if [ "$(opkg list-installed 2>/dev/null | grep "htop")" != "" ]; then
+    showoff
+    print_already
+  elif [ -f /var/lock/opkg.lock ]; then
+    showoff
+    print_opkg_busy
+  else
+    opkg install htop >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+  fi
+}
+
 setup_thingspeak_ping() {
   proceed=false
-  printf " \e[34m•\e[0m Starting up cron service... "
-  if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
+  printf " \e[34m•\e[0m Installing curl... "
+  if [ "$(opkg list-installed 2>/dev/null | grep "curl")" != "" ]; then
     showoff
     print_already
     proceed=true
-  else
-    /etc/init.d/cron start >/dev/null 2>&1
+  elif [ -f /var/lock/opkg.lock ]; then
     showoff
+    print_opkg_busy
+  else
+    opkg install curl >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
     assert_status
     status="$?"
     if [ "$status" = 0 ]; then
       proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Starting up cron service... "
+    if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      /etc/init.d/cron start >/dev/null 2>&1
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 
@@ -1224,6 +1264,7 @@ disable_dropbear_password_auth
 setup_remote_ssh
 setup_aria2
 setup_aria2_scheduling
+install_htop
 setup_thingspeak_ping
 setup_bash_default
 setup_hostname
