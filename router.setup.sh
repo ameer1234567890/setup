@@ -234,13 +234,12 @@ set_nano_default() {
     fi
 
     printf " \e[34m•\e[0m Setting nano as default editor for current session... "
-    if [ "$(grep "export EDITOR=nano" /etc/profile 2>/dev/null)" != "" ]; then
+    if [ "$(env | grep "EDITOR=nano")" != "" ]; then
       showoff
       print_already
     else
       showoff
-      export EDITOR=nano >/dev/null 2>&1
-      assert_status
+      printf "\e[33mNot supported! Please set manually by entering \"export EDITOR=nano\" in the terminal!\e[0m\n"
     fi
   fi
 }
@@ -291,7 +290,7 @@ setup_usb_storage() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Touching empty file identifying mount status... "
+    printf " \e[34m•\e[0m Touching empty file which identifies mount status... "
     if [ -f /mnt/usb1/USB_NOT_MOUNTED ] || [ "$(mount | grep "/mnt/usb1")" != "" ]; then
       showoff
       print_already
@@ -310,7 +309,7 @@ setup_usb_storage() {
   if [ $proceed = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Test mounting in current session... "
-    if [ -f /mnt/usb1/USB_NOT_MOUNTED ] || [ "$(mount | grep "/mnt/usb1")" != "" ]; then
+    if [ "$(mount | grep "/mnt/usb1")" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -428,7 +427,7 @@ setup_samba() {
       proceed=true
     else
       showoff
-      printf "\e[33mNot supported! Please set a password manually by entering \"passwd user\" in the terminal!\e[0m"
+      printf "\e[33mNot supported! Please set a password manually by entering \"passwd user\" in the terminal!\e[0m\n"
       proceed=true
     fi
   fi
@@ -442,7 +441,7 @@ setup_samba() {
       proceed=true
     else
       showoff
-      printf "\e[33mNot supported! Please set a password manually by entering \"smbpasswd -a user\" in the terminal!\e[0m"
+      printf "\e[33mNot supported! Please set a password manually by entering \"smbpasswd -a user\" in the terminal!\e[0m\n"
       proceed=true
     fi
   fi
@@ -971,7 +970,7 @@ setup_aria2_scheduling() {
 
     if [ $proceed = true ]; then
       printf " \e[34m•\e[0m Adding aria2 scheduling tasks to crontab... "
-      if [ "$(crontab -l | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
+      if [ "$(crontab -l 2>/dev/null | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
         showoff
         print_already
       else
