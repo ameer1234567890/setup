@@ -1015,6 +1015,21 @@ setup_aria2_scheduling() {
 }
 
 
+setup_aria2_webui() {
+  if [ $ARIA2_OK = true ]; then
+    printf " \e[34m•\e[0m Starting up aria2 webui... "
+    if [ "$(ls /www/webui-aria2 2>/dev/null)" != "" ]; then
+      showoff
+      print_already
+    else
+      ln -s /mnt/usb1/.data/webui-aria2/docs /www/webui-aria2 >/dev/null 2>&1
+      showoff
+      assert_status
+    fi
+  fi
+}
+
+
 setup_extroot() {
   proceed=false
   printf " \e[34m•\e[0m Checking if USB is mounted... "
@@ -1286,6 +1301,7 @@ disable_dropbear_password_auth
 setup_remote_ssh
 setup_aria2
 setup_aria2_scheduling
+setup_aria2_webui
 install_htop
 setup_thingspeak_ping
 setup_bash_default
