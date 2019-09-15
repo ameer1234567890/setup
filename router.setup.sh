@@ -680,6 +680,97 @@ setup_remote_ssh() {
 }
 
 
+setup_router_remote_http() {
+  proceed=false
+  printf " \e[34m•\e[0m Installing autossh... "
+  if [ "$(opkg list-installed 2>/dev/null | grep autossh)" != "" ]; then
+    showoff
+    print_already
+    proceed=true
+  elif [ -f /var/lock/opkg.lock ]; then
+    showoff
+    print_opkg_busy
+  else
+    opkg install autossh >/dev/null 2>&1 &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
+    status="$?"
+    if [ "$status" = 0 ]; then
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Creating gadhamoo service... "
+    if [ -f /etc/init.d/gadhamoo ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      printf "#!/bin/sh /etc/rc.common\n\nSTART=99\n\nstart() {\n\techo \"Starting gadhamoo service...\"\n\t/usr/sbin/autossh -M 80 -y -R gadhamoo:80:192.168.100.1:80 serveo.net < /dev/ptmx &\n}\n\nstop() {\n\techo \"Stopping gadhamoo service...\"\n\tpids=\"\$(pgrep -f gadhamoo)\"\n\tfor pid in \$pids; do\n\t\t/bin/kill \"\$pid\"\n\tdone\n}\n\nrestart() {\n\tstop\n\tstart\n}\n" > /etc/init.d/gadhamoo 2>/dev/null
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Setting executable permissions gadhamoo service... "
+    if [ "$(find /etc/init.d/gadhamoo -perm -u=x 2>/dev/null)" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      chmod +x /etc/init.d/gadhamoo >/dev/null 2>&1
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Starting gadhamoo service... "
+    if [ "$(pgrep -f "gadhamoo")" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      /etc/init.d/gadhamoo start >/dev/null 2>&1 &
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    printf " \e[34m•\e[0m Enabling autostart of gadhamoo service... "
+    # shellcheck disable=SC2010
+    if [ "$(ls -l /etc/rc.d | grep ../init.d/gadhamoo)" != "" ]; then
+      showoff
+      print_already
+    else
+      /etc/init.d/gadhamoo enable >/dev/null 2>&1
+      showoff
+      assert_status
+    fi
+  fi
+}
+
+
 setup_aria2() {
   ARIA2_OK=false
   proceed=true
@@ -1320,6 +1411,7 @@ make_samba_wan_accessible
 setup_rsync
 disable_dropbear_password_auth
 setup_remote_ssh
+setup_router_remote_http
 setup_aria2
 setup_aria2_scheduling
 setup_aria2_webui
