@@ -1712,13 +1712,52 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
+    proceed=false
     printf "   \e[34m•\e[0m Setting up external git for current session... "
     if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
       showoff
       print_already
+      proceed=true
     else
       showoff
       printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf "   \e[34m•\e[0m Adding git user.name... "
+    if [ "$(git config --global user.name 2>/dev/null)" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      git config --global user.name "Ameer Dawood" 2>/dev/null
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf "   \e[34m•\e[0m Adding git user.email... "
+    if [ "$(git config --global user.email 2>/dev/null)" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      git config --global user.email "ameer1234567890@gmail.com" 2>/dev/null
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 }
