@@ -1663,25 +1663,25 @@ setup_external_git() {
 
 
 #### tasks to run. comment out any tasks that are not required.
-notify_on_startup
-install_openssh_sftp_server
-set_nano_default
-setup_usb_storage
-setup_samba
-make_samba_wan_accessible
-setup_rsync
-disable_dropbear_password_auth
-setup_remote_ssh
-setup_router_remote_http
-setup_aria2
-setup_aria2_scheduling
-setup_aria2_webui
-install_htop
-install_screen
-setup_thingspeak_ping
-setup_bash_default
-setup_hostname
-setup_timezone
+# notify_on_startup
+# install_openssh_sftp_server
+# set_nano_default
+# setup_usb_storage
+# setup_samba
+# make_samba_wan_accessible
+# setup_rsync
+# disable_dropbear_password_auth
+# setup_remote_ssh
+# setup_router_remote_http
+# setup_aria2
+# setup_aria2_scheduling
+# setup_aria2_webui
+# install_htop
+# install_screen
+# setup_thingspeak_ping
+# setup_bash_default
+# setup_hostname
+# setup_timezone
 setup_external_git
 # setup_extroot # preferrably, this should be done last
 
