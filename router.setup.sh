@@ -18,7 +18,7 @@ echo ""
 
 
 kill_tools() {
-  tools="opkg tar"
+  tools="opkg tar wget"
   printf "\n\n User cancelled!\n"
   for tool in $tools; do
     if [ "$(pidof "$tool")" != "" ]; then
@@ -1661,6 +1661,15 @@ setup_external_git() {
         proceed=true
       fi
     fi
+  fi
+
+  if [ $proceed = false ]; then
+    printf " \e[34m•\e[0m Cleaning up incomplete git files... "
+    rm -rf /mnt/usb1/.data/git &
+    bg_pid="$!"
+    show_progress "$bg_pid"
+    wait "$bg_pid"
+    assert_status
   fi
 
   if [ $proceed = true ]; then
