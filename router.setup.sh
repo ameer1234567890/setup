@@ -1714,30 +1714,38 @@ setup_external_git() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Adding git user.name... "
-    if [ "$(git config --global user.name 2>/dev/null)" != "" ]; then
-      showoff
-      print_already
-      proceed=true
-    else
-      git config --global user.name "Ameer Dawood" 2>/dev/null
-      showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
+    if [ $GIT_OK = true ]; then
+      if [ "$(git config --global user.name 2>/dev/null)" != "" ]; then
+        showoff
+        print_already
         proceed=true
+      else
+        git config --global user.name "Ameer Dawood" 2>/dev/null
+        showoff
+        assert_status
+        status="$?"
+        if [ "$status" = 0 ]; then
+          proceed=true
+        fi
       fi
+    else
+      printf "\e[33mgit not setup!\e[0m\n"
     fi
   fi
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Adding git user.email... "
-    if [ "$(git config --global user.email 2>/dev/null)" != "" ]; then
-      showoff
-      print_already
+    if [ $GIT_OK = true ]; then
+      if [ "$(git config --global user.email 2>/dev/null)" != "" ]; then
+        showoff
+        print_already
+      else
+        git config --global user.email "ameer1234567890@gmail.com" 2>/dev/null
+        showoff
+        assert_status
+      fi
     else
-      git config --global user.email "ameer1234567890@gmail.com" 2>/dev/null
-      showoff
-      assert_status
+      printf "\e[33mgit not setup!\e[0m\n"
     fi
   fi
 }
