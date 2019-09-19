@@ -823,7 +823,7 @@ setup_aria2() {
       print_already
       proceed=true
     else
-      chown user.501 /home/user >/dev/null 2>&1
+      chown user:501 /home/user >/dev/null 2>&1
       showoff
       assert_status
       status="$?"
