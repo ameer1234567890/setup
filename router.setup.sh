@@ -2,6 +2,7 @@
 
 REBOOT_REQUIRED=false
 ARIA2_OK=false
+GIT_OK=false
 
 clear
 echo ""
@@ -1115,23 +1116,7 @@ setup_aria2_scheduling() {
   else
     printf "   \e[34m•\e[0m Setting up aria2 scheduling service... "
     showoff
-    printf "\e[33maria2 not setup completely!\e[0m\n"
-  fi
-}
-
-
-setup_aria2_webui() {
-  printf " \e[34m•\e[0m Install and Setup Aria2 Webui:\n"
-  if [ $ARIA2_OK = true ]; then
-    printf "   \e[34m•\e[0m Starting up aria2 webui... "
-    if [ "$(ls /www/webui-aria2 2>/dev/null)" != "" ]; then
-      showoff
-      print_already
-    else
-      ln -s /mnt/usb1/.data/webui-aria2/docs /www/webui-aria2 >/dev/null 2>&1
-      showoff
-      assert_status
-    fi
+    printf "\e[33maria2 not setup!\e[0m\n"
   fi
 }
 
@@ -1718,6 +1703,7 @@ setup_external_git() {
       showoff
       print_already
       proceed=true
+      GIT_OK=true
     else
       showoff
       printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
@@ -1744,21 +1730,54 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
-    proceed=false
     printf "   \e[34m•\e[0m Adding git user.email... "
     if [ "$(git config --global user.email 2>/dev/null)" != "" ]; then
       showoff
       print_already
-      proceed=true
     else
       git config --global user.email "ameer1234567890@gmail.com" 2>/dev/null
       showoff
       assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
+    fi
+  fi
+}
+
+
+setup_aria2_webui() {
+  printf " \e[34m•\e[0m Install and Setup Aria2 Webui:\n"
+  proceed=false
+  if [ $ARIA2_OK = true ]; then
+    printf "   \e[34m•\e[0m Installing aria2 webui... "
+    if [ -d /mnt/usb1/.data/webui-aria2 ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      if [ $GIT_OK = true ]; then
+        git clone --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/usb1/.data/webui-aria2
+        assert_status
+        status="$?"
+        if [ "$status" = 0 ]; then
+          proceed=true
+        fi
+      else
+        printf "\e[33mgit not setup!\e[0m\n"
       fi
     fi
+
+    printf "   \e[34m•\e[0m Setting up aria2 webui... "
+    if [ -d /www/webui-aria2 ]; then
+      showoff
+      print_already
+    else
+      ln -s /mnt/usb1/.data/webui-aria2/docs /www/webui-aria2 >/dev/null 2>&1
+      showoff
+      assert_status
+    fi
+  else
+    printf "   \e[34m•\e[0m Setting up aria2 webui... "
+    showoff
+    printf "\e[33maria2 not setup!\e[0m\n"
   fi
 }
 
@@ -1776,7 +1795,6 @@ setup_remote_ssh
 setup_router_remote_http
 setup_aria2
 setup_aria2_scheduling
-setup_aria2_webui
 install_htop
 install_screen
 setup_thingspeak_ping
@@ -1784,6 +1802,7 @@ setup_bash_default
 setup_hostname
 setup_timezone
 setup_external_git
+setup_aria2_webui
 # setup_extroot # preferrably, this should be done last
 
 
