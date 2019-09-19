@@ -11,7 +11,7 @@ echo " ##                               ROUTER SETUP                            
 echo " ##                                                                          ##"
 echo " ##                              by Ameer Dawood                             ##"
 echo " ##                                                                          ##"
-echo " ##         This script runs my customized setup process on OpenWRT          ##"
+echo " ##         This script runs my customized setup process on OpenWrt          ##"
 echo " ##                                                                          ##"
 echo " ##############################################################################"
 echo ""
@@ -44,7 +44,7 @@ help() {
   echo ""
   echo "Usage: $0 -k KEY -t TOKEN -s API_KEY"
   echo ""
-  echo "Run my customized setup process on OpenWRT"
+  echo "Run my customized setup process on OpenWrt"
   echo ""
   printf "\t-k KEY\t\tIFTTT webhook key\n"
   printf "\t-t TOKEN\tRPC token to be used in aria2\n"
@@ -1380,23 +1380,284 @@ setup_timezone() {
 
 
 setup_external_git() {
-  printf " \e[34m•\e[0m Setting up external git for future session... "
-  if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
-    showoff
-    print_already
-  else
-    printf "export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH" >> /etc/profile
+  git_download_required=true
+  proceed=false
+  printf " \e[34m•\e[0m Checking if USB is mounted... "
+  if [ "$(mount | grep "/mnt/usb1")" = "" ]; then
+    wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     showoff
     assert_status
-  fi
-
-  printf " \e[34m•\e[0m Setting up external git for current sessions... "
-  if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
-    showoff
-    print_already
   else
     showoff
-    printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
+    print_already
+    proceed=true
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    if [ -d /mnt/usb1/.data/git/usr ]; then
+      git_download_required=false
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Creating directory for git... "
+    if [ -d /mnt/usb1/.data/git ]; then
+      showoff
+      print_already
+    else
+      mkdir -p "/mnt/usb1/.data/git" 2>/dev/null
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Detecting OpenWrt version... "
+    openwrt_version="$(grep "DISTRIB_RELEASE" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+    if [ "$openwrt_version" = "" ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    showoff
+    assert_status
+    status="$?"
+    if [ "$status" = 0 ]; then
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Detecting system architecture... "
+    openwrt_arch="$(grep "DISTRIB_ARCH" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+    if [ "$openwrt_arch" = "" ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    showoff
+    assert_status
+    status="$?"
+    if [ "$status" = 0 ]; then
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Detecting git version... "
+    git_version="$(opkg info git 2>/dev/null | grep "Version" | awk '{print $2}')"
+    if [ "$git_version" = "" ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    assert_status
+    status="$?"
+    if [ "$status" = 0 ]; then
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Detecting git-http version... "
+    git_http_version="$(opkg info git-http 2>/dev/null | grep "Version" | awk '{print $2}')"
+    if [ "$git_http_version" = "" ]; then
+      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+    else
+      echo "" >/dev/null 2>&1 # imitating return code zero
+    fi
+    assert_status
+    status="$?"
+    if [ "$status" = 0 ]; then
+      proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Downloading git... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git_${git_version}_$openwrt_arch.ipk"
+      wget -q -O "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" "$url" &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Downloading git-http... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git-http_${git_http_version}_$openwrt_arch.ipk"
+      wget -q -O "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" "$url" &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Extracting git ipk file... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      tar -zxf "git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Extracting data... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      tar -zxf data.tar.gz &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Cleaning up... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      rm "git_${git_version}_$openwrt_arch.ipk" data.tar.gz
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Extracting git-http ipk file... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      tar -zxf "git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Extracting data... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      tar -zxf data.tar.gz &
+      bg_pid="$!"
+      show_progress "$bg_pid"
+      wait "$bg_pid"
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Cleaning up... "
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
+    else
+      rm "git-http_${git_http_version}_$openwrt_arch.ipk" data.tar.gz
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf " \e[34m•\e[0m Setting up external git for future sessions... "
+    if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      printf "export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH" >> /etc/profile
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    printf " \e[34m•\e[0m Setting up external git for current session... "
+    if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
+      showoff
+      print_already
+    else
+      showoff
+      printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
+    fi
   fi
 }
 
