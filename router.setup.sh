@@ -1768,19 +1768,21 @@ setup_aria2_webui() {
       fi
     fi
 
-    printf "   \e[34m•\e[0m Setting up aria2 webui... "
-    if [ -d /www/webui-aria2 ]; then
-      showoff
-      print_already
+    if [ $proceed = true ]; then
+      printf "   \e[34m•\e[0m Setting up aria2 webui... "
+      if [ -d /www/webui-aria2 ]; then
+        showoff
+        print_already
+      else
+        ln -s /mnt/usb1/.data/webui-aria2/docs /www/webui-aria2 >/dev/null 2>&1
+        showoff
+        assert_status
+      fi
     else
-      ln -s /mnt/usb1/.data/webui-aria2/docs /www/webui-aria2 >/dev/null 2>&1
+      printf "   \e[34m•\e[0m Setting up aria2 webui... "
       showoff
-      assert_status
+      printf "\e[33maria2 not setup!\e[0m\n"
     fi
-  else
-    printf "   \e[34m•\e[0m Setting up aria2 webui... "
-    showoff
-    printf "\e[33maria2 not setup!\e[0m\n"
   fi
 }
 
