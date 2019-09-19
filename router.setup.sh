@@ -1754,7 +1754,10 @@ setup_aria2_webui() {
       proceed=true
     else
       if [ $GIT_OK = true ]; then
-        git clone --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/usb1/.data/webui-aria2
+        git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/usb1/.data/webui-aria2 2>/dev/null &
+        bg_pid="$!"
+        show_progress "$bg_pid"
+        wait "$bg_pid"
         assert_status
         status="$?"
         if [ "$status" = 0 ]; then
