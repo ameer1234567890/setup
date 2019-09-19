@@ -1380,7 +1380,7 @@ setup_timezone() {
 
 
 setup_external_git() {
-  printf " \e[34m•\e[0m Setup External Git:"
+  printf " \e[34m•\e[0m Setup External Git:\n"
   git_download_required=true
   proceed=false
   printf "   \e[34m•\e[0m Checking if USB is mounted... "
