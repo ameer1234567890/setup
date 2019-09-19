@@ -1405,6 +1405,7 @@ setup_external_git() {
     if [ -d /mnt/usb1/.data/git ]; then
       showoff
       print_already
+      proceed=true
     else
       mkdir -p "/mnt/usb1/.data/git" 2>/dev/null
       showoff
@@ -1488,6 +1489,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git_${git_version}_$openwrt_arch.ipk"
       wget -q -O "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" "$url" &
@@ -1508,6 +1510,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git-http_${git_http_version}_$openwrt_arch.ipk"
       wget -q -O "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" "$url" &
@@ -1528,6 +1531,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       tar -zxf "git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz &
       bg_pid="$!"
@@ -1547,6 +1551,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       tar -zxf data.tar.gz &
       bg_pid="$!"
@@ -1566,6 +1571,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       rm "git_${git_version}_$openwrt_arch.ipk" data.tar.gz
       assert_status
@@ -1582,6 +1588,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       tar -zxf "git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz &
       bg_pid="$!"
@@ -1601,6 +1608,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       tar -zxf data.tar.gz &
       bg_pid="$!"
@@ -1620,6 +1628,7 @@ setup_external_git() {
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
+      proceed=true
     else
       rm "git-http_${git_http_version}_$openwrt_arch.ipk" data.tar.gz
       assert_status
