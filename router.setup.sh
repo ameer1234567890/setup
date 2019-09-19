@@ -1786,10 +1786,6 @@ setup_aria2_webui() {
         showoff
         assert_status
       fi
-    else
-      printf "   \e[34m•\e[0m Setting up aria2 webui... "
-      showoff
-      printf "\e[33maria2 not setup!\e[0m\n"
     fi
   fi
 }
