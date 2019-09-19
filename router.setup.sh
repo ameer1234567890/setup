@@ -1380,9 +1380,10 @@ setup_timezone() {
 
 
 setup_external_git() {
+  printf " \e[34m•\e[0m Setup External Git:"
   git_download_required=true
   proceed=false
-  printf " \e[34m•\e[0m Checking if USB is mounted... "
+  printf "   \e[34m•\e[0m Checking if USB is mounted... "
   if [ "$(mount | grep "/mnt/usb1")" = "" ]; then
     wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     showoff
@@ -1401,7 +1402,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating directory for git... "
+    printf "   \e[34m•\e[0m Creating directory for git... "
     if [ -d /mnt/usb1/.data/git ]; then
       showoff
       print_already
@@ -1419,7 +1420,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Detecting OpenWrt version... "
+    printf "   \e[34m•\e[0m Detecting OpenWrt version... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1442,7 +1443,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Detecting system architecture... "
+    printf "   \e[34m•\e[0m Detecting system architecture... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1465,7 +1466,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Detecting git version... "
+    printf "   \e[34m•\e[0m Detecting git version... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1487,7 +1488,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Detecting git-http version... "
+    printf "   \e[34m•\e[0m Detecting git-http version... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1509,7 +1510,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Downloading git... "
+    printf "   \e[34m•\e[0m Downloading git... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1530,7 +1531,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Downloading git-http... "
+    printf "   \e[34m•\e[0m Downloading git-http... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1551,7 +1552,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Extracting git ipk file... "
+    printf "   \e[34m•\e[0m Extracting git ipk file... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1571,7 +1572,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Extracting data... "
+    printf "   \e[34m•\e[0m Extracting data... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1591,7 +1592,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Cleaning up... "
+    printf "   \e[34m•\e[0m Cleaning up... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1608,7 +1609,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Extracting git-http ipk file... "
+    printf "   \e[34m•\e[0m Extracting git-http ipk file... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1628,7 +1629,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Extracting data... "
+    printf "   \e[34m•\e[0m Extracting data... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1648,7 +1649,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Cleaning up... "
+    printf "   \e[34m•\e[0m Cleaning up... "
     if [ $git_download_required = false ]; then
       showoff
       print_not_required
@@ -1664,7 +1665,7 @@ setup_external_git() {
   fi
 
   if [ $proceed = false ]; then
-    printf " \e[34m•\e[0m Cleaning up incomplete git files... "
+    printf "   \e[34m•\e[0m Cleaning up incomplete git files... "
     rm -rf /mnt/usb1/.data/git 2>dev.null &
     bg_pid="$!"
     show_progress "$bg_pid"
@@ -1674,7 +1675,7 @@ setup_external_git() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up external git for future sessions... "
+    printf "   \e[34m•\e[0m Setting up external git for future sessions... "
     if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
       showoff
       print_already
@@ -1691,7 +1692,7 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting up external git for current session... "
+    printf "   \e[34m•\e[0m Setting up external git for current session... "
     if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
       showoff
       print_already
