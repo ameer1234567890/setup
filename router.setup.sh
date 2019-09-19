@@ -142,7 +142,7 @@ show_progress() {
 
 
 update_opkg() {
-  printf " \e[34m•\e[0m Running opkg update... "
+  printf "   \e[34m•\e[0m Running opkg update... "
   opkg update >/dev/null 2>&1 &
   bg_pid="$!"
   show_progress "$bg_pid"
@@ -173,7 +173,8 @@ rm opkgstatus.txt >/dev/null 2>&1
 
 
 notify_on_startup() {
-  printf " \e[34m•\e[0m Setting up notification via IFTTT, on router startup... "
+  printf " \e[34m•\e[0m Notify on Startup:\n"
+  printf "   \e[34m•\e[0m Setting up notification via IFTTT, on router startup... "
   if [ "$(grep "sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
     showoff
     print_already
@@ -186,7 +187,8 @@ notify_on_startup() {
 
 
 install_openssh_sftp_server() {
-  printf " \e[34m•\e[0m Installing OpenSSH SFTP server... "
+  printf " \e[34m•\e[0m Install SFTP Server:\n"
+  printf "   \e[34m•\e[0m Installing OpenSSH SFTP server... "
   if [ "$(opkg list-installed 2>/dev/null | grep openssh-sftp-server)" != "" ]; then
     showoff
     print_already
@@ -204,8 +206,9 @@ install_openssh_sftp_server() {
 
 
 set_nano_default() {
+  printf " \e[34m•\e[0m Install and Setup Nano:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing nano... "
+  printf "   \e[34m•\e[0m Installing nano... "
   if [ "$(opkg list-installed 2>/dev/null | grep nano)" != "" ]; then
     showoff
     print_already
@@ -226,7 +229,7 @@ set_nano_default() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting nano as default editor for future sessions... "
+    printf "   \e[34m•\e[0m Setting nano as default editor for future sessions... "
     if [ "$(grep "export EDITOR=nano" /etc/profile 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -236,7 +239,7 @@ set_nano_default() {
       assert_status
     fi
 
-    printf " \e[34m•\e[0m Setting nano as default editor for current session... "
+    printf "   \e[34m•\e[0m Setting nano as default editor for current session... "
     if [ "$(env | grep "EDITOR=nano")" != "" ]; then
       showoff
       print_already
@@ -249,10 +252,11 @@ set_nano_default() {
 
 
 setup_usb_storage() {
+  printf " \e[34m•\e[0m Setup USB Storage:\n"
   proceed=true
   packages="kmod-usb-core usbutils kmod-usb-storage kmod-fs-ext4 block-mount"
   for package in $packages; do
-    printf " \e[34m•\e[0m Installing required packages for USB storage (%s)... " "$package"
+    printf "   \e[34m•\e[0m Installing required packages for USB storage (%s)... " "$package"
     if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
       showoff
       print_already
@@ -275,7 +279,7 @@ setup_usb_storage() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating mount directory... "
+    printf "   \e[34m•\e[0m Creating mount directory... "
     if [ -d /mnt/usb1 ]; then
       showoff
       print_already
@@ -293,7 +297,7 @@ setup_usb_storage() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Touching empty file which identifies mount status... "
+    printf "   \e[34m•\e[0m Touching empty file which identifies mount status... "
     if [ -f /mnt/usb1/USB_NOT_MOUNTED ] || [ "$(mount | grep "/mnt/usb1")" != "" ]; then
       showoff
       print_already
@@ -311,7 +315,7 @@ setup_usb_storage() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Test mounting in current session... "
+    printf "   \e[34m•\e[0m Test mounting in current session... "
     if [ "$(mount | grep "/mnt/usb1")" != "" ]; then
       showoff
       print_already
@@ -327,7 +331,7 @@ setup_usb_storage() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting up persistent mount config... "
+    printf "   \e[34m•\e[0m Setting up persistent mount config... "
     if [ "$(grep "/mnt/usb1" /etc/config/fstab)" != "" ]; then
       showoff
       print_already
@@ -340,11 +344,12 @@ setup_usb_storage() {
 
 
 setup_samba() {
+  printf " \e[34m•\e[0m Install and Startup Samba:\n"
   proceed=true
   samba_restart_required=false
   packages="samba36-server luci-app-samba"
   for package in $packages; do
-    printf " \e[34m•\e[0m Installing required packages for samba (%s)... " "$package"
+    printf "   \e[34m•\e[0m Installing required packages for samba (%s)... " "$package"
     if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
       showoff
       print_already
@@ -367,7 +372,7 @@ setup_samba() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up samba config... "
+    printf "   \e[34m•\e[0m Setting up samba config... "
     if [ "$(grep "option 'path' '/mnt/usb1'" /etc/config/samba)" != "" ]; then
       showoff
       print_already
@@ -386,7 +391,7 @@ setup_samba() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up smb.conf.template... "
+    printf "   \e[34m•\e[0m Setting up smb.conf.template... "
     if [ "$(grep "min protocol = SMB2" /etc/samba/smb.conf.template)" != "" ]; then
       showoff
       print_already
@@ -405,7 +410,7 @@ setup_samba() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up samba system user... "
+    printf "   \e[34m•\e[0m Setting up samba system user... "
     if [ "$(grep "user:" /etc/passwd)" != "" ]; then
       showoff
       print_already
@@ -423,7 +428,7 @@ setup_samba() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up password for samba system user... "
+    printf "   \e[34m•\e[0m Setting up password for samba system user... "
     if [ "$(grep "user:x:" /etc/passwd)" = "" ]; then
       showoff
       print_already
@@ -437,7 +442,7 @@ setup_samba() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting up user & password for smb user... "
+    printf "   \e[34m•\e[0m Setting up user & password for smb user... "
     if [ "$(grep "user:501:" /etc/samba/smbpasswd)" != "" ]; then
       showoff
       print_already
@@ -449,7 +454,7 @@ setup_samba() {
     fi
   fi
 
-  printf " \e[34m•\e[0m Restarting samba... "
+  printf "   \e[34m•\e[0m Restarting samba... "
   if [ $samba_restart_required = true ]; then
     /etc/init.d/samba restart >/dev/null 2>&1 &
     bg_pid="$!"
@@ -463,8 +468,9 @@ setup_samba() {
 
 
 make_samba_wan_accessible() {
+  printf " \e[34m•\e[0m Making Samba Web Accessible:\n"
   samba_restart_required=false
-  printf " \e[34m•\e[0m Making samba accessible from WAN... "
+  printf "   \e[34m•\e[0m Making samba accessible from WAN... "
   if [ "$(opkg list-installed 2>/dev/null | grep "samba36-server")" != "" ]; then
     if [ "$(grep "bind interfaces only = no" /etc/samba/smb.conf.template)" != "" ]; then
       showoff
@@ -479,7 +485,7 @@ make_samba_wan_accessible() {
     printf "\e[33mSamba not installed!\e[0m\n"
   fi
 
-  printf " \e[34m•\e[0m Restarting samba... "
+  printf "   \e[34m•\e[0m Restarting samba... "
   if [ $samba_restart_required = true ]; then
     /etc/init.d/samba restart >/dev/null 2>&1 &
     bg_pid="$!"
@@ -493,8 +499,9 @@ make_samba_wan_accessible() {
 
 
 setup_rsync() {
+  printf " \e[34m•\e[0m Install and Setup Rsync:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing rsync... "
+  printf "   \e[34m•\e[0m Installing rsync... "
   if [ "$(opkg list-installed 2>/dev/null | grep rsync)" != "" ]; then
     showoff
     print_already
@@ -516,7 +523,7 @@ setup_rsync() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Configuring rsync... "
+    printf "   \e[34m•\e[0m Configuring rsync... "
     if [ "$(grep "path = /mnt/usb1" /etc/rsyncd.conf 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -534,7 +541,7 @@ setup_rsync() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting up rsync daemon... "
+    printf "   \e[34m•\e[0m Starting up rsync daemon... "
     if [ "$(pgrep -f "rsync --daemon" 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -550,7 +557,7 @@ setup_rsync() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting up rsync daemon startup config... "
+    printf "   \e[34m•\e[0m Setting up rsync daemon startup config... "
     if [ "$(grep "rsync --daemon" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -563,8 +570,9 @@ setup_rsync() {
 
 
 disable_dropbear_password_auth() {
+  printf " \e[34m•\e[0m Disable Password Auth in Dropbear:\n"
   dropbear_restart_required=false
-  printf " \e[34m•\e[0m Disabling password authentication in dropbear... "
+  printf "   \e[34m•\e[0m Disabling password authentication in dropbear... "
   if [ "$(uci get dropbear.@dropbear[0].PasswordAuth)" = "off" ]; then
     showoff
     print_already
@@ -576,7 +584,7 @@ disable_dropbear_password_auth() {
     dropbear_restart_required=true
   fi
 
-  printf " \e[34m•\e[0m Restarting dropbear... "
+  printf "   \e[34m•\e[0m Restarting dropbear... "
   if [ $dropbear_restart_required = true ]; then
     /etc/init.d/dropbear restart >/dev/null 2>&1 &
     bg_pid="$!"
@@ -590,8 +598,9 @@ disable_dropbear_password_auth() {
 
 
 setup_remote_ssh() {
+  printf " \e[34m•\e[0m Setup Remote SSH:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing autossh... "
+  printf "   \e[34m•\e[0m Installing autossh... "
   if [ "$(opkg list-installed 2>/dev/null | grep autossh)" != "" ]; then
     showoff
     print_already
@@ -613,7 +622,7 @@ setup_remote_ssh() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating serveo service... "
+    printf "   \e[34m•\e[0m Creating serveo service... "
     if [ -f /etc/init.d/serveo ]; then
       showoff
       print_already
@@ -631,7 +640,7 @@ setup_remote_ssh() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting executable permissions serveo service... "
+    printf "   \e[34m•\e[0m Setting executable permissions serveo service... "
     if [ "$(find /etc/init.d/serveo -perm -u=x 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -649,7 +658,7 @@ setup_remote_ssh() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting serveo service... "
+    printf "   \e[34m•\e[0m Starting serveo service... "
     if [ "$(pgrep -f "ameer")" != "" ]; then
       showoff
       print_already
@@ -666,7 +675,7 @@ setup_remote_ssh() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Enabling autostart of serveo service... "
+    printf "   \e[34m•\e[0m Enabling autostart of serveo service... "
     # shellcheck disable=SC2010
     if [ "$(ls -l /etc/rc.d | grep ../init.d/serveo)" != "" ]; then
       showoff
@@ -681,8 +690,9 @@ setup_remote_ssh() {
 
 
 setup_router_remote_http() {
+  printf " \e[34m•\e[0m Setup Router Remote HTTP:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing autossh... "
+  printf "   \e[34m•\e[0m Installing autossh... "
   if [ "$(opkg list-installed 2>/dev/null | grep autossh)" != "" ]; then
     showoff
     print_already
@@ -704,7 +714,7 @@ setup_router_remote_http() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating gadhamoo service... "
+    printf "   \e[34m•\e[0m Creating gadhamoo service... "
     if [ -f /etc/init.d/gadhamoo ]; then
       showoff
       print_already
@@ -722,7 +732,7 @@ setup_router_remote_http() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting executable permissions gadhamoo service... "
+    printf "   \e[34m•\e[0m Setting executable permissions gadhamoo service... "
     if [ "$(find /etc/init.d/gadhamoo -perm -u=x 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -740,7 +750,7 @@ setup_router_remote_http() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting gadhamoo service... "
+    printf "   \e[34m•\e[0m Starting gadhamoo service... "
     if [ "$(pgrep -f "gadhamoo")" != "" ]; then
       showoff
       print_already
@@ -757,7 +767,7 @@ setup_router_remote_http() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Enabling autostart of gadhamoo service... "
+    printf "   \e[34m•\e[0m Enabling autostart of gadhamoo service... "
     # shellcheck disable=SC2010
     if [ "$(ls -l /etc/rc.d | grep ../init.d/gadhamoo)" != "" ]; then
       showoff
@@ -772,11 +782,12 @@ setup_router_remote_http() {
 
 
 setup_aria2() {
+  printf " \e[34m•\e[0m Install and Setup Aria2:\n"
   ARIA2_OK=false
   proceed=true
   packages="aria2 sudo curl"
   for package in $packages; do
-    printf " \e[34m•\e[0m Installing required packages for aria2 (%s)... " "$package"
+    printf "   \e[34m•\e[0m Installing required packages for aria2 (%s)... " "$package"
     if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
       showoff
       print_already
@@ -799,7 +810,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating home directory for user... "
+    printf "   \e[34m•\e[0m Creating home directory for user... "
     if [ -d /home/user ]; then
       showoff
       print_already
@@ -817,7 +828,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Assigning ownership of user's home directory to user... "
+    printf "   \e[34m•\e[0m Assigning ownership of user's home directory to user... "
     if [ "$(find /home/user -maxdepth 0 -user user)" != "" ]; then
       showoff
       print_already
@@ -835,7 +846,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating .aria2 directory... "
+    printf "   \e[34m•\e[0m Creating .aria2 directory... "
     if [ -d /home/user/.aria2 ]; then
       showoff
       print_already
@@ -853,7 +864,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating aria2 session file... "
+    printf "   \e[34m•\e[0m Creating aria2 session file... "
     if [ -f /home/user/.aria2/session ]; then
       showoff
       print_already
@@ -871,7 +882,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating aria2 configuration file... "
+    printf "   \e[34m•\e[0m Creating aria2 configuration file... "
     if [ -f /home/user/.aria2/aria2.conf ]; then
       showoff
       print_already
@@ -889,7 +900,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating aria2 hook-complete file... "
+    printf "   \e[34m•\e[0m Creating aria2 hook-complete file... "
     if [ -f /home/user/.aria2/hook-complete.sh ]; then
       showoff
       print_already
@@ -907,7 +918,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting executable permissions hook-complete file... "
+    printf "   \e[34m•\e[0m Setting executable permissions hook-complete file... "
     if [ "$(find /home/user/.aria2/hook-complete.sh -perm -u=x 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -925,7 +936,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating aria2 hook-error file... "
+    printf "   \e[34m•\e[0m Creating aria2 hook-error file... "
     if [ -f /home/user/.aria2/hook-error.sh ]; then
       showoff
       print_already
@@ -943,7 +954,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Setting executable permissions hook-error file... "
+    printf "   \e[34m•\e[0m Setting executable permissions hook-error file... "
     if [ "$(find /home/user/.aria2/hook-error.sh -perm -u=x 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -961,7 +972,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Creating aria2 download directory... "
+    printf "   \e[34m•\e[0m Creating aria2 download directory... "
     if [ -d /mnt/usb1/aria2 ]; then
       showoff
       print_already
@@ -979,7 +990,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Disabling un-needed autostart of aria2 service... "
+    printf "   \e[34m•\e[0m Disabling un-needed autostart of aria2 service... "
     # shellcheck disable=SC2010
     if [ "$(ls -l /etc/rc.d | grep ../init.d/aria2)" = "" ]; then
       showoff
@@ -998,7 +1009,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting up aria2 daemon... "
+    printf "   \e[34m•\e[0m Starting up aria2 daemon... "
     if [ "$(pgrep -f "aria2c --conf-path=/home/user/.aria2/aria2.conf" 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1014,7 +1025,7 @@ setup_aria2() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting up aria2 daemon startup config... "
+    printf "   \e[34m•\e[0m Setting up aria2 daemon startup config... "
     if [ "$(grep "sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1032,9 +1043,10 @@ setup_aria2() {
 
 
 setup_aria2_scheduling() {
+  printf " \e[34m•\e[0m Setup Aria2 Scheduling:\n"
   if [ $ARIA2_OK = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting up cron service... "
+    printf "   \e[34m•\e[0m Starting up cron service... "
     if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1051,7 +1063,7 @@ setup_aria2_scheduling() {
 
     if [ $proceed = true ]; then
       proceed=false
-      printf " \e[34m•\e[0m Enabling autostart of cron service... "
+      printf "   \e[34m•\e[0m Enabling autostart of cron service... "
       # shellcheck disable=SC2010
       if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
         showoff
@@ -1069,7 +1081,7 @@ setup_aria2_scheduling() {
     fi
 
     if [ $proceed = true ]; then
-      printf " \e[34m•\e[0m Adding aria2 scheduling tasks to crontab... "
+      printf "   \e[34m•\e[0m Adding aria2 scheduling tasks to crontab... "
       if [ "$(crontab -l 2>/dev/null | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
         showoff
         print_already
@@ -1101,7 +1113,7 @@ setup_aria2_scheduling() {
       fi
     fi
   else
-    printf " \e[34m•\e[0m Setting up aria2 scheduling service... "
+    printf "   \e[34m•\e[0m Setting up aria2 scheduling service... "
     showoff
     printf "\e[33maria2 not setup completely!\e[0m\n"
   fi
@@ -1109,8 +1121,9 @@ setup_aria2_scheduling() {
 
 
 setup_aria2_webui() {
+  printf " \e[34m•\e[0m Install and Setup Aria2 Webui:\n"
   if [ $ARIA2_OK = true ]; then
-    printf " \e[34m•\e[0m Starting up aria2 webui... "
+    printf "   \e[34m•\e[0m Starting up aria2 webui... "
     if [ "$(ls /www/webui-aria2 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1124,8 +1137,9 @@ setup_aria2_webui() {
 
 
 setup_extroot() {
+  printf " \e[34m•\e[0m Setup Extroot:\n"
   proceed=false
-  printf " \e[34m•\e[0m Checking if USB is mounted... "
+  printf "   \e[34m•\e[0m Checking if USB is mounted... "
   if [ "$(mount | grep "/mnt/usb1")" = "" ]; then
     wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     showoff
@@ -1138,7 +1152,7 @@ setup_extroot() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Copying /overlay to USB... "
+    printf "   \e[34m•\e[0m Copying /overlay to USB... "
     if [ -d /mnt/usb1/upper ] || [ -d /mnt/usb1/work ] || [ -d /mnt/usb1/etc ]; then
       showoff
       print_already
@@ -1157,7 +1171,7 @@ setup_extroot() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting up USB to be mounted at /overlay... "
+    printf "   \e[34m•\e[0m Setting up USB to be mounted at /overlay... "
     if [ "$(grep "option target '/mnt/usb1'" /etc/config/fstab)" != "" ]; then
       showoff
       print_already
@@ -1172,7 +1186,8 @@ setup_extroot() {
 
 
 install_htop() {
-  printf " \e[34m•\e[0m Installing htop... "
+  printf " \e[34m•\e[0m Install Htop:\n"
+  printf "   \e[34m•\e[0m Installing htop... "
   if [ "$(opkg list-installed 2>/dev/null | grep "htop")" != "" ]; then
     showoff
     print_already
@@ -1190,7 +1205,8 @@ install_htop() {
 
 
 install_screen() {
-  printf " \e[34m•\e[0m Installing screen... "
+  printf " \e[34m•\e[0m Install Screen:\n"
+  printf "   \e[34m•\e[0m Installing screen... "
   if [ "$(opkg list-installed 2>/dev/null | grep "screen")" != "" ]; then
     showoff
     print_already
@@ -1208,8 +1224,9 @@ install_screen() {
 
 
 setup_thingspeak_ping() {
+  printf " \e[34m•\e[0m Setup ThingSpeak Ping:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing curl... "
+  printf "   \e[34m•\e[0m Installing curl... "
   if [ "$(opkg list-installed 2>/dev/null | grep "curl")" != "" ]; then
     showoff
     print_already
@@ -1231,7 +1248,7 @@ setup_thingspeak_ping() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Starting up cron service... "
+    printf "   \e[34m•\e[0m Starting up cron service... "
     if [ "$(pgrep -f "crond" 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1249,7 +1266,7 @@ setup_thingspeak_ping() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Enabling autostart of cron service... "
+    printf "   \e[34m•\e[0m Enabling autostart of cron service... "
     # shellcheck disable=SC2010
     if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
       showoff
@@ -1268,7 +1285,7 @@ setup_thingspeak_ping() {
 
   if [ $proceed = true ]; then
     proceed=false
-    printf " \e[34m•\e[0m Adding thingspeak ping task to crontab... "
+    printf "   \e[34m•\e[0m Adding thingspeak ping task to crontab... "
     if [ "$(crontab -l | grep "curl \"https://api.thingspeak.com/update" 2>/dev/null)" != "" ]; then
       showoff
       print_already
@@ -1297,8 +1314,9 @@ setup_thingspeak_ping() {
 
 
 setup_bash_default() {
+  printf " \e[34m•\e[0m Install and Setup Bash as Default Shell:\n"
   proceed=false
-  printf " \e[34m•\e[0m Installing bash... "
+  printf "   \e[34m•\e[0m Installing bash... "
   if [ "$(opkg list-installed 2>/dev/null | grep bash)" != "" ]; then
     showoff
     print_already
@@ -1319,7 +1337,7 @@ setup_bash_default() {
   fi
 
   if [ $proceed = true ]; then
-    printf " \e[34m•\e[0m Setting bash as default shell for future sessions... "
+    printf "   \e[34m•\e[0m Setting bash as default shell for future sessions... "
     if [ "$(sed -n '1p' /etc/passwd 2>/dev/null)" != "root:x:0:0:root:/root:/bin/ash" ]; then
       showoff
       print_already
@@ -1334,7 +1352,8 @@ setup_bash_default() {
 
 
 setup_hostname() {
-  printf " \e[34m•\e[0m Changing hostname... "
+  printf " \e[34m•\e[0m Change Hostname:\n"
+  printf "   \e[34m•\e[0m Changing hostname... "
   if [ "$(uci get system.@system[0].hostname 2>/dev/null)" = "miwifimini" ]; then
     showoff
     print_already
@@ -1357,7 +1376,8 @@ setup_hostname() {
 
 
 setup_timezone() {
-  printf " \e[34m•\e[0m Changing timezone... "
+  printf " \e[34m•\e[0m Change Timezone:\n"
+  printf "   \e[34m•\e[0m Changing timezone... "
   if [ "$(uci get system.@system[0].timezone 2>/dev/null)" = "<+05>-5" ]; then
     showoff
     print_already
@@ -1705,25 +1725,25 @@ setup_external_git() {
 
 
 #### tasks to run. comment out any tasks that are not required.
-# notify_on_startup
-# install_openssh_sftp_server
-# set_nano_default
-# setup_usb_storage
-# setup_samba
-# make_samba_wan_accessible
-# setup_rsync
-# disable_dropbear_password_auth
-# setup_remote_ssh
-# setup_router_remote_http
-# setup_aria2
-# setup_aria2_scheduling
-# setup_aria2_webui
-# install_htop
-# install_screen
-# setup_thingspeak_ping
-# setup_bash_default
-# setup_hostname
-# setup_timezone
+notify_on_startup
+install_openssh_sftp_server
+set_nano_default
+setup_usb_storage
+setup_samba
+make_samba_wan_accessible
+setup_rsync
+disable_dropbear_password_auth
+setup_remote_ssh
+setup_router_remote_http
+setup_aria2
+setup_aria2_scheduling
+setup_aria2_webui
+install_htop
+install_screen
+setup_thingspeak_ping
+setup_bash_default
+setup_hostname
+setup_timezone
 setup_external_git
 # setup_extroot # preferrably, this should be done last
 
