@@ -1420,66 +1420,90 @@ setup_external_git() {
   if [ $proceed = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Detecting OpenWrt version... "
-    openwrt_version="$(grep "DISTRIB_RELEASE" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
-    if [ "$openwrt_version" = "" ]; then
-      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
-    else
-      echo "" >/dev/null 2>&1 # imitating return code zero
-    fi
-    showoff
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
       proceed=true
+    else
+      openwrt_version="$(grep "DISTRIB_RELEASE" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+      if [ "$openwrt_version" = "" ]; then
+        wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+      else
+        echo "" >/dev/null 2>&1 # imitating return code zero
+      fi
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 
   if [ $proceed = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Detecting system architecture... "
-    openwrt_arch="$(grep "DISTRIB_ARCH" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
-    if [ "$openwrt_arch" = "" ]; then
-      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
-    else
-      echo "" >/dev/null 2>&1 # imitating return code zero
-    fi
-    showoff
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
       proceed=true
+    else
+      openwrt_arch="$(grep "DISTRIB_ARCH" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+      if [ "$openwrt_arch" = "" ]; then
+        wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+      else
+        echo "" >/dev/null 2>&1 # imitating return code zero
+      fi
+      showoff
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 
   if [ $proceed = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Detecting git version... "
-    git_version="$(opkg info git 2>/dev/null | grep "Version" | awk '{print $2}')"
-    if [ "$git_version" = "" ]; then
-      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
-    else
-      echo "" >/dev/null 2>&1 # imitating return code zero
-    fi
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
       proceed=true
+    else
+      git_version="$(opkg info git 2>/dev/null | grep "Version" | awk '{print $2}')"
+      if [ "$git_version" = "" ]; then
+        wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+      else
+        echo "" >/dev/null 2>&1 # imitating return code zero
+      fi
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 
   if [ $proceed = true ]; then
     proceed=false
     printf " \e[34m•\e[0m Detecting git-http version... "
-    git_http_version="$(opkg info git-http 2>/dev/null | grep "Version" | awk '{print $2}')"
-    if [ "$git_http_version" = "" ]; then
-      wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
-    else
-      echo "" >/dev/null 2>&1 # imitating return code zero
-    fi
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
+    if [ $git_download_required = false ]; then
+      showoff
+      print_not_required
       proceed=true
+    else
+      git_http_version="$(opkg info git-http 2>/dev/null | grep "Version" | awk '{print $2}')"
+      if [ "$git_http_version" = "" ]; then
+        wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
+      else
+        echo "" >/dev/null 2>&1 # imitating return code zero
+      fi
+      assert_status
+      status="$?"
+      if [ "$status" = 0 ]; then
+        proceed=true
+      fi
     fi
   fi
 
