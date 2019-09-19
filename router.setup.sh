@@ -1557,7 +1557,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -zxf "git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz &
+      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz &
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
@@ -1577,7 +1577,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -zxf data.tar.gz &
+      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz &
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
@@ -1597,7 +1597,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      rm "git_${git_version}_$openwrt_arch.ipk" data.tar.gz
+      rm "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz
       assert_status
       status="$?"
       if [ "$status" = 0 ]; then
@@ -1614,7 +1614,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -zxf "git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz &
+      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz &
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
@@ -1634,7 +1634,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -zxf data.tar.gz &
+      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz &
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
@@ -1654,7 +1654,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      rm "git-http_${git_http_version}_$openwrt_arch.ipk" data.tar.gz
+      rm "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz
       assert_status
       status="$?"
       if [ "$status" = 0 ]; then
