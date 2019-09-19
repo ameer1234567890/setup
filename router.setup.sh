@@ -1394,7 +1394,6 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
-    proceed=false
     if [ -d /mnt/usb1/.data/git/usr ]; then
       git_download_required=false
     fi
