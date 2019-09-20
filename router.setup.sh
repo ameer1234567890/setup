@@ -128,7 +128,7 @@ show_progress() {
       7 ) printf "  ⠇\b\b\b" ;;
       8 ) printf "  ⠏\b\b\b" ;;
     esac
-    progress_state=$((progress_state + 1))
+    progress_state=$(( progress_state + 1 ))
     if [ $progress_state -gt 8 ]; then
       progress_state=0
     fi
