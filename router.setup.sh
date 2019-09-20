@@ -34,27 +34,13 @@ kill_tools() {
     fi
   done
 
-    if [ -f opkgstatus.txt ]; then
-    printf " Deleting temporary file opkgstatus.txt... "
-    rm opkgstatus.txt >/dev/null 2>&1
-    status="$?"
-    if [ "$status" = 0 ]; then
-      printf "\e[32mDone!\e[0m\n"
-    else
-      printf "\e[91mFailed!\e[0m\n"
+  temp_files="opkgstatus.txt crontab.txt"
+  for file in $temp_files; do
+    if [ -f "$file" ]; then
+      printf " Deleting temporary file %s... " "$file"
+      rm "$file" >/dev/null 2>&1 && printf "\e[32mDone!\e[0m\n" || printf "\e[91mFailed!\e[0m\n"
     fi
-  fi
-
-  if [ -f opkgstatus.txt ]; then
-    printf " Deleting temporary file crontab.txt... "
-    rm crontab.txt >/dev/null 2>&1
-    status="$?"
-    if [ "$status" = 0 ]; then
-      printf "\e[32mDone!\e[0m\n"
-    else
-      printf "\e[91mFailed!\e[0m\n"
-    fi
-  fi
+  done
   
   echo ""
   exit 0
