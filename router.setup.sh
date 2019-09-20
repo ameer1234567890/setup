@@ -78,13 +78,13 @@ if [ -z "$IFTTT_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ]; then
 fi
 
 assert_status() {
-  status="$?"
-  if [ "$status" = 0 ]; then
+  status=$?
+  if [ $status = 0 ]; then
     printf "\e[32mDone!\e[0m\n"
   else
     printf "\e[91mFailed!\e[0m\n"
   fi
-  return "$status"
+  return $status
 }
 
 
@@ -152,8 +152,8 @@ opkg find zsh > opkgstatus.txt 2>/dev/null & # replace zsh with any tool that is
 bg_pid="$!"
 show_progress "$bg_pid"
 wait "$bg_pid"
-status="$?"
-if [ "$status" = 0 ]; then
+status=$?
+if [ $status = 0 ]; then
   if [ "$(cat opkgstatus.txt 2>/dev/null)" != "" ]; then
     printf "\e[36mNo!\e[0m\n"
   else
@@ -260,11 +260,7 @@ setup_usb_storage() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" != 0 ]; then
-        proceed=false
-      fi
+      assert_status && proceed=true
     fi
   done
 
@@ -278,11 +274,7 @@ setup_usb_storage() {
     else
       showoff
       mkdir /mnt/usb1 >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -296,11 +288,7 @@ setup_usb_storage() {
     else
       showoff
       touch /mnt/usb1/USB_NOT_MOUNTED >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -313,11 +301,7 @@ setup_usb_storage() {
       proceed=true
     else
       mount -t ext4 -o rw,async,noatime /dev/sda1 /mnt/usb1 >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -353,11 +337,7 @@ setup_samba() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   done
 
@@ -371,11 +351,7 @@ setup_samba() {
     else
       printf "config samba\n\toption workgroup 'WORKGROUP'\n\toption homes '1'\n\toption name 'miwifimini'\n\toption description 'miwifimini'\n\nconfig 'sambashare'\n\toption 'name' 'usb1'\n\toption 'path' '/mnt/usb1'\n\toption 'users' 'user'\n\toption 'guest_ok' 'yes'\n\toption 'create_mask' '0644'\n\toption 'dir_mask' '0777'\n\toption 'read_only' 'no'\n" > /etc/config/samba 2>/dev/null
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
       samba_restart_required=true
     fi
   fi
@@ -390,11 +366,7 @@ setup_samba() {
     else
       sed -i '$ a \\n\tmin protocol = SMB2\n' /etc/samba/smb.conf.template >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
       samba_restart_required=true
     fi
   fi
@@ -409,11 +381,7 @@ setup_samba() {
     else
       sed -i '$ a \\nuser:x:501:501:user:/home/user:/bin/ash\n' /etc/passwd >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -505,11 +473,7 @@ setup_rsync() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
@@ -522,11 +486,7 @@ setup_rsync() {
     else
       printf 'pid file = /var/run/rsyncd.pid\nlog file = /var/log/rsyncd.log\nlock file = /var/run/rsync.lock\nuse chroot = no\nuid = user\ngid = 501\nread only = no\n\n[usb1]\npath = /mnt/usb1\ncomment = NAS of Ameer\nlist = yes\nhosts allow = 192.168.100.1/24' > /etc/rsyncd.conf 2>/dev/null
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -539,11 +499,7 @@ setup_rsync() {
       proceed=true
     else
       rsync --daemon >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -604,11 +560,7 @@ setup_remote_ssh() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
@@ -621,11 +573,7 @@ setup_remote_ssh() {
     else
       printf "#!/bin/sh /etc/rc.common\n\nSTART=99\n\nstart() {\n\techo \"Starting serveo service...\"\n\t/usr/sbin/autossh -M 22 -y -R ameer:22:localhost:22 serveo.net < /dev/ptmx &\n}\n\nstop() {\n\techo \"Stopping serveo service...\"\n\tpids=\"\$(pgrep -f ameer)\"\n\tfor pid in \$pids; do\n\t\t/bin/kill \"\$pid\"\n\tdone\n}\n\nrestart() {\n\tstop\n\tstart\n}\n" > /etc/init.d/serveo 2>/dev/null
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -639,11 +587,7 @@ setup_remote_ssh() {
     else
       chmod +x /etc/init.d/serveo >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -657,11 +601,7 @@ setup_remote_ssh() {
     else
       /etc/init.d/serveo start >/dev/null 2>&1 &
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -696,11 +636,7 @@ setup_router_remote_http() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
@@ -713,11 +649,7 @@ setup_router_remote_http() {
     else
       printf "#!/bin/sh /etc/rc.common\n\nSTART=99\n\nstart() {\n\techo \"Starting gadhamoo service...\"\n\t/usr/sbin/autossh -M 80 -y -R gadhamoo:80:192.168.100.1:80 serveo.net < /dev/ptmx &\n}\n\nstop() {\n\techo \"Stopping gadhamoo service...\"\n\tpids=\"\$(pgrep -f gadhamoo)\"\n\tfor pid in \$pids; do\n\t\t/bin/kill \"\$pid\"\n\tdone\n}\n\nrestart() {\n\tstop\n\tstart\n}\n" > /etc/init.d/gadhamoo 2>/dev/null
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -731,11 +663,7 @@ setup_router_remote_http() {
     else
       chmod +x /etc/init.d/gadhamoo >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -749,11 +677,7 @@ setup_router_remote_http() {
     else
       /etc/init.d/gadhamoo start >/dev/null 2>&1 &
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -791,11 +715,7 @@ setup_aria2() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" != 0 ]; then
-        proceed=false
-      fi
+      assert_status && proceed=true
     fi
   done
 
@@ -809,11 +729,7 @@ setup_aria2() {
     else
       mkdir -p /home/user >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -827,11 +743,7 @@ setup_aria2() {
     else
       chown user:501 /home/user >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -845,11 +757,7 @@ setup_aria2() {
     else
       sudo -u user mkdir /home/user/.aria2 >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -863,11 +771,7 @@ setup_aria2() {
     else
       sudo -u user touch /home/user/.aria2/session >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -881,11 +785,7 @@ setup_aria2() {
     else
       printf "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/home/user/.aria2/session\ninput-file=/home/user/.aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=%s\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/home/user/.aria2/hook-complete.sh\non-bt-download-complete=/home/user/.aria2/hook-complete.sh\non-download-error=/home/user/.aria2/hook-error.sh\nmax-overall-download-limit=40K\n" "$ARIA2_RPC_TOKEN" 2>/dev/null | sudo -u user tee /home/user/.aria2/aria2.conf >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -899,11 +799,7 @@ setup_aria2() {
     else
       printf "#!/bin/sh\ncurl -X POST -H \"Content-Type: application/json\" -d '{\"value1\":\"'\$3'\"}' https://maker.ifttt.com/trigger/aria2_complete/with/key/%s\n" "$IFTTT_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-complete.sh >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -917,11 +813,7 @@ setup_aria2() {
     else
       chmod +x /home/user/.aria2/hook-complete.sh >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -935,11 +827,7 @@ setup_aria2() {
     else
       printf "#!/bin/sh\ncurl -X POST -H \"Content-Type: application/json\" -d '{\"value1\":\"'\$3'\"}' https://maker.ifttt.com/trigger/aria2_error/with/key/%s\n" "$IFTTT_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-error.sh >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -953,11 +841,7 @@ setup_aria2() {
     else
       chmod +x /home/user/.aria2/hook-error.sh >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -971,11 +855,7 @@ setup_aria2() {
     else
       sudo -u user mkdir /mnt/usb1/aria2 >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -990,11 +870,7 @@ setup_aria2() {
     else
       /etc/init.d/aria2 disable >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1007,11 +883,7 @@ setup_aria2() {
       proceed=true
     else
       sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1023,11 +895,7 @@ setup_aria2() {
       ARIA2_OK=true
     else
       sed -i -e '$i \sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf &\n' /etc/rc.local >/dev/null 2>&1
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        ARIA2_OK=true
-      fi
+      assert_status && ARIA2_OK=true
     fi
   fi
 }
@@ -1045,11 +913,7 @@ setup_aria2_scheduling() {
     else
       /etc/init.d/cron start >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
 
     if [ $proceed = true ]; then
@@ -1063,11 +927,7 @@ setup_aria2_scheduling() {
       else
         /etc/init.d/cron enable >/dev/null 2>&1
         showoff
-        assert_status
-        status="$?"
-        if [ "$status" = 0 ]; then
-          proceed=true
-        fi
+        assert_status && proceed=true
       fi
     fi
 
@@ -1137,11 +997,7 @@ setup_extroot() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1214,11 +1070,7 @@ setup_thingspeak_ping() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
@@ -1231,11 +1083,7 @@ setup_thingspeak_ping() {
     else
       /etc/init.d/cron start >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1250,11 +1098,7 @@ setup_thingspeak_ping() {
     else
       /etc/init.d/cron enable >/dev/null 2>&1
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1304,11 +1148,7 @@ setup_bash_default() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
@@ -1405,11 +1245,7 @@ setup_external_git() {
     else
       mkdir -p "/mnt/usb1/.data/git" 2>/dev/null
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1428,11 +1264,7 @@ setup_external_git() {
         echo "" >/dev/null 2>&1 # imitating return code zero
       fi
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1451,11 +1283,7 @@ setup_external_git() {
         echo "" >/dev/null 2>&1 # imitating return code zero
       fi
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1473,11 +1301,7 @@ setup_external_git() {
       else
         echo "" >/dev/null 2>&1 # imitating return code zero
       fi
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1495,11 +1319,7 @@ setup_external_git() {
       else
         echo "" >/dev/null 2>&1 # imitating return code zero
       fi
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1516,11 +1336,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1537,11 +1353,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1557,11 +1369,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1577,11 +1385,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1594,11 +1398,7 @@ setup_external_git() {
       proceed=true
     else
       rm "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>dev.null
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1614,11 +1414,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1634,11 +1430,7 @@ setup_external_git() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1651,11 +1443,7 @@ setup_external_git() {
       proceed=true
     else
       rm "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>dev.null
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1678,11 +1466,7 @@ setup_external_git() {
     else
       printf "export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH" >> /etc/profile
       showoff
-      assert_status
-      status="$?"
-      if [ "$status" = 0 ]; then
-        proceed=true
-      fi
+      assert_status && proceed=true
     fi
   fi
 
@@ -1712,11 +1496,7 @@ setup_external_git() {
       else
         git config --global user.name "Ameer Dawood" 2>/dev/null
         showoff
-        assert_status
-        status="$?"
-        if [ "$status" = 0 ]; then
-          proceed=true
-        fi
+        assert_status && proceed=true
       fi
     else
       printf "\e[33mgit not setup!\e[0m\n"
@@ -1756,11 +1536,7 @@ setup_aria2_webui() {
         bg_pid="$!"
         show_progress "$bg_pid"
         wait "$bg_pid"
-        assert_status
-        status="$?"
-        if [ "$status" = 0 ]; then
-          proceed=true
-        fi
+        assert_status && proceed=true
       else
         printf "\e[33mgit not setup!\e[0m\n"
       fi
