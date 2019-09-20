@@ -25,12 +25,7 @@ kill_tools() {
     if [ "$(pidof "$tool")" != "" ]; then
       printf " Killing %s... " "$tool"
     	killall "$tool" >/dev/null 2>&1
-      status="$?"
-      if [ "$status" = 0 ]; then
-        printf "\e[32mDone!\e[0m\n"
-      else
-        printf "\e[91mFailed!\e[0m\n"
-      fi
+      assert_status
     fi
   done
 
@@ -38,7 +33,8 @@ kill_tools() {
   for file in $temp_files; do
     if [ -f "$file" ]; then
       printf " Deleting temporary file %s... " "$file"
-      rm "$file" >/dev/null 2>&1 && printf "\e[32mDone!\e[0m\n" || printf "\e[91mFailed!\e[0m\n"
+      rm "$file" >/dev/null 2>&1
+      assert_status
     fi
   done
   
@@ -77,7 +73,7 @@ done
 
 
 if [ -z "$IFTTT_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ]; then
-  echo "Some or all of the parameters are empty";
+  echo "Some or all of the parameters are empty"
   help
 fi
 
@@ -92,19 +88,13 @@ assert_status() {
 }
 
 
-print_already() {
-  printf "\e[36mAlready Done!\e[0m\n"
-}
+print_already() { printf "\e[36mAlready Done!\e[0m\n"; }
 
 
-print_opkg_busy() {
-  printf "\e[91mopkg Busy!\e[0m\n"
-}
+print_opkg_busy() { printf "\e[91mopkg Busy!\e[0m\n"; }
 
 
-print_not_required() {
-  printf "\e[36mNot Required!\e[0m\n"
-}
+print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
 
 
 showoff() {
@@ -142,8 +132,7 @@ show_progress() {
       7 ) printf "  ⠇\b\b\b" ;;
       8 ) printf "  ⠏\b\b\b" ;;
     esac
-    progress_state=$((progress_state + 1))
-    if [ $progress_state -gt 8 ]; then
+    if [ $((progress_state + 1)) -gt 8 ]; then
       progress_state=0
     fi
     showoff
