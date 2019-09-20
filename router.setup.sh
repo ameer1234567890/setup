@@ -260,7 +260,7 @@ setup_usb_storage() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status && proceed=true
+      assert_status || proceed=false
     fi
   done
 
@@ -715,7 +715,7 @@ setup_aria2() {
       bg_pid="$!"
       show_progress "$bg_pid"
       wait "$bg_pid"
-      assert_status && proceed=true
+      assert_status || proceed=false
     fi
   done
 
