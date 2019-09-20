@@ -113,7 +113,7 @@ showoff() {
 
 
 show_progress() {
-  bg_pid="$1"
+  bg_pid=$1
   progress_state=0
   printf "  ⠋\b\b\b"
   while [ "$(ps | awk '{print $1}' | grep "$bg_pid")" != "" ]; do
@@ -139,9 +139,9 @@ show_progress() {
 update_opkg() {
   printf "   \e[34m•\e[0m Running opkg update... "
   opkg update >/dev/null 2>&1 &
-  bg_pid="$!"
-  show_progress "$bg_pid"
-  wait "$bg_pid"
+  bg_pid=$!
+  show_progress $bg_pid
+  wait $bg_pid
   assert_status
 }
 
@@ -149,9 +149,9 @@ update_opkg() {
 # check if opkg update is required, and perform update if required
 printf " \e[34m•\e[0m Checking if opkg update is required... "
 opkg find zsh > opkgstatus.txt 2>/dev/null & # replace zsh with any tool that is definitely not installed
-bg_pid="$!"
-show_progress "$bg_pid"
-wait "$bg_pid"
+bg_pid=$!
+show_progress $bg_pid
+wait $bg_pid
 status=$?
 if [ $status = 0 ]; then
   if [ "$(cat opkgstatus.txt 2>/dev/null)" != "" ]; then
@@ -192,9 +192,9 @@ install_openssh_sftp_server() {
     print_opkg_busy
   else
     opkg install openssh-sftp-server >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   fi
 }
@@ -213,9 +213,9 @@ set_nano_default() {
     print_opkg_busy
   else
     opkg install nano >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -257,9 +257,9 @@ setup_usb_storage() {
       proceed=false
     else
       opkg install "$package" >/dev/null 2>&1 &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status || proceed=false
     fi
   done
@@ -334,9 +334,9 @@ setup_samba() {
       print_opkg_busy
     else
       opkg install "$package" >/dev/null 2>&1 &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   done
@@ -416,9 +416,9 @@ setup_samba() {
   printf "   \e[34m•\e[0m Restarting samba... "
   if [ $samba_restart_required = true ]; then
     /etc/init.d/samba restart >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   else
     print_not_required
@@ -447,9 +447,9 @@ make_samba_wan_accessible() {
   printf "   \e[34m•\e[0m Restarting samba... "
   if [ $samba_restart_required = true ]; then
     /etc/init.d/samba restart >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   else
     print_not_required
@@ -470,9 +470,9 @@ setup_rsync() {
     print_opkg_busy
   else
     opkg install rsync >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -534,9 +534,9 @@ disable_dropbear_password_auth() {
   printf "   \e[34m•\e[0m Restarting dropbear... "
   if [ $dropbear_restart_required = true ]; then
     /etc/init.d/dropbear restart >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   else
     print_not_required
@@ -557,9 +557,9 @@ setup_remote_ssh() {
     print_opkg_busy
   else
     opkg install autossh >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -633,9 +633,9 @@ setup_router_remote_http() {
     print_opkg_busy
   else
     opkg install autossh >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -712,9 +712,9 @@ setup_aria2() {
       proceed=false
     else
       opkg install "$package" >/dev/null 2>&1 &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status || proceed=false
     fi
   done
@@ -938,23 +938,23 @@ setup_aria2_scheduling() {
         print_already
       else
         crontab -l > crontab.txt 2>/dev/null
-        status_list="$?"
+        status_list=$?
         echo "0 1 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"0\"}]}'" >> crontab.txt
-        status_one="$?"
+        status_one=$?
         echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"40K\"}]}'" >> crontab.txt
-        status_two="$?"
+        status_two=$?
         echo "0 0 1 * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.pauseAll\", \"params\":[\"token:$ARIA2_RPC_TOKEN\"]}'" >> crontab.txt
-        status_three="$?"
+        status_three=$?
         crontab crontab.txt >/dev/null 2>&1
-        status_install="$?"
+        status_install=$?
         rm crontab.txt >/dev/null 2>&1
-        status_delete="$?"
-        if [ "$status_list" != 0 ] \
-        || [ "$status_one" != 0 ] \
-        || [ "$status_two" != 0 ] \
-        || [ "$status_three" != 0 ] \
-        || [ "$status_install" != 0 ] \
-        || [ "$status_delete" != 0 ]; then
+        status_delete=$?
+        if [ $status_list != 0 ] \
+        || [ $status_one != 0 ] \
+        || [ $status_two != 0 ] \
+        || [ $status_three != 0 ] \
+        || [ $status_install != 0 ] \
+        || [ $status_delete != 0 ]; then
           wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
         else
           echo "" >/dev/null 2>&1 # imitating return code zero
@@ -994,9 +994,9 @@ setup_extroot() {
       proceed=true
     else
       tar -C /overlay/ -c . -f - | tar -C /mnt/usb1/ -xf - 2>/dev/null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1027,9 +1027,9 @@ install_htop() {
     print_opkg_busy
   else
     opkg install htop >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   fi
 }
@@ -1046,9 +1046,9 @@ install_screen() {
     print_opkg_busy
   else
     opkg install screen >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   fi
 }
@@ -1067,9 +1067,9 @@ setup_thingspeak_ping() {
     print_opkg_busy
   else
     opkg install curl >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -1110,17 +1110,17 @@ setup_thingspeak_ping() {
       print_already
     else
       crontab -l > crontab.txt 2>/dev/null
-      status_list="$?"
+      status_list=$?
       echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(grep MemFree /proc/meminfo | awk '{print \$2}')\"" >> crontab.txt
-      status_one="$?"
+      status_one=$?
       crontab crontab.txt >/dev/null 2>&1
-      status_install="$?"
+      status_install=$?
       rm crontab.txt >/dev/null 2>&1
-      status_delete="$?"
-      if [ "$status_list" != 0 ] \
-      || [ "$status_one" != 0 ] \
-      || [ "$status_install" != 0 ] \
-      || [ "$status_delete" != 0 ]; then
+      status_delete=$?
+      if [ $status_list != 0 ] \
+      || [ $status_one != 0 ] \
+      || [ $status_install != 0 ] \
+      || [ $status_delete != 0 ]; then
         wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
       else
         echo "" >/dev/null 2>&1 # imitating return code zero
@@ -1145,9 +1145,9 @@ setup_bash_default() {
     print_opkg_busy
   else
     opkg install bash >/dev/null 2>&1 &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status && proceed=true
   fi
 
@@ -1174,11 +1174,11 @@ setup_hostname() {
     print_already
   else
     uci set system.@system[0].hostname='miwifimini' > /dev/null 2>&1
-    status_set="$?"
+    status_set=$?
     uci commit > /dev/null 2>&1
-    status_commit="$?"
-    if [ "$status_set" != 0 ] \
-    || [ "$status_commit" != 0 ]; then
+    status_commit=$?
+    if [ $status_set != 0 ] \
+    || [ $status_commit != 0 ]; then
       wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     else
       echo "" >/dev/null 2>&1 # imitating return code zero
@@ -1198,11 +1198,11 @@ setup_timezone() {
     print_already
   else
     uci set system.@system[0].timezone='<+05>-5' > /dev/null 2>&1
-    status_set="$?"
+    status_set=$?
     uci commit > /dev/null 2>&1
-    status_commit="$?"
-    if [ "$status_set" != 0 ] \
-    || [ "$status_commit" != 0 ]; then
+    status_commit=$?
+    if [ $status_set != 0 ] \
+    || [ $status_commit != 0 ]; then
       wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     else
       echo "" >/dev/null 2>&1 # imitating return code zero
@@ -1333,9 +1333,9 @@ setup_external_git() {
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git_${git_version}_$openwrt_arch.ipk"
       wget -q -O "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" "$url" 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1350,9 +1350,9 @@ setup_external_git() {
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git-http_${git_http_version}_$openwrt_arch.ipk"
       wget -q -O "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" "$url" 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1366,9 +1366,9 @@ setup_external_git() {
       proceed=true
     else
       tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1382,9 +1382,9 @@ setup_external_git() {
       proceed=true
     else
       tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1411,9 +1411,9 @@ setup_external_git() {
       proceed=true
     else
       tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1427,9 +1427,9 @@ setup_external_git() {
       proceed=true
     else
       tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>dev.null &
-      bg_pid="$!"
-      show_progress "$bg_pid"
-      wait "$bg_pid"
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
       assert_status && proceed=true
     fi
   fi
@@ -1450,9 +1450,9 @@ setup_external_git() {
   if [ $proceed = false ]; then
     printf "   \e[34m•\e[0m Cleaning up incomplete git files... "
     rm -rf /mnt/usb1/.data/git 2>dev.null &
-    bg_pid="$!"
-    show_progress "$bg_pid"
-    wait "$bg_pid"
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   fi
 
@@ -1533,9 +1533,9 @@ setup_aria2_webui() {
     else
       if [ $GIT_OK = true ]; then
         git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/usb1/.data/webui-aria2 2>/dev/null &
-        bg_pid="$!"
-        show_progress "$bg_pid"
-        wait "$bg_pid"
+        bg_pid=$!
+        show_progress $bg_pid
+        wait $bg_pid
         assert_status && proceed=true
       else
         printf "\e[33mgit not setup!\e[0m\n"
