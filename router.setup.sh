@@ -89,11 +89,7 @@ assert_status() {
 
 
 print_already() { printf "\e[36mAlready Done!\e[0m\n"; }
-
-
 print_opkg_busy() { printf "\e[91mopkg Busy!\e[0m\n"; }
-
-
 print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
 
 
@@ -103,7 +99,7 @@ showoff() {
 
   # here we collect return code for last command, prior to calling showoff, which most probably
   # is the important command that we ran
-  status="$?"
+  status=$?
   i=0;
   while [ $i -le 300 ]; do
     echo "" >/dev/null
@@ -112,7 +108,7 @@ showoff() {
   # here we return the return code collected from the last command, prior to
   # calling showoff, so that the next command in the chain (most probably assert_status) gets
   # its required return code
-  return "$status"
+  return $status
 }
 
 
@@ -220,11 +216,7 @@ set_nano_default() {
     bg_pid="$!"
     show_progress "$bg_pid"
     wait "$bg_pid"
-    assert_status
-    status="$?"
-    if [ "$status" = 0 ]; then
-      proceed=true
-    fi
+    assert_status && proceed=true
   fi
 
   if [ $proceed = true ]; then
