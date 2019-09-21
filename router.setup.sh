@@ -1258,7 +1258,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      openwrt_version="$(grep "DISTRIB_RELEASE" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+      openwrt_version="$(awk -F\' '/DISTRIB_RELEASE/ {print $2}' /etc/openwrt_release 2>/dev/null)"
       if [ "$openwrt_version" = "" ]; then
         wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
       else
@@ -1277,7 +1277,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      openwrt_arch="$(grep "DISTRIB_ARCH" /etc/openwrt_release 2>/dev/null | cut -d "'" -f 2)"
+      openwrt_arch="$(awk -F\' '/DISTRIB_ARCH/ {print $2}' /etc/openwrt_release 2>/dev/null)"
       if [ "$openwrt_arch" = "" ]; then
         wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
       else
@@ -1296,7 +1296,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      git_version="$(opkg info git 2>/dev/null | grep "Version" | awk '{print $2}')"
+      git_version="$(opkg info git 2>/dev/null | awk '/Version/ {print $2}')"
       if [ "$git_version" = "" ]; then
         wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
       else
@@ -1314,7 +1314,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      git_http_version="$(opkg info git-http 2>/dev/null | grep "Version" | awk '{print $2}')"
+      git_http_version="$(opkg info git 2>/dev/null | awk '/Version/ {print $2}')"
       if [ "$git_http_version" = "" ]; then
         wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
       else
