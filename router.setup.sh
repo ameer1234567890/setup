@@ -1112,7 +1112,7 @@ setup_thingspeak_ping() {
     else
       crontab -l > crontab.txt 2>/dev/null
       status_list=$?
-      echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(grep MemFree /proc/meminfo | awk '{print \$2}')\"" >> crontab.txt
+      echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(awk '/MemFree/ {print \$2}' /proc/meminfo)\"" >> crontab.txt
       status_one=$?
       crontab crontab.txt >/dev/null 2>&1
       status_install=$?
