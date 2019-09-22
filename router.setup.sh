@@ -116,7 +116,7 @@ show_progress() {
   bg_pid=$1
   progress_state=0
   printf "  ⠋\b\b\b"
-  while [ "$(ps | awk '{print $1}' | grep "$bg_pid")" != "" ]; do
+  while [ "$(ps | awk '{print $1}' | grep -F "$bg_pid")" != "" ]; do
     case $progress_state in
       0 ) printf "  ⠙\b\b\b" ;;
       1 ) printf "  ⠹\b\b\b" ;;
@@ -171,7 +171,7 @@ rm opkgstatus.txt >/dev/null 2>&1
 notify_on_startup() {
   printf " \e[34m•\e[0m Notify on Startup:\n"
   printf "   \e[34m•\e[0m Setting up notification via IFTTT, on router startup... "
-  if [ "$(grep "sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
+  if [ "$(grep -F "sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
     showoff
     print_already
   else
@@ -185,7 +185,7 @@ notify_on_startup() {
 install_openssh_sftp_server() {
   printf " \e[34m•\e[0m Install SFTP Server:\n"
   printf "   \e[34m•\e[0m Installing OpenSSH SFTP server... "
-  if [ "$(opkg list-installed 2>/dev/null | grep openssh-sftp-server)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "openssh-sftp-server")" != "" ]; then
     showoff
     print_already
   elif [ -f /var/lock/opkg.lock ]; then
@@ -205,7 +205,7 @@ set_nano_default() {
   printf " \e[34m•\e[0m Install and Setup Nano:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing nano... "
-  if [ "$(opkg list-installed 2>/dev/null | grep nano)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "nano")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -222,7 +222,7 @@ set_nano_default() {
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Setting nano as default editor for future sessions... "
-    if [ "$(grep "export EDITOR=nano" /etc/profile 2>/dev/null)" != "" ]; then
+    if [ "$(grep -F "export EDITOR=nano" /etc/profile 2>/dev/null)" != "" ]; then
       showoff
       print_already
     else
@@ -232,7 +232,7 @@ set_nano_default() {
     fi
 
     printf "   \e[34m•\e[0m Setting nano as default editor for current session... "
-    if [ "$(env | grep "EDITOR=nano")" != "" ]; then
+    if [ "$(env | grep -F "EDITOR=nano")" != "" ]; then
       showoff
       print_already
     else
@@ -249,7 +249,7 @@ setup_usb_storage() {
   packages="kmod-usb-core usbutils kmod-usb-storage kmod-fs-ext4 block-mount"
   for package in $packages; do
     printf "   \e[34m•\e[0m Installing required packages for USB storage (%s)... " "$package"
-    if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
+    if [ "$(opkg list-installed 2>/dev/null | grep -F "$package")" != "" ]; then
       showoff
       print_already
     elif [ -f /var/lock/opkg.lock ]; then
@@ -282,7 +282,7 @@ setup_usb_storage() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Touching empty file which identifies mount status... "
-    if [ -f /mnt/usb1/USB_NOT_MOUNTED ] || [ "$(mount | grep "/mnt/usb1")" != "" ]; then
+    if [ -f /mnt/usb1/USB_NOT_MOUNTED ] || [ "$(mount | grep -F "/mnt/usb1")" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -296,7 +296,7 @@ setup_usb_storage() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Test mounting in current session... "
-    if [ "$(mount | grep "/mnt/usb1")" != "" ]; then
+    if [ "$(mount | grep -F "/mnt/usb1")" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -308,7 +308,7 @@ setup_usb_storage() {
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Setting up persistent mount config... "
-    if [ "$(grep "/mnt/usb1" /etc/config/fstab)" != "" ]; then
+    if [ "$(grep -F "/mnt/usb1" /etc/config/fstab)" != "" ]; then
       showoff
       print_already
     else
@@ -326,7 +326,7 @@ setup_samba() {
   packages="samba36-server luci-app-samba"
   for package in $packages; do
     printf "   \e[34m•\e[0m Installing required packages for samba (%s)... " "$package"
-    if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
+    if [ "$(opkg list-installed 2>/dev/null | grep -F "$package")" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -345,7 +345,7 @@ setup_samba() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up samba config... "
-    if [ "$(grep "option 'path' '/mnt/usb1'" /etc/config/samba)" != "" ]; then
+    if [ "$(grep -F "option 'path' '/mnt/usb1'" /etc/config/samba)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -360,7 +360,7 @@ setup_samba() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up smb.conf.template... "
-    if [ "$(grep "min protocol = SMB2" /etc/samba/smb.conf.template)" != "" ]; then
+    if [ "$(grep -F "min protocol = SMB2" /etc/samba/smb.conf.template)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -375,7 +375,7 @@ setup_samba() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up samba system user... "
-    if [ "$(grep "user:" /etc/passwd)" != "" ]; then
+    if [ "$(grep -F "user:" /etc/passwd)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -389,7 +389,7 @@ setup_samba() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up password for samba system user... "
-    if [ "$(grep "user:x:" /etc/passwd)" = "" ]; then
+    if [ "$(grep -F "user:x:" /etc/passwd)" = "" ]; then
       showoff
       print_already
       proceed=true
@@ -403,7 +403,7 @@ setup_samba() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up user & password for smb user... "
-    if [ "$(grep "user:501:" /etc/samba/smbpasswd)" != "" ]; then
+    if [ "$(grep -F "user:501:" /etc/samba/smbpasswd)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -431,8 +431,8 @@ make_samba_wan_accessible() {
   printf " \e[34m•\e[0m Making Samba Web Accessible:\n"
   samba_restart_required=false
   printf "   \e[34m•\e[0m Making samba accessible from WAN... "
-  if [ "$(opkg list-installed 2>/dev/null | grep "samba36-server")" != "" ]; then
-    if [ "$(grep "bind interfaces only = no" /etc/samba/smb.conf.template)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "samba36-server")" != "" ]; then
+    if [ "$(grep -F "bind interfaces only = no" /etc/samba/smb.conf.template)" != "" ]; then
       showoff
       print_already
     else
@@ -462,7 +462,7 @@ setup_rsync() {
   printf " \e[34m•\e[0m Install and Setup Rsync:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing rsync... "
-  if [ "$(opkg list-installed 2>/dev/null | grep rsync)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "rsync")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -480,7 +480,7 @@ setup_rsync() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Configuring rsync... "
-    if [ "$(grep "path = /mnt/usb1" /etc/rsyncd.conf 2>/dev/null)" != "" ]; then
+    if [ "$(grep -F "path = /mnt/usb1" /etc/rsyncd.conf 2>/dev/null)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -506,7 +506,7 @@ setup_rsync() {
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Setting up rsync daemon startup config... "
-    if [ "$(grep "rsync --daemon" /etc/rc.local 2>/dev/null)" != "" ]; then
+    if [ "$(grep -F "rsync --daemon" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
     else
@@ -549,7 +549,7 @@ setup_remote_ssh() {
   printf " \e[34m•\e[0m Setup Remote SSH:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing autossh... "
-  if [ "$(opkg list-installed 2>/dev/null | grep autossh)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "autossh")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -609,7 +609,7 @@ setup_remote_ssh() {
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Enabling autostart of serveo service... "
     # shellcheck disable=SC2010
-    if [ "$(ls -l /etc/rc.d | grep ../init.d/serveo)" != "" ]; then
+    if [ "$(ls -l /etc/rc.d | grep -F "../init.d/serveo")" != "" ]; then
       showoff
       print_already
     else
@@ -625,7 +625,7 @@ setup_router_remote_http() {
   printf " \e[34m•\e[0m Setup Router Remote HTTP:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing autossh... "
-  if [ "$(opkg list-installed 2>/dev/null | grep autossh)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "autossh")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -685,7 +685,7 @@ setup_router_remote_http() {
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Enabling autostart of gadhamoo service... "
     # shellcheck disable=SC2010
-    if [ "$(ls -l /etc/rc.d | grep ../init.d/gadhamoo)" != "" ]; then
+    if [ "$(ls -l /etc/rc.d | grep -F "../init.d/gadhamoo")" != "" ]; then
       showoff
       print_already
     else
@@ -704,7 +704,7 @@ setup_aria2() {
   packages="aria2 sudo curl"
   for package in $packages; do
     printf "   \e[34m•\e[0m Installing required packages for aria2 (%s)... " "$package"
-    if [ "$(opkg list-installed 2>/dev/null | grep "$package")" != "" ]; then
+    if [ "$(opkg list-installed 2>/dev/null | grep -F "$package")" != "" ]; then
       showoff
       print_already
     elif [ -f /var/lock/opkg.lock ]; then
@@ -864,7 +864,7 @@ setup_aria2() {
     proceed=false
     printf "   \e[34m•\e[0m Disabling un-needed autostart of aria2 service... "
     # shellcheck disable=SC2010
-    if [ "$(ls -l /etc/rc.d | grep ../init.d/aria2)" = "" ]; then
+    if [ "$(ls -l /etc/rc.d | grep -F "../init.d/aria2")" = "" ]; then
       showoff
       print_already
       proceed=true
@@ -890,7 +890,7 @@ setup_aria2() {
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Setting up aria2 daemon startup config... "
-    if [ "$(grep "sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf" /etc/rc.local 2>/dev/null)" != "" ]; then
+    if [ "$(grep -F "sudo -u user aria2c --conf-path=/home/user/.aria2/aria2.conf" /etc/rc.local 2>/dev/null)" != "" ]; then
       showoff
       print_already
       ARIA2_OK=true
@@ -921,7 +921,7 @@ setup_aria2_scheduling() {
       proceed=false
       printf "   \e[34m•\e[0m Enabling autostart of cron service... "
       # shellcheck disable=SC2010
-      if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
+      if [ "$(ls -l /etc/rc.d | grep -F "../init.d/cron")" != "" ]; then
         showoff
         print_already
         proceed=true
@@ -934,7 +934,7 @@ setup_aria2_scheduling() {
 
     if [ $proceed = true ]; then
       printf "   \e[34m•\e[0m Adding aria2 scheduling tasks to crontab... "
-      if [ "$(crontab -l 2>/dev/null | grep "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
+      if [ "$(crontab -l 2>/dev/null | grep -F "curl http://127.0.0.1:6800/jsonrpc" 2>/dev/null)" != "" ]; then
         showoff
         print_already
       else
@@ -976,7 +976,7 @@ setup_extroot() {
   printf " \e[34m•\e[0m Setup Extroot:\n"
   proceed=false
   printf "   \e[34m•\e[0m Checking if USB is mounted... "
-  if [ "$(mount | grep "/mnt/usb1")" = "" ]; then
+  if [ "$(mount | grep -F "/mnt/usb1")" = "" ]; then
     wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     showoff
     assert_status
@@ -1004,7 +1004,7 @@ setup_extroot() {
 
   if [ $proceed = true ]; then
     printf "   \e[34m•\e[0m Setting up USB to be mounted at /overlay... "
-    if [ "$(grep "option target '/mnt/usb1'" /etc/config/fstab)" != "" ]; then
+    if [ "$(grep -F "option target '/mnt/usb1'" /etc/config/fstab)" != "" ]; then
       showoff
       print_already
     else
@@ -1020,7 +1020,7 @@ setup_extroot() {
 install_htop() {
   printf " \e[34m•\e[0m Install Htop:\n"
   printf "   \e[34m•\e[0m Installing htop... "
-  if [ "$(opkg list-installed 2>/dev/null | grep "htop")" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "htop")" != "" ]; then
     showoff
     print_already
   elif [ -f /var/lock/opkg.lock ]; then
@@ -1039,7 +1039,7 @@ install_htop() {
 install_screen() {
   printf " \e[34m•\e[0m Install Screen:\n"
   printf "   \e[34m•\e[0m Installing screen... "
-  if [ "$(opkg list-installed 2>/dev/null | grep "screen")" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "screen")" != "" ]; then
     showoff
     print_already
   elif [ -f /var/lock/opkg.lock ]; then
@@ -1059,7 +1059,7 @@ setup_thingspeak_ping() {
   printf " \e[34m•\e[0m Setup ThingSpeak Ping:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing curl... "
-  if [ "$(opkg list-installed 2>/dev/null | grep "curl")" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "curl")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -1092,7 +1092,7 @@ setup_thingspeak_ping() {
     proceed=false
     printf "   \e[34m•\e[0m Enabling autostart of cron service... "
     # shellcheck disable=SC2010
-    if [ "$(ls -l /etc/rc.d | grep ../init.d/cron)" != "" ]; then
+    if [ "$(ls -l /etc/rc.d | grep -F "../init.d/cron")" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -1106,7 +1106,7 @@ setup_thingspeak_ping() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Adding thingspeak ping task to crontab... "
-    if [ "$(crontab -l | grep "curl \"https://api.thingspeak.com/update" 2>/dev/null)" != "" ]; then
+    if [ "$(crontab -l | grep -F "curl \"https://api.thingspeak.com/update" 2>/dev/null)" != "" ]; then
       showoff
       print_already
     else
@@ -1137,7 +1137,7 @@ setup_bash_default() {
   printf " \e[34m•\e[0m Install and Setup Bash as Default Shell:\n"
   proceed=false
   printf "   \e[34m•\e[0m Installing bash... "
-  if [ "$(opkg list-installed 2>/dev/null | grep bash)" != "" ]; then
+  if [ "$(opkg list-installed 2>/dev/null | grep -F "bash")" != "" ]; then
     showoff
     print_already
     proceed=true
@@ -1220,7 +1220,7 @@ setup_external_git() {
   git_download_required=true
   proceed=false
   printf "   \e[34m•\e[0m Checking if USB is mounted... "
-  if [ "$(mount | grep "/mnt/usb1")" = "" ]; then
+  if [ "$(mount | grep -F "/mnt/usb1")" = "" ]; then
     wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     showoff
     assert_status
@@ -1460,7 +1460,7 @@ setup_external_git() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up external git for future sessions... "
-    if [ "$(grep "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
+    if [ "$(grep -F "/mnt/usb1/.data/git/usr/bin" /etc/profile)" != "" ]; then
       showoff
       print_already
       proceed=true
@@ -1474,7 +1474,7 @@ setup_external_git() {
   if [ $proceed = true ]; then
     proceed=false
     printf "   \e[34m•\e[0m Setting up external git for current session... "
-    if [ "$(echo "$PATH" | grep "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
+    if [ "$(echo "$PATH" | grep -F "/mnt/usb1/.data/git/usr/bin")" != "" ]; then
       showoff
       print_already
       proceed=true
