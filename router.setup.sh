@@ -1178,8 +1178,11 @@ setup_hostname() {
     status_set=$?
     uci commit > /dev/null 2>&1
     status_commit=$?
+    /etc/init.d/system reload 2>&1
+    status_reload=$?
     if [ $status_set != 0 ] \
-    || [ $status_commit != 0 ]; then
+    || [ $status_commit != 0 ] \
+    || [ $status_reload != 0 ]; then
       wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     else
       echo "" >/dev/null 2>&1 # imitating return code zero
