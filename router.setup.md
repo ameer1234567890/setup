@@ -339,6 +339,7 @@ on-download-complete=/home/user/.aria2/hook-complete.sh
 on-bt-download-complete=/home/user/.aria2/hook-complete.sh
 on-download-error=/home/user/.aria2/hook-error.sh
 max-overall-download-limit=40K
+max-concurrent-downloads=1
 ```
 * `sudo -u user mkdir /mnt/usb1/aria2`
 * `/etc/init.d/aria2 disable`

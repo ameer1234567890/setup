@@ -784,7 +784,7 @@ setup_aria2() {
       print_already
       proceed=true
     else
-      printf "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/home/user/.aria2/session\ninput-file=/home/user/.aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=%s\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/home/user/.aria2/hook-complete.sh\non-bt-download-complete=/home/user/.aria2/hook-complete.sh\non-download-error=/home/user/.aria2/hook-error.sh\nmax-overall-download-limit=40K\n" "$ARIA2_RPC_TOKEN" 2>/dev/null | sudo -u user tee /home/user/.aria2/aria2.conf >/dev/null 2>&1
+      printf "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/home/user/.aria2/session\ninput-file=/home/user/.aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=%s\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/home/user/.aria2/hook-complete.sh\non-bt-download-complete=/home/user/.aria2/hook-complete.sh\non-download-error=/home/user/.aria2/hook-error.sh\nmax-overall-download-limit=40K\nmax-concurrent-downloads=1\n" "$ARIA2_RPC_TOKEN" 2>/dev/null | sudo -u user tee /home/user/.aria2/aria2.conf >/dev/null 2>&1
       showoff
       assert_status && proceed=true
     fi
