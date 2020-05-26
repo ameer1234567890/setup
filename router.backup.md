@@ -5,6 +5,7 @@
 /etc/rsyncd.conf
 /etc/init.d/serveo
 /etc/init.d/gadhamoo
+/bin/bash
 ```
 
 #### Commands to run (These commands need to be run after upgrading)
