@@ -350,7 +350,7 @@ setup_samba() {
       print_already
       proceed=true
     else
-      printf "config samba\n\toption workgroup 'WORKGROUP'\n\toption homes '1'\n\toption name 'miwifimini'\n\toption description 'miwifimini'\n\nconfig 'sambashare'\n\toption 'name' 'usb1'\n\toption 'path' '/mnt/usb1'\n\toption 'users' 'user'\n\toption 'guest_ok' 'yes'\n\toption 'create_mask' '0644'\n\toption 'dir_mask' '0777'\n\toption 'read_only' 'no'\n" > /etc/config/samba 2>/dev/null
+      printf "config samba\n\toption workgroup 'WORKGROUP'\n\toption homes '1'\n\toption name 'nas1'\n\toption description 'nas1'\n\nconfig 'sambashare'\n\toption 'name' 'usb1'\n\toption 'path' '/mnt/usb1'\n\toption 'users' 'user'\n\toption 'guest_ok' 'yes'\n\toption 'create_mask' '0644'\n\toption 'dir_mask' '0777'\n\toption 'read_only' 'no'\n" > /etc/config/samba 2>/dev/null
       showoff
       assert_status && proceed=true
       samba_restart_required=true
@@ -1170,11 +1170,11 @@ setup_bash_default() {
 setup_hostname() {
   printf " \e[34m•\e[0m Change Hostname:\n"
   printf "   \e[34m•\e[0m Changing hostname... "
-  if [ "$(uci get system.@system[0].hostname 2>/dev/null)" = "miwifimini" ]; then
+  if [ "$(uci get system.@system[0].hostname 2>/dev/null)" = "nas1" ]; then
     showoff
     print_already
   else
-    uci set system.@system[0].hostname='miwifimini' > /dev/null 2>&1
+    uci set system.@system[0].hostname='nas1' > /dev/null 2>&1
     status_set=$?
     uci commit > /dev/null 2>&1
     status_commit=$?
