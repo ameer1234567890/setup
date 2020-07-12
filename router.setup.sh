@@ -1234,8 +1234,8 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
-    if [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}')" != "" ] && 
-       [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}')" != "$(git --version 2>/dev/null | awk '{print $3}')" ]; then
+    if [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}' | cut -d - -f 1)" != "" ] && 
+       [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}' | cut -d - -f 1)" != "$(git --version 2>/dev/null | awk '{print $3}')" ]; then
       printf "   \e[34m•\e[0m Removing old version of git... "
       rm -rf /mnt/usb1/.data/git 2>/dev/null &
       bg_pid=$!
