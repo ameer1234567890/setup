@@ -91,6 +91,7 @@ assert_status() {
 print_already() { printf "\e[36mAlready Done!\e[0m\n"; }
 print_opkg_busy() { printf "\e[91mopkg Busy!\e[0m\n"; }
 print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
+print_required() { printf "\e[32mRequired!\e[0m\n"; }
 
 
 showoff() {
@@ -323,24 +324,21 @@ setup_samba() {
   printf " \e[34m•\e[0m Install and Startup Samba:\n"
   proceed=true
   samba_restart_required=false
-  packages="samba36-server luci-app-samba"
-  for package in $packages; do
-    printf "   \e[34m•\e[0m Installing required packages for samba (%s)... " "$package"
-    if [ "$(opkg list-installed 2>/dev/null | grep -F "$package")" != "" ]; then
-      showoff
-      print_already
-      proceed=true
-    elif [ -f /var/lock/opkg.lock ]; then
-      showoff
-      print_opkg_busy
-    else
-      opkg install "$package" >/dev/null 2>&1 &
-      bg_pid=$!
-      show_progress $bg_pid
-      wait $bg_pid
-      assert_status && proceed=true
-    fi
-  done
+  printf "   \e[34m•\e[0m Installing samba36-server... "
+  if [ "$(opkg list-installed 2>/dev/null | grep -F samba36-server)" != "" ]; then
+    showoff
+    print_already
+    proceed=true
+  elif [ -f /var/lock/opkg.lock ]; then
+    showoff
+    print_opkg_busy
+  else
+    opkg install samba36-server >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status && proceed=true
+  fi
 
   if [ $proceed = true ]; then
     proceed=false
@@ -1189,7 +1187,6 @@ setup_hostname() {
     fi
     showoff
     assert_status
-    REBOOT_REQUIRED=true
   fi
 }
 
@@ -1197,23 +1194,28 @@ setup_hostname() {
 setup_timezone() {
   printf " \e[34m•\e[0m Change Timezone:\n"
   printf "   \e[34m•\e[0m Changing timezone... "
-  if [ "$(uci get system.@system[0].timezone 2>/dev/null)" = "<+05>-5" ]; then
+  if [ "$(uci get system.@system[0].timezone 2>/dev/null)" = "PKT-5" ]; then
     showoff
     print_already
   else
-    uci set system.@system[0].timezone='<+05>-5' > /dev/null 2>&1
-    status_set=$?
+    uci set system.@system[0].timezone='PKT-5' > /dev/null 2>&1
+    status_set_one=$?
+    uci set system.@system[0].zonename='Asia/Karachi' > /dev/null 2>&1
+    status_set_two=$?
     uci commit > /dev/null 2>&1
     status_commit=$?
-    if [ $status_set != 0 ] \
-    || [ $status_commit != 0 ]; then
+    /etc/init.d/system reload 2>&1
+    status_reload=$?
+    if [ $status_set_one != 0 ] \
+    || [ $status_set_two != 0 ] \
+    || [ $status_commit != 0 ] \
+    || [ $status_reload != 0 ]; then
       wrong_cmd >/dev/null 2>&1 # imitating a non-zero return
     else
       echo "" >/dev/null 2>&1 # imitating return code zero
     fi
     showoff
     assert_status
-    REBOOT_REQUIRED=true
   fi
 }
 
@@ -1234,8 +1236,11 @@ setup_external_git() {
   fi
 
   if [ $proceed = true ]; then
-    if [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}' | cut -d - -f 1)" != "" ] && 
-       [ "$(opkg info git 2>/dev/null | awk '/Version/ {print $2}' | cut -d - -f 1)" != "$(git --version 2>/dev/null | awk '{print $3}')" ]; then
+    printf "   \e[34m•\e[0m Checking if updating / installing git is required... "
+    repo_git_v="$(opkg info git 2>/dev/null | awk '/Version/ {print $2}' | cut -d - -f 1)"
+    if [ "$repo_git_v" != "" ] && 
+       [ "$repo_git_v" != "$(git --version 2>/dev/null | awk '{print $3}')" ]; then
+      print_required
       printf "   \e[34m•\e[0m Removing old version of git... "
       rm -rf /mnt/usb1/.data/git 2>/dev/null &
       bg_pid=$!
@@ -1243,6 +1248,8 @@ setup_external_git() {
       wait $bg_pid
       assert_status && proceed=true
       git_download_required=true
+    else
+      print_not_required
     fi
   fi
 
@@ -1349,7 +1356,7 @@ setup_external_git() {
       proceed=true
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git_${git_version}_$openwrt_arch.ipk"
-      wget -q -O "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" "$url" 2>dev.null &
+      wget -q -O "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" "$url" 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1366,7 +1373,7 @@ setup_external_git() {
       proceed=true
     else
       url="http://downloads.openwrt.org/releases/$openwrt_version/packages/$openwrt_arch/packages/git-http_${git_http_version}_$openwrt_arch.ipk"
-      wget -q -O "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" "$url" 2>dev.null &
+      wget -q -O "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" "$url" 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1382,7 +1389,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz 2>dev.null &
+      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" ./data.tar.gz 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1398,7 +1405,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>dev.null &
+      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1414,7 +1421,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      rm "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>dev.null
+      rm "/mnt/usb1/.data/git/git_${git_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>/dev/null
       assert_status && proceed=true
     fi
   fi
@@ -1427,7 +1434,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz 2>dev.null &
+      tar -C /mnt/usb1/.data/git -zxf "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" ./data.tar.gz 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1443,7 +1450,7 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>dev.null &
+      tar -C /mnt/usb1/.data/git -zxf /mnt/usb1/.data/git/data.tar.gz 2>/dev/null &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1459,14 +1466,14 @@ setup_external_git() {
       print_not_required
       proceed=true
     else
-      rm "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>dev.null
+      rm "/mnt/usb1/.data/git/git-http_${git_http_version}_$openwrt_arch.ipk" /mnt/usb1/.data/git/data.tar.gz 2>/dev/null
       assert_status && proceed=true
     fi
   fi
 
   if [ $proceed = false ]; then
     printf "   \e[34m•\e[0m Cleaning up incomplete git files... "
-    rm -rf /mnt/usb1/.data/git 2>dev.null &
+    rm -rf /mnt/usb1/.data/git 2>/dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -1499,6 +1506,20 @@ setup_external_git() {
       showoff
       printf "\e[33mNot supported! Please set manually by entering \"export PATH=/mnt/usb1/.data/git/usr/lib/git-core:/mnt/usb1/.data/git/usr/bin:\$PATH\" in the terminal!\e[0m\n"
       proceed=true
+    fi
+  fi
+
+  if [ $proceed = true ]; then
+    proceed=false
+    printf "   \e[34m•\e[0m Creating git templates directory... "
+    if [ -d "/usr/share/git-core/templates" ]; then
+      showoff
+      print_already
+      proceed=true
+    else
+      mkdir -p /usr/share/git-core/templates 2>/dev/null
+      showoff
+      assert_status && proceed=true
     fi
   fi
 
