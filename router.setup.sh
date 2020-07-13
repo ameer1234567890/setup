@@ -782,7 +782,7 @@ setup_aria2() {
       print_already
       proceed=true
     else
-      printf "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/home/user/.aria2/session\ninput-file=/home/user/.aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=%s\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/home/user/.aria2/hook-complete.sh\non-bt-download-complete=/home/user/.aria2/hook-complete.sh\non-download-error=/home/user/.aria2/hook-error.sh\nmax-overall-download-limit=40K\nmax-concurrent-downloads=1\n" "$ARIA2_RPC_TOKEN" 2>/dev/null | sudo -u user tee /home/user/.aria2/aria2.conf >/dev/null 2>&1
+      printf "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/home/user/.aria2/session\ninput-file=/home/user/.aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=%s\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/home/user/.aria2/hook-complete.sh\non-bt-download-complete=/home/user/.aria2/hook-complete.sh\non-download-error=/home/user/.aria2/hook-error.sh\nmax-overall-download-limit=20K\nmax-concurrent-downloads=1\n" "$ARIA2_RPC_TOKEN" 2>/dev/null | sudo -u user tee /home/user/.aria2/aria2.conf >/dev/null 2>&1
       showoff
       assert_status && proceed=true
     fi
@@ -940,7 +940,7 @@ setup_aria2_scheduling() {
         status_list=$?
         echo "0 1 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"0\"}]}'" >> crontab.txt
         status_one=$?
-        echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"40K\"}]}'" >> crontab.txt
+        echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"20K\"}]}'" >> crontab.txt
         status_two=$?
         echo "0 0 1 * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.pauseAll\", \"params\":[\"token:$ARIA2_RPC_TOKEN\"]}'" >> crontab.txt
         status_three=$?
