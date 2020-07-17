@@ -172,11 +172,11 @@ rm opkgstatus.txt >/dev/null 2>&1
 notify_on_startup() {
   printf " \e[34m•\e[0m Notify on Startup:\n"
   printf "   \e[34m•\e[0m Setting up notification via IFTTT, on router startup... "
-  if [ "$(grep -F "sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
+  if [ "$(grep -F "sleep 14 && wget -O - http://maker.ifttt.com/trigger/nas1_reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
     showoff
     print_already
   else
-    sed -i -e '$i \sleep 14 && wget -O - http://maker.ifttt.com/trigger/router-reboot/with/key/'"$IFTTT_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
+    sed -i -e '$i \sleep 14 && wget -O - http://maker.ifttt.com/trigger/nas1_reboot/with/key/'"$IFTTT_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
     showoff
     assert_status
   fi
