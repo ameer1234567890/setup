@@ -52,7 +52,7 @@ help() {
   echo ""
   echo "Run my customized setup process on OpenWrt"
   echo ""
-  printf "\t-k KEY\t\tIFTTT webhook key\n"
+  printf "\t-k KEY\t\tSlack webhook key\n"
   printf "\t-t TOKEN\tRPC token to be used in aria2\n"
   printf "\t-s API_KEY\tThingSpeak API key\n"
   printf "\t-h\t\tshow help message and exit\n"
@@ -63,7 +63,7 @@ help() {
 
 while getopts "k:t:s:h" opt; do
   case "$opt" in
-    k ) IFTTT_KEY="$OPTARG" ;;
+    k ) SLACK_WEBHOOK_KEY="$OPTARG" ;;
     t ) ARIA2_RPC_TOKEN="$OPTARG" ;;
     s ) THINGSPEAK_API_KEY="$OPTARG" ;;
     h ) help ;;
@@ -72,7 +72,7 @@ while getopts "k:t:s:h" opt; do
 done
 
 
-if [ -z "$IFTTT_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ]; then
+if [ -z "$SLACK_WEBHOOK_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ]; then
   echo "Some or all of the parameters are empty"
   help
 fi
@@ -171,12 +171,12 @@ rm opkgstatus.txt >/dev/null 2>&1
 
 notify_on_startup() {
   printf " \e[34m•\e[0m Notify on Startup:\n"
-  printf "   \e[34m•\e[0m Setting up notification via IFTTT, on router startup... "
-  if [ "$(grep -F "sleep 14 && wget -O - http://maker.ifttt.com/trigger/nas1_reboot/with/key/" /etc/rc.local 2>/dev/null)" != "" ]; then
+  printf "   \e[34m•\e[0m Setting up notification via Slack, on router startup... "
+  if [ "$(grep -F "https://hooks.slack.com/services/" /etc/rc.local 2>/dev/null)" != "" ]; then
     showoff
     print_already
   else
-    sed -i -e '$i \sleep 14 && wget -O - http://maker.ifttt.com/trigger/nas1_reboot/with/key/'"$IFTTT_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
+    sed -i -e '$i \sleep 14 && curl -X POST --data-urlencode "payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\"NAS1 rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}" https://hooks.slack.com/services/'"$SLACK_WEBHOOK_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
     showoff
     assert_status
   fi
@@ -796,7 +796,7 @@ setup_aria2() {
       print_already
       proceed=true
     else
-      printf "#!/bin/sh\ncurl -X POST -H \"Content-Type: application/json\" -d '{\"value1\":\"'\$3'\"}' https://maker.ifttt.com/trigger/aria2_complete/with/key/%s\n" "$IFTTT_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-complete.sh >/dev/null 2>&1
+      printf "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/%s\n" "$SLACK_WEBHOOK_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-complete.sh >/dev/null 2>&1
       showoff
       assert_status && proceed=true
     fi
@@ -824,7 +824,7 @@ setup_aria2() {
       print_already
       proceed=true
     else
-      printf "#!/bin/sh\ncurl -X POST -H \"Content-Type: application/json\" -d '{\"value1\":\"'\$3'\"}' https://maker.ifttt.com/trigger/aria2_error/with/key/%s\n" "$IFTTT_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-error.sh >/dev/null 2>&1
+      printf "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/%s\n" "$SLACK_WEBHOOK_KEY" 2>/dev/null | sudo -u user tee /home/user/.aria2/hook-error.sh >/dev/null 2>&1
       showoff
       assert_status && proceed=true
     fi
