@@ -94,3 +94,19 @@ Match address 192.168.100.0/24
     PasswordAuthentication yes
 ```
 * Run `sudo service ssh reload`
+
+#### Install Plex Media Server
+```
+echo deb https://downloads.plex.tv/repo/deb public main | sudo tee /etc/apt/sources.list.d/plexmediaserver.list
+curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
+sudo apt update
+sudo apt install plexmediaserver
+```
+* Setup server at `<your servers IP address>:32400/web`
+* Note: Use LAN IP address, instead of hostname, for initial setup, since otherwise Plex will assume that you are accessing from an external network.
+
+#### Cache pip wheels
+```
+pip wheel --wheel-dir=/mnt/usb2/.data/pip cssselect==0.9.1
+pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
+```
