@@ -12,8 +12,12 @@ These are sets of setup instrutions for some of my devices
 | Service | Location | Software | Frequency |
 |---------|----------|----------|-----------|
 | Google Drive | NAS1 - USB1 | rclone | Manual |
-| Google Photos | NAS1 - USB1 | multcloud | Auto |
 | Google Keep | Laptop | Google Takeout | Manual |
+| Google Calendar | Laptop | Google Takeout | Manual |
+| Google Contacts | Laptop | Google Takeout | Manual |
+| Chrome Bookmarks | Laptop | Google Takeout | Manual |
+| Google Maps Places | Laptop | Google Takeout | Manual |
+| Google Photos | NAS1 - USB1 | multcloud | Auto |
 | Gmail | Laptop | Google Takeout | Manual |
 | Ameer Laptop | NAS1 - USB1 | rsync | Auto |
 | Aani Laptop | None | None | None |
