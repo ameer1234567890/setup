@@ -110,3 +110,16 @@ sudo apt install plexmediaserver
 pip wheel --wheel-dir=/mnt/usb2/.data/pip cssselect==0.9.1
 pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 ```
+
+#### Disable WiFi if wired
+* Add below to `/etc/rc.local`
+```
+# Disable WiFi if wired.
+logger "Checking Network interfaces..."
+if ethtool eth0 | egrep "Link.*yes" && ifconfig eth0 | grep "inet"; then
+  logger 'Disabling WiFi...'
+  ifconfig wlan0 down
+else
+  logger 'WiFi is still enabled: Ethernet is down or ethtool is not installed.'
+fi
+```
