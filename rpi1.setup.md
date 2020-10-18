@@ -112,7 +112,7 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 ```
 
 #### Disable WiFi if wired
-* Add below to `/etc/rc.local`
+* Add below to `/etc/rc.local`, replacing interface names as required
 ```
 # Disable WiFi if wired.
 logger "Checking Network interfaces..."
