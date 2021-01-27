@@ -123,3 +123,19 @@ else
   logger 'WiFi is still enabled: Ethernet is down or ethtool is not installed.'
 fi
 ```
+
+#### Password-less Samba Shares
+* Add below to `/etc/rc.local`, replacing interface names as required
+```
+[usb2]
+    path = /mnt/usb2
+    read only = no
+    public = yes
+    writable = yes
+    browsable = yes
+    guest ok = yes
+    create mask = 0755
+    directory mask = 0777
+    force user = pi
+    force group = pi
+```
