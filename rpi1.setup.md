@@ -125,7 +125,7 @@ fi
 ```
 
 #### Password-less Samba Shares
-* Add below to `/etc/rc.local`, replacing interface names as required
+* Add below to `/etc/samba/smb.conf`
 ```
 [usb2]
     path = /mnt/usb2
