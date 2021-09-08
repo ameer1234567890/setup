@@ -108,6 +108,7 @@ Listen 0.0.0.0:631
 * Change `JobPrivateValues default` to `JobPrivateValues none`
 
 #### Persist CUPS job status
+* Set mount options `fmask=000,dmask=000` in `/etc/fstab`
 * `sudo cp -r /var/spool/cups /boot/cups`
 * `sudo rm -rf /var/spool/cups`
 * `sudo ln -s /boot/cups /var/spool`
