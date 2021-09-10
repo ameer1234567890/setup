@@ -112,3 +112,15 @@ Listen 0.0.0.0:631
 * `sudo cp -r /var/spool/cups /boot/cups`
 * `sudo rm -rf /var/spool/cups`
 * `sudo ln -s /boot/cups /var/spool`
+
+#### Setup Samba Print Service
+* Add below to `/etc/samba/smb.conf` under `[global]`
+```
+rpc_server:spoolss = external
+rpc_daemon:spoolssd = fork
+printing = CUPS
+```
+* `sudo mkdir -p /var/spool/samba/`
+* `sudo chmod 1777 /var/spool/samba/`
+* `sudo smbcontrol all reload-config`
+* `sudo systemctl restart smbd.service`
