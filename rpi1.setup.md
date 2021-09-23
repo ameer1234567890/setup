@@ -124,3 +124,10 @@ printing = CUPS
 * `sudo chmod 1777 /var/spool/samba/`
 * `sudo smbcontrol all reload-config`
 * `sudo systemctl restart smbd.service`
+
+#### Setup remote rsyslog server logging
+* Add below to `/etc/rsyslog.conf`
+```
+*.* @ameerpc.lan
+```
+* `sudo systemctl restart rsyslog.service`
