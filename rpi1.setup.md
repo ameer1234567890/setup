@@ -81,6 +81,7 @@ fi
 ServerAlias *
 Listen 0.0.0.0:631
 ```
+* `sudo /etc/init.d/cups restart`
 * Access CUPS webui at `http://127.0.0.1:631`
 
 #### Add cups printer in Windows
@@ -106,12 +107,14 @@ Listen 0.0.0.0:631
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
 * Change `JobPrivateValues default` to `JobPrivateValues none`
+* `sudo /etc/init.d/cups restart`
 
 #### Persist CUPS job status
-* Set mount options `fmask=000,dmask=000` in `/etc/fstab`
+* Set mount options for `/boot` to add `fmask=000,dmask=000` in `/etc/fstab`
 * `sudo cp -r /var/spool/cups /boot/cups`
 * `sudo rm -rf /var/spool/cups`
 * `sudo ln -s /boot/cups /var/spool`
+* Reboot
 
 #### Setup Samba Print Service
 * Add below to `/etc/samba/smb.conf` under `[global]`
