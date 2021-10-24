@@ -15,7 +15,7 @@
 
 #### Install & Setup apt-cacher-ng
 * `sudo apt install apt-cacher-ng`
-* Add `Acquire::http::Proxy "http://rpi1:3142";` to `/etc/apt/apt.conf.d/00proxy`
+* Add `Acquire::http::Proxy "http://nas2.lan:3142";` to `/etc/apt/apt.conf.d/00proxy`
 
 
 #### Install pip
@@ -128,6 +128,6 @@ printing = CUPS
 #### Setup remote rsyslog server logging
 * Add below to `/etc/rsyslog.conf`
 ```
-*.* @ameerpc.lan
+*.* @syslogger.lan
 ```
 * `sudo systemctl restart rsyslog.service`
