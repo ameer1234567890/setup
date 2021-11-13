@@ -56,6 +56,26 @@ else
 fi
 ```
 
+#### Setup rsync
+* `sudo apt install rsync`
+* Add below to `/etc/rsyncd.conf`
+```
+pid file = /var/run/rsyncd.pid
+log file = /var/log/rsyncd.log
+lock file = /var/run/rsync.lock
+use chroot = no
+uid = pi
+gid = pi
+read only = no
+
+[usb1]
+path = /mnt/usb1
+comment = usb1
+list = yes
+hosts allow = 192.168.100.1/24
+```
+* `sudo systemctl restart rsync.service`
+
 #### Password-less Samba Shares
 * Add below to `/etc/samba/smb.conf`
 ```
@@ -70,6 +90,15 @@ fi
     directory mask = 0777
     force user = pi
     force group = pi
+```
+* `sudo systemctl restart smbd.service`
+
+#### Install & Setup aria2
+* `sudo apt install aria2 lighttpd`
+* `sudo ln -s /mnt/usb1/.data/webui-aria2/docs /var/www/html/webui-aria2`
+* Add below to `/etc/rc.local`
+```
+/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf &
 ```
 
 #### Install & Setup CUPS Printer
