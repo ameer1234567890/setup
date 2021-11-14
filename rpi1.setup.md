@@ -113,25 +113,8 @@ Listen 0.0.0.0:631
 * `sudo /etc/init.d/cups restart`
 * Access CUPS webui at `http://127.0.0.1:631`
 
-#### Add cups printer in Windows
-* Go to printers and scanners
-* Click Add printer or scanner
-* Wait for a while (about 15 seconds)
-* Click `The printer that I want is not listed`
-* In the dialog box, select `Select a shared printer by name`
-* Enter `http://127.0.0.1:631/printers/HP_Deskjet_2520_series` in the textbox (replace printer name with the name setup in CUPS)
-* Click Next
-
 #### Install HPLIP (Support for HP Printers)
 * `sudo apt install hplip`
-
-#### Install SANE scanner backend
-* `sudo apt install sane sane-utils`
-* Run `scanimage -L` and see if the scanner is shown in the output
-
-#### Install scanservjs frontend for SANE
-* `sudo apt install nodejs npm imagemagick tesseract-ocr`
-* Go to `https://github.com/sbs20/scanservjs` and follow installation instructions
 
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
@@ -156,6 +139,23 @@ printing = CUPS
 * `sudo chmod 1777 /var/spool/samba/`
 * `sudo smbcontrol all reload-config`
 * `sudo systemctl restart smbd.service`
+
+#### Add cups printer in Windows
+* Go to printers and scanners
+* Click Add printer or scanner
+* Wait for a while (about 15 seconds)
+* Click `The printer that I want is not listed`
+* In the dialog box, select `Select a shared printer by name`
+* Enter `http://127.0.0.1:631/printers/HP_Deskjet_2520_series` in the textbox (replace printer name with the name setup in CUPS)
+* Click Next
+
+#### Install SANE scanner backend
+* `sudo apt install sane sane-utils`
+* Run `scanimage -L` and see if the scanner is shown in the output
+
+#### Install scanservjs frontend for SANE
+* `sudo apt install nodejs npm imagemagick tesseract-ocr`
+* Go to `https://github.com/sbs20/scanservjs` and follow installation instructions
 
 #### Setup remote rsyslog server logging
 * Add below to `/etc/rsyslog.conf`
