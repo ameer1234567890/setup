@@ -17,6 +17,18 @@
 * `sudo apt install apt-cacher-ng`
 * Add `Acquire::http::Proxy "http://nas2.lan:3142";` to `/etc/apt/apt.conf.d/00proxy`
 
+#### Configure apt cache location
+* Add below to `/etc/apt/apt.conf`
+```
+Dir::Cache /mnt/usb2/.data/apt-cache;
+```
+
+#### Configure apt-cacher-ng cache location
+* Change below in `/etc/apt-cacher-ng/acng.conf`
+```
+CacheDir: /mnt/usb2/.data/apt-cacher-ng/cache
+LogDir: /mnt/usb2/.data/apt-cacher-ng/log
+```
 
 #### Install pip
 * `wget https://bootstrap.pypa.io/get-pip.py`
