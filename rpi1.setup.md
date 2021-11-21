@@ -55,6 +55,35 @@ pip wheel --wheel-dir=/mnt/usb2/.data/pip cssselect==0.9.1
 pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 ```
 
+#### Add reboot notification
+* Add below to `/etc/rc.local`, replacing API key as required
+```
+sleep 14 && curl -X POST --data-urlencode "payload={\"channel\": \"#general\", \"username\": \"NotifyBot\", \"text\": \"NAS1 rebooted.\", \"icon_emoji\": \":slack:\"}" https://hooks.slack.com/services/XXXXXXX/XXXXXX/XXXXXXXXXXXXXXXXXXX
+```
+
+#### Add heartbeat
+* Add below to `crontab -e`, replacing API key as required
+```
+* * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(vcgencmd measure_temp | cut -d = -f 2 | cut -d \' -f 1)"
+```
+
+#### Google Drive backup using rclone
+* `sudo apt install rclone`
+* `cp /mnt/usb1/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf`
+* Add below to `crontab -e`
+```
+0 2 * * * /mnt/usb1/Ameer/backup-gdrive-ameer.sh
+4 2 * * * /mnt/usb1/Ameer/backup-gdriveshared-ameer.sh
+7 2 * * * /mnt/usb1/Aani/backup-gdrive-aani.sh
+```
+
+#### git backup
+* `sudo apt install git`
+* Add below to `crontab -e`
+```
+0 3 * * * /mnt/usb1/Ameer/gitbackup/gitbackup.sh
+```
+
 #### Disable WiFi if wired
 * Add below to `/etc/rc.local`, replacing interface names as required
 ```
