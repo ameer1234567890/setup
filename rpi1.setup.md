@@ -157,6 +157,9 @@ Listen 0.0.0.0:631
 #### Install HPLIP (Support for HP Printers)
 * `sudo apt install hplip`
 
+#### Install GutenPrint (Support for Canon Printers)
+* `sudo apt install printer-driver-gutenprint`
+
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
 * Change `JobPrivateValues default` to `JobPrivateValues none`
@@ -187,7 +190,7 @@ printing = CUPS
 * Wait for a while (about 15 seconds)
 * Click `The printer that I want is not listed`
 * In the dialog box, select `Select a shared printer by name`
-* Enter `http://127.0.0.1:631/printers/HP_Deskjet_2520_series` in the textbox (replace printer name with the name setup in CUPS)
+* Enter `http://printer.lan:631/printers/HP_Deskjet_2528` in the textbox (replace printer name with the name setup in CUPS)
 * Click Next
 
 #### Install SANE scanner backend
