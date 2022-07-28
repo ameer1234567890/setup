@@ -137,10 +137,27 @@ hosts allow = 192.168.100.1/24
 #### Install & Setup aria2
 * `sudo apt install aria2 lighttpd`
 * `sudo ln -s /mnt/usb1/.data/webui-aria2/docs /var/www/html/webui-aria2`
-* Add below to `/etc/rc.local`
+* Add below to `/lib/systemd/system/aria2.service`
 ```
-/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf &
+[Unit]
+Description=a lightweight multi-protocol & multi-source command-line download utility
+ConditionPathExists=/mnt/usb1/.data/aria2/aria2.conf
+ConditionFileIsExecutable=/usr/bin/aria2c
+After=network.target
+Documentation=man:aria2c(1)
+
+[Service]
+Type=forking
+User=pi
+ExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
 ```
+* `sudo systemctl enable aria2.service`
+* `sudo systemctl start aria2.service`
 
 #### Install & Setup CUPS Printer
 * `sudo apt install cups`
