@@ -149,6 +149,7 @@ Documentation=man:aria2c(1)
 [Service]
 Type=forking
 User=pi
+ExecStartPre=/bin/sleep 10
 ExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf
 Restart=always
 RestartSec=1
