@@ -163,7 +163,7 @@ WantedBy=multi-user.target
 #### Enable swap support in read-only mode
 * `sudo dphys-swapfile swapoff`
 * Change `CONF_SWAPSIZE=100` in `/etc/dphys-swapfile` to `CONF_SWAPSIZE=50`
-* Change `CONF_SWAPFILE` in `/etc/dphys-swapfile` to `/boot/swap`
+* Uncomment and change `CONF_SWAPFILE` in `/etc/dphys-swapfile` to `/boot/swap`
 * `sudo dphys-swapfile setup`
 * `sudo dphys-swapfile swapon`
 
