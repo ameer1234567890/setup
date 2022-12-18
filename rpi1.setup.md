@@ -160,6 +160,13 @@ WantedBy=multi-user.target
 * `sudo systemctl enable aria2.service`
 * `sudo systemctl start aria2.service`
 
+#### Enable swap support in read-only mode
+* `sudo dphys-swapfile swapoff`
+* Change `CONF_SWAPSIZE=100` in `/etc/dphys-swapfile` to `CONF_SWAPSIZE=50`
+* Change `CONF_SWAPFILE` in `/etc/dphys-swapfile` to `/boot/swap`
+* `sudo dphys-swapfile setup`
+* `sudo dphys-swapfile swapon`
+
 #### Install & Setup CUPS Printer
 * `sudo apt install cups`
 * `sudo usermod -a -G lpadmin pi`
