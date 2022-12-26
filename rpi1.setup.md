@@ -195,6 +195,9 @@ Listen 0.0.0.0:631
 #### Install splix (Support for Samsung Printers)
 * `sudo apt install printer-driver-splix`
 
+#### Install foo2zjs (Support for ZjStream-based Printers)
+* `sudo apt install printer-driver-foo2zjs`
+
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
 * Change `JobPrivateValues default` to `JobPrivateValues none`
