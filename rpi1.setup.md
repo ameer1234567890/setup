@@ -192,6 +192,9 @@ Listen 0.0.0.0:631
 #### Install escpr (Support for Epson Printers)
 * `sudo apt install printer-driver-escpr`
 
+#### Install splix (Support for Samsung Printers)
+* `sudo apt install printer-driver-splix`
+
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
 * Change `JobPrivateValues default` to `JobPrivateValues none`
