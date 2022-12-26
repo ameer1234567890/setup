@@ -16,6 +16,7 @@
 #### Install & Setup apt-cacher-ng
 * `sudo apt install apt-cacher-ng`
 * Add `Acquire::http::Proxy "http://nas2.lan:3142";` to `/etc/apt/apt.conf.d/00proxy`
+* Add `PassThroughPattern: ^(.*):443$` to `/etc/apt-cacher-ng/acng.conf`
 
 #### Configure apt cache location
 * Add below to `/etc/apt/apt.conf`
