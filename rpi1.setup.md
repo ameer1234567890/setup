@@ -189,6 +189,9 @@ Listen 0.0.0.0:631
 #### Install brlaser (Support for Brother Printers)
 * `sudo apt install printer-driver-brlaser`
 
+#### Install escpr (Support for Epson Printers)
+* `sudo apt install printer-driver-escpr`
+
 #### How to turn off Unknown Name and Withheld User in the CUPS web interface
 * Change below in `/etc/cups/cupsd.conf`
 * Change `JobPrivateValues default` to `JobPrivateValues none`
