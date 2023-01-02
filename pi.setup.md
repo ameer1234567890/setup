@@ -72,13 +72,7 @@ while [ "$_INTERNET" -eq 0 ]; do
 done
 ```
 
-#### Add heartbeat (for Raspberry Pi)
-* Add below to `crontab -e`, replacing API key as required
-```
-* * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(vcgencmd measure_temp | cut -d = -f 2 | cut -d \' -f 1)"
-```
-
-#### Add heartbeat (for Orange Pi)
+#### Add heartbeat
 * Add below to `crontab -e`, replacing API key as required
 ```
 * * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(cat /sys/class/thermal/thermal_zone0/temp | sed -r "s/([0-9]+)([0-9]{3})/\1.\2/")"
