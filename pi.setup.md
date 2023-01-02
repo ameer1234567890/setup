@@ -81,7 +81,7 @@ done
 #### Add heartbeat (for Orange Pi)
 * Add below to `crontab -e`, replacing API key as required
 ```
-* * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(cat /sys/class/thermal/thermal_zone0/temp | sed -e "s/\(..\)\(..\)/\1.\2/")"
+* * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(cat /sys/class/thermal/thermal_zone0/temp | sed -r "s/([0-9]+)([0-9]{3})/\1.\2/")"
 ```
 
 #### Google Drive backup using rclone
