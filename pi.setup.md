@@ -154,13 +154,12 @@ hosts allow = 192.168.100.1/24
 Description=a lightweight multi-protocol & multi-source command-line download utility
 ConditionPathExists=/mnt/usb1/.data/aria2/aria2.conf
 ConditionFileIsExecutable=/usr/bin/aria2c
-After=network.target mnt-usb1.mount
+After=network-online.target mnt-usb1.mount
 Documentation=man:aria2c(1)
 
 [Service]
 Type=forking
 User=pi
-ExecStartPre=/bin/sleep 10
 ExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf
 Restart=always
 RestartSec=1
