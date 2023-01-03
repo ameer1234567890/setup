@@ -20,16 +20,16 @@
 
 #### Configure apt cache location
 * Add below to `/etc/apt/apt.conf`
-```
-Dir::Cache /mnt/usb2/.data/apt-cache;
-```
+  ```
+  Dir::Cache /mnt/usb2/.data/apt-cache;
+  ```
 
 #### Configure apt-cacher-ng cache location
 * Change below in `/etc/apt-cacher-ng/acng.conf`
-```
-CacheDir: /mnt/usb2/.data/apt-cacher-ng/cache
-LogDir: /mnt/usb2/.data/apt-cacher-ng/log
-```
+  ```
+  CacheDir: /mnt/usb2/.data/apt-cacher-ng/cache
+  LogDir: /mnt/usb2/.data/apt-cacher-ng/log
+  ```
 
 #### Install pip
 * `wget https://bootstrap.pypa.io/get-pip.py`
@@ -43,11 +43,11 @@ LogDir: /mnt/usb2/.data/apt-cacher-ng/log
 
 #### Disable Password Logins via SSH
 * Add below to `/etc/ssh/sshd_config`
-```
-PasswordAuthentication no
-Match address 192.168.100.0/24
-    PasswordAuthentication yes
-```
+  ```
+  PasswordAuthentication no
+  Match address 192.168.100.0/24
+      PasswordAuthentication yes
+  ```
 * Run `sudo service ssh reload`
 
 #### Cache pip wheels
@@ -58,105 +58,107 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 
 #### Add reboot notification
 * Add below to `/etc/rc.local`, replacing API key as required
-```
-curl -X POST --data-urlencode "payload={\"channel\": \"#general\", \"username\": \"NotifyBot\", \"text\": \"NAS1 rebooted.\", \"icon_emoji\": \":slack:\"}" https://hooks.slack.com/services/XXXXXXX/XXXXXX/XXXXXXXXXXXXXXXXXXX
-```
+  ```
+  curl -X POST --data-urlencode "payload={\"channel\": \"#general\", \"username\": \"NotifyBot\", \"text\": \"NAS1 rebooted.\", \"icon_emoji\": \":slack:\"}" https://hooks.slack.com/services/XXXXXXX/XXXXXX/XXXXXXXXXXXXXXXXXXX
+  ```
 
 #### Add heartbeat
 * Add below to `crontab -e`, replacing API key as required
-```
-* * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(cat /sys/class/thermal/thermal_zone0/temp | sed -r "s/([0-9]+)([0-9]{3})/\1.\2/")"
-```
+  ```
+  * * * * * curl "https://api.thingspeak.com/update?api_key=XXXXXXXXXXXXXXXX&field1=$(awk '/MemFree/ {print $2}' /proc/meminfo)&field2=$(cat /sys/class/thermal/thermal_zone0/temp | sed -r "s/([0-9]+)([0-9]{3})/\1.\2/")"
+  ```
 
 #### Google Drive backup using rclone
 * `sudo apt install rclone`
 * `cp /mnt/usb1/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf`
 * Add below to `crontab -e`
-```
-0 2 * * * /mnt/usb1/Ameer/backup-gdrive-ameer.sh
-4 2 * * * /mnt/usb1/Ameer/backup-gdriveshared-ameer.sh
-7 2 * * * /mnt/usb1/Aani/backup-gdrive-aani.sh
-```
+  ```
+  0 2 * * * /mnt/usb1/Ameer/backup-gdrive-ameer.sh
+  4 2 * * * /mnt/usb1/Ameer/backup-gdriveshared-ameer.sh
+  7 2 * * * /mnt/usb1/Aani/backup-gdrive-aani.sh
+  10 2 * * * /mnt/usb1/Ameer/backup-gphotos-ameer.sh
+  30 2 * * * /mnt/usb1/Aani/backup-gphotos-aani.sh
+  ```
 
 #### git backup
 * `sudo apt install git`
 * Add below to `crontab -e`
-```
-0 3 * * * /mnt/usb1/Ameer/gitbackup/gitbackup.sh
-```
+  ```
+  0 3 * * * /mnt/usb1/Ameer/gitbackup/gitbackup.sh
+  ```
 
 #### Disable WiFi if wired
 * Add below to `/etc/rc.local`, replacing interface names as required
-```
-# Disable WiFi if wired.
-logger "Checking Network interfaces..."
-if ethtool eth0 | egrep "Link.*yes" && ifconfig eth0 | grep "inet"; then
-  logger 'Disabling WiFi...'
-  ifconfig wlan0 down
-else
-  logger 'WiFi is still enabled: Ethernet is down or ethtool is not installed.'
-fi
-```
+  ```
+  # Disable WiFi if wired.
+  logger "Checking Network interfaces..."
+  if ethtool eth0 | egrep "Link.*yes" && ifconfig eth0 | grep "inet"; then
+    logger 'Disabling WiFi...'
+    ifconfig wlan0 down
+  else
+    logger 'WiFi is still enabled: Ethernet is down or ethtool is not installed.'
+  fi
+  ```
 
 #### Setup rsync
 * `sudo apt install rsync`
 * Add below to `/etc/rsyncd.conf`
-```
-pid file = /var/run/rsyncd.pid
-log file = /var/log/rsyncd.log
-lock file = /var/run/rsync.lock
-use chroot = no
-uid = pi
-gid = pi
-read only = no
-
-[usb1]
-path = /mnt/usb1
-comment = usb1
-list = yes
-hosts allow = 192.168.100.1/24
-```
+  ```
+  pid file = /var/run/rsyncd.pid
+  log file = /var/log/rsyncd.log
+  lock file = /var/run/rsync.lock
+  use chroot = no
+  uid = pi
+  gid = pi
+  read only = no
+  
+  [usb1]
+  path = /mnt/usb1
+  comment = usb1
+  list = yes
+  hosts allow = 192.168.100.1/24
+  ```
 * `sudo systemctl restart rsync.service`
 
 #### Password-less Samba Shares
 * Add below to `/etc/samba/smb.conf`
-```
-[usb2]
-    path = /mnt/usb2
-    read only = no
-    public = yes
-    writable = yes
-    browsable = yes
-    guest ok = yes
-    create mask = 0755
-    directory mask = 0777
-    force user = pi
-    force group = pi
-```
+  ```
+  [usb2]
+      path = /mnt/usb2
+      read only = no
+      public = yes
+      writable = yes
+      browsable = yes
+      guest ok = yes
+      create mask = 0755
+      directory mask = 0777
+      force user = pi
+      force group = pi
+  ```
 * `sudo systemctl restart smbd.service`
 
 #### Install & Setup aria2
 * `sudo apt install aria2 lighttpd`
 * `sudo ln -s /mnt/usb1/.data/webui-aria2/docs /var/www/html/webui-aria2`
 * Add below to `/lib/systemd/system/aria2.service`
-```
-[Unit]
-Description=a lightweight multi-protocol & multi-source command-line download utility
-ConditionPathExists=/mnt/usb1/.data/aria2/aria2.conf
-ConditionFileIsExecutable=/usr/bin/aria2c
-After=network-online.target mnt-usb1.mount
-Documentation=man:aria2c(1)
-
-[Service]
-Type=forking
-User=pi
-ExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf
-Restart=always
-RestartSec=1
-
-[Install]
-WantedBy=multi-user.target
-```
+  ```
+  [Unit]
+  Description=a lightweight multi-protocol & multi-source command-line download utility
+  ConditionPathExists=/mnt/usb1/.data/aria2/aria2.conf
+  ConditionFileIsExecutable=/usr/bin/aria2c
+  After=network-online.target mnt-usb1.mount
+  Documentation=man:aria2c(1)
+  
+  [Service]
+  Type=forking
+  User=pi
+  ExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf
+  Restart=always
+  RestartSec=1
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
 * `sudo systemctl enable aria2.service`
 * `sudo systemctl start aria2.service`
 
@@ -172,10 +174,10 @@ WantedBy=multi-user.target
 * `sudo usermod -a -G lpadmin pi`
 * `sudo cupsctl --remote-admin --remote-any --share-printers`
 * Add below to `/etc/cups/cupsd.conf`
-```
-ServerAlias *
-Listen 0.0.0.0:631
-```
+  ```
+  ServerAlias *
+  Listen 0.0.0.0:631
+  ```
 * `sudo /etc/init.d/cups restart`
 * Access CUPS webui at `http://127.0.0.1:631`
 
@@ -211,11 +213,11 @@ Listen 0.0.0.0:631
 
 #### Setup Samba Print Service
 * Add below to `/etc/samba/smb.conf` under `[global]`
-```
-rpc_server:spoolss = external
-rpc_daemon:spoolssd = fork
-printing = CUPS
-```
+  ```
+  rpc_server:spoolss = external
+  rpc_daemon:spoolssd = fork
+  printing = CUPS
+  ```
 * `sudo mkdir -p /var/spool/samba/`
 * `sudo chmod 1777 /var/spool/samba/`
 * `sudo smbcontrol all reload-config`
@@ -244,7 +246,7 @@ printing = CUPS
 
 #### Setup remote rsyslog server logging
 * Add below to `/etc/rsyslog.conf`
-```
-*.* @syslogger.lan
-```
+  ```
+  *.* @syslogger.lan
+  ```
 * `sudo systemctl restart rsyslog.service`
