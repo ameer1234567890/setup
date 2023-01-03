@@ -237,6 +237,10 @@ printing = CUPS
 #### Install scanservjs frontend for SANE
 * `sudo apt install nodejs npm imagemagick sane-utils update-inetd tesseract-ocr tesseract-ocr-ces tesseract-ocr-chi-sim tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita tesseract-ocr-nld tesseract-ocr-pol tesseract-ocr-por tesseract-ocr-rus tesseract-ocr-spa tesseract-ocr-tur tesseract-ocr-ara`
 * Go to `https://github.com/sbs20/scanservjs` and follow installation instructions
+* Run below:
+  ```sh
+  curl -s https://raw.githubusercontent.com/sbs20/scanservjs/master/packages/server/installer.sh | sudo bash -s -- -a
+  ```
 
 #### Setup remote rsyslog server logging
 * Add below to `/etc/rsyslog.conf`
