@@ -59,17 +59,7 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 #### Add reboot notification
 * Add below to `/etc/rc.local`, replacing API key as required
 ```
-_INTERNET=0
-while [ "$_INTERNET" -eq 0 ]; do
-  ping google.com -c 1
-  status="$?"
-  if [ "$status" -eq 0 ]; then
-    _INTERNET=1
-    logger "Announcing reboot"
-    curl -X POST --data-urlencode "payload={\"channel\": \"#general\", \"username\": \"NotifyBot\", \"text\": \"NAS1 rebooted.\", \"icon_emoji\": \":slack:\"}" https://hooks.slack.com/services/XXXXXXX/XXXXXX/XXXXXXXXXXXXXXXXXXX
-  fi
-  sleep 1
-done
+curl -X POST --data-urlencode "payload={\"channel\": \"#general\", \"username\": \"NotifyBot\", \"text\": \"NAS1 rebooted.\", \"icon_emoji\": \":slack:\"}" https://hooks.slack.com/services/XXXXXXX/XXXXXX/XXXXXXXXXXXXXXXXXXX
 ```
 
 #### Add heartbeat
