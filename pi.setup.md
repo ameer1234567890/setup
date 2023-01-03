@@ -235,7 +235,7 @@ printing = CUPS
 * Run `scanimage -L` and see if the scanner is shown in the output
 
 #### Install scanservjs frontend for SANE
-* `sudo apt install nodejs npm imagemagick sane-utils update-inetd tesseract-ocr tesseract-ocr-ces tesseract-ocr-chi-sim tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita tesseract-ocr-nld tesseract-ocr-pol tesseract-ocr-por tesseract-ocr-rus tesseract-ocr-spa tesseract-ocr-tur`
+* `sudo apt install nodejs npm imagemagick sane-utils update-inetd tesseract-ocr tesseract-ocr-ces tesseract-ocr-chi-sim tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita tesseract-ocr-nld tesseract-ocr-pol tesseract-ocr-por tesseract-ocr-rus tesseract-ocr-spa tesseract-ocr-tur tesseract-ocr-ara`
 * Go to `https://github.com/sbs20/scanservjs` and follow installation instructions
 
 #### Setup remote rsyslog server logging
