@@ -56,6 +56,18 @@ pip wheel --wheel-dir=/mnt/usb2/.data/pip cssselect==0.9.1
 pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 ```
 
+#### Setup zram on Raspberry Pi
+* Run `sudo apt install zram-tools`
+* Check presence of zram partition with `sudo cat /proc/swaps`
+* Add below to `/etc/sysctl.conf`
+  ```
+  vm.vfs_cache_pressure=500
+  vm.swappiness=100
+  vm.dirty_background_ratio=1
+  vm.dirty_ratio=50
+  ```
+* Enable zram with `sudo sysctl --system`
+
 #### Add reboot notification
 * Add below to `/etc/rc.local`, replacing API key as required
   ```
