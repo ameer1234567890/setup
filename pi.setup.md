@@ -56,6 +56,9 @@ pip wheel --wheel-dir=/mnt/usb2/.data/pip cssselect==0.9.1
 pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 ```
 
+#### Setup passwordless sudo on Orange Pi
+* Add below to `pi ALL=(ALL) NOPASSWD: ALL`
+
 #### Setup zram on Raspberry Pi
 * Run `sudo apt install zram-tools`
 * Check presence of zram partition with `sudo cat /proc/swaps`
