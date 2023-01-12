@@ -74,6 +74,20 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
   ```
 * Enable zram with `sudo sysctl --system`
 
+#### Setup overlayroot notice on Raspberry Pi
+* Add below to `/etc/profile.d/motd.sh`
+  ```
+  if df | grep overlay > /dev/null 2>&1; then
+  textred=$(tput setaf 3)
+  cat <<END_HEREDOC
+  
+  ${textred}==>WARNING: Root filesystem is read only.
+  None of the changes you make will be preserved after reboot.
+  END_HEREDOC
+  fi
+  ```
+* `sudo chmod +x /etc/profile.d/motd.sh`
+
 #### Add reboot notification
 * Add below to `/etc/rc.local`, replacing API key as required
   ```
