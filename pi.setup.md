@@ -228,6 +228,9 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
 #### Install splix (Support for Samsung Printers)
 * `sudo apt install printer-driver-splix`
 
+#### Install fujixerox (Support for Fuji Xerox Printers)
+* `sudo apt install printer-driver-fujixerox`
+
 #### Install foo2zjs (Support for ZjStream-based Printers)
 * `sudo apt install printer-driver-foo2zjs`
 
