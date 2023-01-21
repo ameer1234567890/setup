@@ -81,7 +81,7 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
   textred=$(tput setaf 3)
   cat <<END_HEREDOC
   
-  ${textred}==>WARNING: Root filesystem is read only.
+  ${textred}==> WARNING: Root filesystem is read only.
   None of the changes you make will be preserved after reboot.
   END_HEREDOC
   fi
