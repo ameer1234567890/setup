@@ -79,10 +79,12 @@ pip install /mnt/usb2/.data/pip/cssselect-0.9.1-py2-none-any.whl
   ```
   if df | grep overlay > /dev/null 2>&1; then
   textred=$(tput setaf 3)
+  textwhite=$(tput setaf 7)
   cat <<END_HEREDOC
   
   ${textred}==> WARNING: Root filesystem is read only.
   None of the changes you make will be preserved after reboot.
+  ${textwhite}
   END_HEREDOC
   fi
   ```
