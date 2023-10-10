@@ -13,8 +13,7 @@
 * Add ssh keys to `~/.ssh/authorized_keys`
 
 
-#### Install & Setup apt-cacher-ng
-* `sudo apt install apt-cacher-ng`
+#### Setup apt-cacher-ng Proxy
 * Add below to `/etc/apt/apt.conf.d/00proxy`
 ```
 Acquire::http::Proxy "http://nas2.lan:3142";
