@@ -26,13 +26,6 @@ Acquire::https::Proxy "false";
   Dir::Cache /mnt/usb2/.data/apt-cache;
   ```
 
-#### Configure apt-cacher-ng cache location
-* Change below in `/etc/apt-cacher-ng/acng.conf`
-  ```
-  CacheDir: /mnt/usb2/.data/apt-cacher-ng/cache
-  LogDir: /mnt/usb2/.data/apt-cacher-ng/log
-  ```
-
 #### Install pip
 * `wget https://bootstrap.pypa.io/get-pip.py`
 * `sudo python3 get-pip.py`
