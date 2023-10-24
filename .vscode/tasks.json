@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Deploy & Run",
+            "type": "shell",
+            "command": "cp ./pi.setup.sh N:/; ssh pi@nas1.lan 'cd /mnt/usb1 && chmod +x pi.setup.sh && sudo ./pi.setup.sh'",
+        }
+    ]
+}
