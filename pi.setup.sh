@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#### Start of consigurable variables
+#### Start of configurable variables
 LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
 USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9"
-#### End of of consigurable variables
+#### End of of configurable variables
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
@@ -657,7 +657,7 @@ setup_overlayfs() {
     if [ "$(grep '^overlayroot="tmpfs"' /etc/overlayroot.conf)" != "" ]; then
       print_already
     else
-      overlayroot-chroot sed -i 's/^overlayroot=""/overlayroot="tmpfs"/g' /etc/overlayroot.conf &
+      sed -i 's/^overlayroot=""/overlayroot="tmpfs"/g' /etc/overlayroot.conf &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -909,7 +909,6 @@ disable_swap
 setup_remote_syslog
 install_tailscale
 install_screen
-setup_overlayfs
 
 if [ "$HOSTNAME" = "nas1.lan" ]; then
   printf "\n  \e[34m○\e[0m Running NAS1 Specific Setup:\n"
@@ -934,6 +933,9 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   add_printers
   setup_scan_server
 fi
+
+printf "\n  \e[34m○\e[0m Running post-setup routines:\n"
+setup_overlayfs
 
 
 if [ $REBOOT_REQUIRED = true ]; then
