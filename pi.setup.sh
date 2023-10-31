@@ -22,10 +22,10 @@ REBOOT_REQUIRED=false
 clear
 cat << "EOF"
 
-┏┓     •      
+┏┓     •
 ┃ ┏┓┏┓┏┓┏┓┏┏┳┓
 ┗┛┗┻┣┛┛┗┗┗┻┛┗┗
-    ┛         
+    ┛
 
 * Created by: Ameer Dawood
 * This script runs my customized setup process for Raspberry Pi & Orange Pi
@@ -43,7 +43,7 @@ kill_tools() {
       assert_status
     fi
   done
-  
+
   echo ""
   exit 0
 }
@@ -760,8 +760,19 @@ install_docker() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Assigning current user to docker group... "
+  if [ "$(grep 'docker:.*:pi' /etc/group 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    usermod -aG docker pi >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+    REBOOT_REQUIRED=true
+  fi
   printf "   \e[34m•\e[0m Creating symlinks to external storage... "
-  if [ -L /var/lib/plexmediaserver/Library ]; then
+  if [ -L /var/lib/docker ]; then
     print_already
   else
     usb_data_device=$(ls /mnt | head -n 1)
