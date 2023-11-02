@@ -164,10 +164,15 @@ setup_timezone() {
 
 notify_on_startup() {
   printf "   \e[34m•\e[0m Setting up notification on startup... "
-  if [ "$(grep -F "https://hooks.slack.com/services/" /etc/rc.local 2>/dev/null)" != "" ]; then
+  if [ -f /lib/systemd/system/notifyonstartup.service ]; then
     print_already
   else
-    sed -i -e '$i \curl -X POST --data-urlencode "payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\"'$(echo $HOSTNAME | cut -d . -f 1 | tr 'a-z' 'A-Z')' rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}" https://hooks.slack.com/services/'"$SLACK_WEBHOOK_KEY"' &\n' /etc/rc.local >/dev/null 2>&1
+    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\""$(echo $HOSTNAME | cut -d . -f 1 | tr 'a-z' 'A-Z')" rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/"$SLACK_WEBHOOK_KEY"\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
+      systemctl enable notifyonstartup.service >/dev/null 2>&1 && \
+      systemctl start notifyonstartup.service >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
     assert_status
   fi
 }
@@ -379,7 +384,7 @@ setup_rsync_daemon() {
     elif [ "$(grep /mnt/$drive /etc/rsyncd.conf)" != "" ]; then
       print_already
     else
-      echo -e "[$drive]\npath = /mnt/$drive\ncomment = $drive\nlist = yes\nhosts allow = 192.168.100.1/24,127.0.0.1" >> /etc/rsyncd.conf && \
+      echo -e "[$drive]\npath = /mnt/$drive\ncomment = $drive\nlist = yes\nhosts allow = 192.168.100.1/24,127.0.0.1,100.82.10.102" >> /etc/rsyncd.conf && \
         systemctl restart rsync.service &
       bg_pid=$!
       show_progress $bg_pid
@@ -654,10 +659,10 @@ setup_overlayfs() {
       REBOOT_REQUIRED=true
     fi
   elif [ $(which armbian-config) ]; then
-    if [ "$(grep '^overlayroot="tmpfs"' /etc/overlayroot.conf)" != "" ]; then
+    if [ "$(grep '^overlayroot="tmpfs:swap=1,recurse=0"' /etc/overlayroot.conf)" != "" ]; then
       print_already
     else
-      sed -i 's/^overlayroot=""/overlayroot="tmpfs"/g' /etc/overlayroot.conf &
+      sed -i 's/^overlayroot=""/overlayroot="tmpfs:swap=1,recurse=0"/g' /etc/overlayroot.conf &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
