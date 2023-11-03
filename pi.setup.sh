@@ -646,8 +646,8 @@ install_screen() {
 
 
 setup_overlayfs() {
-  printf "   \e[34m•\e[0m Setting up overlayfs... "
   if [ $(which raspi-config) ]; then
+    printf "   \e[34m•\e[0m Setting up overlayfs... "
     if [ $(raspi-config nonint get_overlay_conf) = 0 ]; then
       print_already
     else
@@ -658,7 +658,18 @@ setup_overlayfs() {
       assert_status
       REBOOT_REQUIRED=true
     fi
-  elif [ $(which armbian-config) ]; then
+  elif [ $(which armbian-config) ] || [ "$(grep '^NAME=' /etc/os-release | cut -d '"' -f 2)" = "Debian GNU/Linux" ]; then
+    printf "   \e[34m•\e[0m Installing overlayroot... "
+    if [ "$(dpkg-query -W -f='${Status}' overlayroot 2>/dev/null)" = "install ok installed" ]; then
+      print_already
+    else
+      DEBIAN_FRONTEND=noninteractive apt-get install -yq overlayroot >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+    printf "   \e[34m•\e[0m Setting up overlayfs... "
     if [ "$(grep '^overlayroot="tmpfs:swap=1,recurse=0"' /etc/overlayroot.conf)" != "" ]; then
       print_already
     else
@@ -670,6 +681,7 @@ setup_overlayfs() {
       REBOOT_REQUIRED=true
     fi
   else
+    printf "   \e[34m•\e[0m Setting up overlayfs... "
     print_notexist
   fi
 }
