@@ -10,7 +10,7 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9"
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='nas1.lan/nas2.lan/printer.lan'
+# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan'
 # SLACK_WEBHOOK_KEY='KEY_HERE'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # THINGSPEAK_API_KEY='KEY_HERE'
@@ -725,6 +725,20 @@ install_plex() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Fixing up systemd unit for plex... "
+  if [ "$(grep 'ConditionPathExists' /etc/systemd/system/plexmediaserver.service.d/override.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    mkdir /etc/systemd/system/plexmediaserver.service.d && \
+      echo -e "[Unit]\nConditionPathExists=/mnt/$usb_data_device/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
+      systemctl daemon-reload && \
+      systemctl restart plexmediaserver.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
 }
 
 
@@ -782,9 +796,23 @@ install_docker() {
   else
     usb_data_device=$(ls /mnt | head -n 1)
     systemctl stop docker.service && \
-      rm -rf /var/lib/docker
+      rm -rf /var/lib/docker && \
       ln -s /mnt/$usb_data_device/docker/docker /var/lib/docker && \
       systemctl start docker.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Fixing up systemd unit for docker... "
+  if [ "$(grep 'ConditionPathExists' /etc/systemd/system/docker.service.d/override.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    mkdir /etc/systemd/system/docker.service.d && \
+      echo -e "[Unit]\nConditionPathExists=/mnt/$usb_data_device/docker" > /etc/systemd/system/docker.service.d/override.conf && \
+      systemctl daemon-reload && \
+      systemctl restart docker.service &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -948,6 +976,12 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   install_ppds
   add_printers
   setup_scan_server
+  install_docker
+fi
+
+if [ "$HOSTNAME" = "fig.lan" ]; then
+  printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
+  install_docker
 fi
 
 printf "\n  \e[34m○\e[0m Running post-setup routines:\n"
