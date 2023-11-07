@@ -5,7 +5,7 @@ LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
-USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9"
+USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1"
 #### End of of configurable variables
 
 #### .secrets.txt
