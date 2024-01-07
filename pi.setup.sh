@@ -341,6 +341,7 @@ setup_google_backup() {
     print_already
   else
     DEBIAN_FRONTEND=noninteractive apt-get install -yq rclone >/dev/null 2>&1 && \
+      sudo -u pi mkdir -p /home/pi/.config/rclone
       cp /mnt/usb1/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
       (crontab -u pi -l && echo -e "0 2 * * * /mnt/usb1/Ameer/backup-gdrive-ameer.sh\n4 2 * * * /mnt/usb1/Ameer/backup-gdriveshared-ameer.sh\n7 2 * * * /mnt/usb1/Aani/backup-gdrive-aani.sh\n10 2 * * * /mnt/usb1/Ameer/backup-gphotos-ameer.sh\n30 2 * * * /mnt/usb1/Aani/backup-gphotos-aani.sh") | crontab -u pi - &
     bg_pid=$!
