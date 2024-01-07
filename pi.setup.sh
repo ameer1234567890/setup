@@ -519,7 +519,7 @@ setup_aria2_scheduling() {
     print_already
   else
     (crontab -u pi -l && echo "0 1 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"0\"}]}'") | crontab -u pi - && \
-      (crontab -u pi -l && echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"20K\"}]}'") | crontab -u pi - &
+      (crontab -u pi -l && echo "0 8 * * * curl http://127.0.0.1:6800/jsonrpc -H \"Content-Type: application/json\" -H \"Accept: application/json\" --data '{\"jsonrpc\": \"2.0\",\"id\":1, \"method\": \"aria2.changeGlobalOption\", \"params\":[\"token:$ARIA2_RPC_TOKEN\",{\"max-overall-download-limit\":\"200K\"}]}'") | crontab -u pi - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
