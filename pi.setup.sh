@@ -393,6 +393,26 @@ setup_rsync_daemon() {
       assert_status
     fi
   done
+  printf "   \e[34m•\e[0m Enabling rsync service... "
+  if [ "$(systemctl status rsync.service | grep disabled)" = "" ]; then
+    print_already
+  else
+    systemctl enable rsync.service >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Starting rsync service... "
+  if [ "$(systemctl status rsync.service | grep running)" != "" ]; then
+    print_already
+  else
+    systemctl start rsync.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
 }
 
 
