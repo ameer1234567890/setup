@@ -199,9 +199,9 @@ setup_ssh_keyfile() {
     print_already
   else
     mkdir -p /home/pi/.ssh
-    chown pi.pi /home/pi/.ssh
+    chown pi:pi /home/pi/.ssh
     touch /home/pi/.ssh/authorized_keys
-    chown pi.pi /home/pi/.ssh/authorized_keys
+    chown pi:pi /home/pi/.ssh/authorized_keys
     echo $SSH_PUBLIC_KEY > /home/pi/.ssh/authorized_keys 2>/dev/null
     assert_status
   fi
