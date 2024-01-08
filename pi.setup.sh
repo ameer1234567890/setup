@@ -644,7 +644,7 @@ disable_swap() {
 
 setup_remote_syslog() {
   printf "   \e[34m•\e[0m Setting up remote syslog... "
-  if [ "$(grep 'syslogger.lan' /etc/rsyslog.conf)" != "" ]; then
+  if [ "$(grep 'syslogger.lan' /etc/rsyslog.conf 2>/dev/null)" != "" ]; then
     print_already
   else
     echo "*.* @syslogger.lan" >> /etc/rsyslog.conf &
