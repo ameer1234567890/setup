@@ -318,6 +318,20 @@ add_zram() {
 }
 
 
+increase_zram() {
+  printf "   \e[34m•\e[0m Increasing zram... "
+  if [ "$(grep ^SIZE=1024 /etc/default/zramswap)" != "" ]; then
+    print_already
+  else
+    echo "SIZE=1024" > /etc/default/zramswap &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 setup_overlayroot_notice() {
   printf "   \e[34m•\e[0m Setting up overlayroot notice... "
   if [ -f /etc/profile.d/motd.sh ]; then
@@ -1033,6 +1047,7 @@ fi
 
 if [ "$HOSTNAME" = "nas2.lan" ]; then
   printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
+  increase_zram
   install_plex
   install_docker
 fi
