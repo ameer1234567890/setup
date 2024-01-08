@@ -890,8 +890,8 @@ install_docker() {
     print_already
   else
     usb_data_device=$(ls /mnt | head -n 1)
-    mkdir /etc/systemd/system/docker.service.d && \
-      echo -e "[Unit]\nConditionPathExists=/mnt/$usb_data_device/docker" > /etc/systemd/system/docker.service.d/override.conf && \
+    mkdir -p /etc/systemd/system/docker.service.d && \
+      echo -e "[Unit]\nAfter=network-online.target docker.socket firewalld.service containerd.service time-set.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/docker" > /etc/systemd/system/docker.service.d/override.conf && \
       systemctl daemon-reload && \
       systemctl restart docker.service &
     bg_pid=$!
