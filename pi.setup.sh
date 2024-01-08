@@ -367,10 +367,11 @@ setup_google_backup() {
   if [ "$(crontab -u pi -l | grep backup-gdrive)" != "" ]; then
     print_already
   else
+    usb_data_device=$(ls /mnt | head -n 1)
     DEBIAN_FRONTEND=noninteractive apt-get install -yq rclone >/dev/null 2>&1 && \
       sudo -u pi mkdir -p /home/pi/.config/rclone
-      cp /mnt/usb1/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
-      (crontab -u pi -l && echo -e "0 2 * * * /mnt/usb1/Ameer/backup-gdrive-ameer.sh\n4 2 * * * /mnt/usb1/Ameer/backup-gdriveshared-ameer.sh\n7 2 * * * /mnt/usb1/Aani/backup-gdrive-aani.sh\n10 2 * * * /mnt/usb1/Ameer/backup-gphotos-ameer.sh\n30 2 * * * /mnt/usb1/Aani/backup-gphotos-aani.sh") | crontab -u pi - &
+      cp /mnt/$usb_data_device/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
+      (crontab -u pi -l && echo -e "0 2 * * * /mnt/$usb_data_device/Ameer/backup-gdrive-ameer.sh\n4 2 * * * /mnt/$usb_data_device/Ameer/backup-gdriveshared-ameer.sh\n7 2 * * * /mnt/$usb_data_device/Aani/backup-gdrive-aani.sh\n10 2 * * * /mnt/$usb_data_device/Ameer/backup-gphotos-ameer.sh\n30 2 * * * /mnt/$usb_data_device/Aani/backup-gphotos-aani.sh") | crontab -u pi - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -384,8 +385,9 @@ setup_git_backup() {
   if [ "$(crontab -u pi -l | grep gitbackup)" != "" ]; then
     print_already
   else
+    usb_data_device=$(ls /mnt | head -n 1)
     DEBIAN_FRONTEND=noninteractive apt-get install -yq git >/dev/null 2>&1 && \
-      (crontab -u pi -l && echo "0 3 * * * /mnt/usb1/Ameer/gitbackup/gitbackup.sh") | crontab -u pi - &
+      (crontab -u pi -l && echo "0 3 * * * /mnt/$usb_data_device/Ameer/gitbackup/gitbackup.sh") | crontab -u pi - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -474,6 +476,7 @@ setup_samba_shares() {
 
 setup_aria2() {
   printf "   \e[34m•\e[0m Installing aria2... "
+  usb_data_device=$(ls /mnt | head -n 1)
   if [ "$(dpkg-query -W -f='${Status}' aria2 2>/dev/null)" = "install ok installed" ]; then
     print_already
   else
@@ -484,62 +487,62 @@ setup_aria2() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 data folder... "
-  if [ -d /mnt/usb1/.data/aria2 ]; then
+  if [ -d /mnt/$usb_data_device/.data/aria2 ]; then
     print_already
   else
-    sudo -u pi mkdir -p /mnt/usb1/.data/aria2 &
+    sudo -u pi mkdir -p /mnt/$usb_data_device/.data/aria2 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 session file... "
-  if [ -f /mnt/usb1/.data/aria2/session ]; then
+  if [ -f /mnt/$usb_data_device/.data/aria2/session ]; then
     print_already
   else
-    sudo -u pi touch /mnt/usb1/.data/aria2/session &
+    sudo -u pi touch /mnt/$usb_data_device/.data/aria2/session &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 configuration file... "
-  if [ -f /mnt/usb1/.data/aria2/aria2.conf ]; then
+  if [ -f /mnt/$usb_data_device/.data/aria2/aria2.conf ]; then
     print_already
   else
-    sudo -u pi echo -e "daemon=true\ndir=/mnt/usb1/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/usb1/.data/aria2/session\ninput-file=/mnt/usb1/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/usb1/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/usb1/.data/aria2/hook-complete.sh\non-download-error=/mnt/usb1/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" > /mnt/usb1/.data/aria2/aria2.conf &
+    sudo -u pi echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" > /mnt/$usb_data_device/.data/aria2/aria2.conf &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 hook-complete file... "
-  if [ -f /mnt/usb1/.data/aria2/hook-complete.sh ]; then
+  if [ -f /mnt/$usb_data_device/.data/aria2/hook-complete.sh ]; then
     print_already
   else
-    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" > /mnt/usb1/.data/aria2/hook-complete.sh && \
-      chmod +x /mnt/usb1/.data/aria2/hook-complete.sh &
+    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" > /mnt/$usb_data_device/.data/aria2/hook-complete.sh && \
+      chmod +x /mnt/$usb_data_device/.data/aria2/hook-complete.sh &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 hook-error file... "
-  if [ -f /mnt/usb1/.data/aria2/hook-error.sh ]; then
+  if [ -f /mnt/$usb_data_device/.data/aria2/hook-error.sh ]; then
     print_already
   else
-    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" > /mnt/usb1/.data/aria2/hook-error.sh && \
-      chmod +x /mnt/usb1/.data/aria2/hook-error.sh &
+    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" > /mnt/$usb_data_device/.data/aria2/hook-error.sh && \
+      chmod +x /mnt/$usb_data_device/.data/aria2/hook-error.sh &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 download directory... "
-  if [ -d /mnt/usb1/aria2 ]; then
+  if [ -d /mnt/$usb_data_device/aria2 ]; then
     print_already
   else
-    sudo -u pi mkdir -p /mnt/usb1/aria2 &
+    sudo -u pi mkdir -p /mnt/$usb_data_device/aria2 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -549,7 +552,7 @@ setup_aria2() {
   if [ -f /lib/systemd/system/aria2.service ]; then
     print_already
   else
-    echo -e "[Unit]\nDescription=a lightweight multi-protocol & multi-source command-line download utility\nConditionPathExists=/mnt/usb1/.data/aria2/aria2.conf\nConditionFileIsExecutable=/usr/bin/aria2c\nAfter=network-online.target mnt-usb1.mount\nDocumentation=man:aria2c(1)\n\n[Service]\nType=forking\nUser=pi\nExecStart=/usr/bin/aria2c --conf-path=/mnt/usb1/.data/aria2/aria2.conf\nRestart=always\nRestartSec=1\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/aria2.service && \
+    echo -e "[Unit]\nDescription=a lightweight multi-protocol & multi-source command-line download utility\nConditionPathExists=/mnt/$usb_data_device/.data/aria2/aria2.conf\nConditionFileIsExecutable=/usr/bin/aria2c\nAfter=network-online.target mnt-$usb_data_device.mount\nDocumentation=man:aria2c(1)\n\n[Service]\nType=forking\nUser=pi\nExecStart=/usr/bin/aria2c --conf-path=/mnt/$usb_data_device/.data/aria2/aria2.conf\nRestart=always\nRestartSec=1\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/aria2.service && \
       systemctl enable aria2.service >/dev/null 2>&1 && \
       systemctl start aria2.service >/dev/null 2>&1 &
     bg_pid=$!
@@ -577,6 +580,7 @@ setup_aria2_scheduling() {
 
 setup_aria2_webui() {
   lighttpd_restart_required=false
+  usb_data_device=$(ls /mnt | head -n 1)
   printf "   \e[34m•\e[0m Installing lighttpd... "
   if [ "$(dpkg-query -W -f='${Status}' lighttpd 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -603,7 +607,7 @@ setup_aria2_webui() {
     print_already
   else
     lighttpd_restart_required=true
-    cat /mnt/usb1/cert/nas1.pem /mnt/usb1/cert/nas1.key > /etc/lighttpd/server.pem &
+    cat /mnt/$usb_data_device/cert/nas1.pem /mnt/$usb_data_device/cert/nas1.key > /etc/lighttpd/server.pem &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -630,10 +634,10 @@ setup_aria2_webui() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Downloading aria2 webui... "
-  if [ -d /mnt/usb1/.data/webui-aria2 ]; then
+  if [ -d /mnt/$usb_data_device/.data/webui-aria2 ]; then
     print_already
   else
-    git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/usb1/.data/webui-aria2 2>/dev/null &
+    git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/$usb_data_device/.data/webui-aria2 2>/dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -643,7 +647,7 @@ setup_aria2_webui() {
   if [ -d /var/www/html/webui-aria2 ]; then
     print_already
   else
-    ln -s /mnt/usb1/.data/webui-aria2/docs /var/www/html/webui-aria2 >/dev/null 2>&1 &
+    ln -s /mnt/$usb_data_device/.data/webui-aria2/docs /var/www/html/webui-aria2 >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -797,9 +801,10 @@ install_plex() {
   if [ -L /var/lib/plexmediaserver/Library ]; then
     print_already
   else
+    usb_data_device=$(ls /mnt | head -n 1)
     systemctl stop plexmediaserver.service && \
       rm -rf /var/lib/plexmediaserver/Library
-      ln -s /mnt/usb2/.data/Plex/Library /var/lib/plexmediaserver/Library && \
+      ln -s /mnt/$usb_data_device/.data/Plex/Library /var/lib/plexmediaserver/Library && \
       systemctl start plexmediaserver.service &
     bg_pid=$!
     show_progress $bg_pid
