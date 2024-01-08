@@ -907,6 +907,37 @@ install_docker() {
 }
 
 
+setup_docker_caching() {
+  printf "   \e[34m•\e[0m Setting up docker caching proxy... "
+  if [ "$(grep 'Environment' /etc/systemd/system/docker.service.d/http-proxy.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    mkdir -p /etc/systemd/system/docker.service.d && \
+      echo -e "[Service]\nEnvironment=\"HTTPS_PROXY=http://fig.lan:3128/"\" > /etc/systemd/system/docker.service.d/http-proxy.conf && \
+      systemctl daemon-reload && \
+      systemctl restart docker.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Installing certificates... "
+  if [ "$(grep "docker_registry_proxy.crt" /etc/ca-certificates.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    curl http://fig.lan:3128/ca.crt > /usr/share/ca-certificates/docker_registry_proxy.crt 2>/dev/null && \
+      echo "docker_registry_proxy.crt" >> /etc/ca-certificates.conf && \
+      update-ca-certificates --fresh >/dev/null 2>&1 && \
+      systemctl daemon-reload && \
+      systemctl restart docker.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 install_cups() {
   printf "   \e[34m•\e[0m Installing cups... "
   if [ "$(dpkg-query -W -f='${Status}' cups 2>/dev/null)" = "install ok installed" ]; then
@@ -1055,6 +1086,7 @@ if [ "$HOSTNAME" = "nas2.lan" ]; then
   increase_zram
   install_plex
   install_docker
+  setup_docker_caching
 fi
 
 if [ "$HOSTNAME" = "printer.lan" ]; then
@@ -1064,11 +1096,13 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   add_printers
   setup_scan_server
   install_docker
+  setup_docker_caching
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
   install_docker
+  setup_docker_caching
 fi
 
 printf "\n  \e[34m○\e[0m Running post-setup routines:\n"
