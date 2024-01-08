@@ -849,7 +849,7 @@ install_docker() {
     print_already
   else
     usb_data_device=$(ls /mnt | head -n 1)
-    systemctl stop docker.service && \
+    systemctl stop docker.service 2>/dev/null && \
       rm -rf /var/lib/docker && \
       ln -s /mnt/$usb_data_device/docker/docker /var/lib/docker && \
       systemctl start docker.service &
