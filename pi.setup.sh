@@ -74,7 +74,8 @@ assert_status() {
 print_already() { printf "\e[36mAlready Done!\e[0m\n"; }
 print_opkg_busy() { printf "\e[91mopkg Busy!\e[0m\n"; }
 print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
-print_required() { printf "\e[32mRequired!\e[0m\n"; }
+print_available() { printf "\e[36mAvailable!\e[0m\n"; }
+print_unavailable() { printf "\e[91mUnavailable!\e[0m\n"; }
 print_notexist() { printf "\e[36mDoes not Exist!\e[0m\n"; }
 
 
@@ -209,15 +210,27 @@ setup_ssh_keyfile() {
 
 
 setup_apt-cacher-ng() {
-  printf "   \e[34m•\e[0m Setting up apt-cacher-ng... "
-  if [ -f /etc/apt/apt.conf.d/00proxy ]; then
-    print_already
+  proxy_available=false
+  printf "   \e[34m•\e[0m Checking proxy availability... "
+  if [ "$(curl -I http://nas2.lan:3142 2> /dev/null | grep '406 Usage Information')" != "" ]; then
+    proxy_available=true
+    print_available
   else
-    echo -e "Acquire::http::Proxy \"http://nas2.lan:3142\";\nAcquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
+    print_unavailable
+  fi
+  printf "   \e[34m•\e[0m Setting up apt-cacher-ng... "
+  if [ $proxy_available = true ]; then
+    if [ -f /etc/apt/apt.conf.d/00proxy ]; then
+      print_already
+    else
+      echo -e "Acquire::http::Proxy \"http://nas2.lan:3142\";\nAcquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  else
+    print_not_required
   fi
 }
 
