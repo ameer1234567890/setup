@@ -562,7 +562,7 @@ setup_aria2_scheduling() {
 
 
 setup_aria2_webui() {
-  LIGHTTPD_RESTART_REQUIRED=false
+  lighttpd_restart_required=false
   printf "   \e[34m•\e[0m Installing lighttpd... "
   if [ "$(dpkg-query -W -f='${Status}' lighttpd 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -577,7 +577,7 @@ setup_aria2_webui() {
   if [ -f /etc/lighttpd/conf-enabled/10-ssl.conf ]; then
     print_already
   else
-    LIGHTTPD_RESTART_REQUIRED=true
+    lighttpd_restart_required=true
     ln -s /etc/lighttpd/conf-available/10-ssl.conf /etc/lighttpd/conf-enabled/10-ssl.conf &
     bg_pid=$!
     show_progress $bg_pid
@@ -588,7 +588,7 @@ setup_aria2_webui() {
   if [ -f /etc/lighttpd/server.pem ]; then
     print_already
   else
-    LIGHTTPD_RESTART_REQUIRED=true
+    lighttpd_restart_required=true
     cat /mnt/usb1/cert/nas1.pem /mnt/usb1/cert/nas1.key > /etc/lighttpd/server.pem &
     bg_pid=$!
     show_progress $bg_pid
@@ -596,7 +596,7 @@ setup_aria2_webui() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Restarting lighttpd... "
-  if [ $LIGHTTPD_RESTART_REQUIRED = false ]; then
+  if [ $lighttpd_restart_required = false ]; then
     print_not_required
   else
     systemctl restart lighttpd.service &
