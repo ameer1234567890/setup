@@ -511,7 +511,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/aria2.conf ]; then
     print_already
   else
-    echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/aria2.conf &
+    echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/aria2.conf > /dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -521,7 +521,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/hook-complete.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-complete.sh && \
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-complete.sh > /dev/null && \
       chmod +x /mnt/$usb_data_device/.data/aria2/hook-complete.sh &
     bg_pid=$!
     show_progress $bg_pid
@@ -532,7 +532,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/hook-error.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-error.sh && \
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-error.sh > /dev/null && \
       chmod +x /mnt/$usb_data_device/.data/aria2/hook-error.sh &
     bg_pid=$!
     show_progress $bg_pid
