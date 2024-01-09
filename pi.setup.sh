@@ -168,7 +168,7 @@ notify_on_startup() {
   if [ -f /lib/systemd/system/notifyonstartup.service ]; then
     print_already
   else
-    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\""$(echo $HOSTNAME | cut -d . -f 1 | tr 'a-z' 'A-Z')" rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/"$SLACK_WEBHOOK_KEY"\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
+    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\""$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')" rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/"$SLACK_WEBHOOK_KEY"\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
       systemctl enable notifyonstartup.service >/dev/null 2>&1 && \
       systemctl start notifyonstartup.service >/dev/null 2>&1 &
     bg_pid=$!
@@ -510,7 +510,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/aria2.conf ]; then
     print_already
   else
-    sudo -u pi echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" > /mnt/$usb_data_device/.data/aria2/aria2.conf &
+    echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/aria2.conf &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -520,7 +520,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/hook-complete.sh ]; then
     print_already
   else
-    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" > /mnt/$usb_data_device/.data/aria2/hook-complete.sh && \
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-complete.sh && \
       chmod +x /mnt/$usb_data_device/.data/aria2/hook-complete.sh &
     bg_pid=$!
     show_progress $bg_pid
@@ -531,7 +531,7 @@ setup_aria2() {
   if [ -f /mnt/$usb_data_device/.data/aria2/hook-error.sh ]; then
     print_already
   else
-    sudo -u pi echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" > /mnt/$usb_data_device/.data/aria2/hook-error.sh && \
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-error.sh && \
       chmod +x /mnt/$usb_data_device/.data/aria2/hook-error.sh &
     bg_pid=$!
     show_progress $bg_pid
@@ -766,7 +766,7 @@ install_plex() {
     print_already
   else
     curl https://downloads.plex.tv/plex-keys/PlexSign.key 2>/dev/null | gpg --dearmor | tee /usr/share/keyrings/plex-archive-keyring.gpg >/dev/null && \
-      echo deb [signed-by=/usr/share/keyrings/plex-archive-keyring.gpg] https://downloads.plex.tv/repo/deb public main | tee /etc/apt/sources.list.d/plexmediaserver.list >/dev/null &
+      echo "deb [signed-by=/usr/share/keyrings/plex-archive-keyring.gpg] https://downloads.plex.tv/repo/deb public main" | tee /etc/apt/sources.list.d/plexmediaserver.list >/dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
