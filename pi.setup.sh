@@ -817,8 +817,8 @@ install_plex() {
     print_already
   else
     usb_data_device=$(ls /mnt | head -n 1)
-    mkdir /etc/systemd/system/plexmediaserver.service.d && \
-      echo -e "[Unit]\nConditionPathExists=/mnt/$usb_data_device/.data/Plex\n\n[Service]\nRestartSec=5\nRestart=on-failure" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
+    mkdir -p /etc/systemd/system/plexmediaserver.service.d && \
+      echo -e "[Unit]\nAfter=network-online.target docker.socket firewalld.service containerd.service time-set.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
       systemctl daemon-reload && \
       systemctl restart plexmediaserver.service &
     bg_pid=$!
