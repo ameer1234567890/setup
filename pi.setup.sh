@@ -320,10 +320,10 @@ add_zram() {
 
 increase_zram() {
   printf "   \e[34m•\e[0m Increasing zram... "
-  if [ "$(grep ^SIZE=1024 /etc/default/zramswap)" != "" ]; then
+  if [ "$(grep ^SIZE=2048 /etc/default/zramswap)" != "" ]; then
     print_already
   else
-    echo "SIZE=1024" > /etc/default/zramswap &
+    echo "SIZE=2048" > /etc/default/zramswap &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
