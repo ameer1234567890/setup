@@ -939,6 +939,32 @@ setup_docker_caching() {
 }
 
 
+install_keepalived() {
+  printf "   \e[34m•\e[0m Installing keepalived... "
+  if [ "$(dpkg-query -W -f='${Status}' keepalived 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq keepalived >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Setting up keepalived... "
+  if [ -f /etc/keepalived/keepalived.conf ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    cp /mnt/$usb_data_device/docker/keepalived/keepalived.conf /etc/keepalived/keepalived.conf && \
+      systemctl restart keepalived.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 install_cups() {
   printf "   \e[34m•\e[0m Installing cups... "
   if [ "$(dpkg-query -W -f='${Status}' cups 2>/dev/null)" = "install ok installed" ]; then
@@ -1007,6 +1033,20 @@ add_printers() {
     print_already
   else
     lpadmin -p HP_Deskjet_2528 -D 'HP Deskjet 2528' -E -v 'usb://HP/Deskjet%202520%20series?serial=CN99P1H104069R&interface=1' -m 'hplip:0/ppd/hplip/HP/hp-deskjet_2520_series.ppd' -o PageSize=A4 >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
+install_avahi() {
+  printf "   \e[34m•\e[0m Installing avahi... "
+  if [ "$(dpkg-query -W -f='${Status}' avahi-utils 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq avahi-utils >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -1088,6 +1128,7 @@ if [ "$HOSTNAME" = "nas2.lan" ]; then
   install_plex
   install_docker
   setup_docker_caching
+  install_keepalived
 fi
 
 if [ "$HOSTNAME" = "printer.lan" ]; then
@@ -1095,9 +1136,11 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   install_cups
   install_ppds
   add_printers
+  install_avahi
   setup_scan_server
   install_docker
   setup_docker_caching
+  install_keepalived
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
