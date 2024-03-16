@@ -1110,7 +1110,7 @@ setup_scan_server() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Installing scanservjs... "
-  if [ -d /var/www/scanservjs ]; then
+  if [ -d /var/lib/scanservjs ]; then
     print_already
   else
     curl -s https://raw.githubusercontent.com/sbs20/scanservjs/master/bootstrap.sh | bash -s -- -v latest >/dev/null 2>&1 &
