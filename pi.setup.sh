@@ -731,6 +731,20 @@ install_screen() {
 }
 
 
+prepare_overlayfs() {
+  printf "   \e[34m•\e[0m Preparing system for overlayroot... "
+  if [ "$(dpkg-query -W -f='${Status}' busybox-static 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq busybox-static >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 setup_overlayfs() {
   if [ $(which armbian-config) ] || [ $(which raspi-config) ] || [ "$(grep '^NAME=' /etc/os-release | cut -d '"' -f 2)" = "Debian GNU/Linux" ]; then
     printf "   \e[34m•\e[0m Installing overlayroot... "
@@ -993,6 +1007,25 @@ install_cups() {
 }
 
 
+setup_cups_ssl() {
+  printf "   \e[34m•\e[0m Setting up cups ssl certificates... "
+  if [ -L /etc/cups/ssl/printer.lan.crt ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    rm /etc/cups/ssl/printer.lan.crt && \
+      ln -s /mnt/$usb_data_device/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
+      rm /etc/cups/ssl/printer.lan.key && \
+      ln -s /mnt/$usb_data_device/docker/tls/printer.key /etc/cups/ssl/printer.lan.key && \
+      systemctl restart cups.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 install_ppds() {
   printf "   \e[34m•\e[0m Installing hplip... "
   if [ "$(dpkg-query -W -f='${Status}' hplip 2>/dev/null)" = "install ok installed" ]; then
@@ -1134,6 +1167,7 @@ fi
 if [ "$HOSTNAME" = "printer.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Print Server Specific Setup:\n"
   install_cups
+  setup_cups_ssl
   install_ppds
   add_printers
   install_avahi
@@ -1141,6 +1175,7 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   install_docker
   setup_docker_caching
   install_keepalived
+  prepare_overlayfs
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
