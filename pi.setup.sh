@@ -1119,6 +1119,19 @@ setup_scan_server() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Creating symlinks to external storage... "
+  if [ -L /var/lib/scanservjs/output ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    rm -rf /var/lib/scanservjs/output && \
+      ln -s /mnt/$usb_data_device/scans /var/lib/scanservjs/output && \
+      systemctl restart scanservjs.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
 }
 
 
