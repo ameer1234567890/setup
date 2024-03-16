@@ -1004,6 +1004,19 @@ install_cups() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Creating symlinks to external storage... "
+  if [ -L /var/spool/cups ]; then
+    print_already
+  else
+    usb_data_device=$(ls /mnt | head -n 1)
+    rm -rf /var/spool/cups && \
+      ln -s /mnt/$usb_data_device/.data/cups /var/spool/cups && \
+      systemctl restart cups.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
 }
 
 
