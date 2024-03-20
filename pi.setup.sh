@@ -259,7 +259,6 @@ mount_usb_drives() {
 
 relocate_apt_cache() {
   printf "   \e[34m•\e[0m Relocating apt cache... "
-  usb_data_device=$(ls /mnt | head -n 1)
   if [ "$(grep "Dir::Cache /mnt/$usb_data_device/.data/apt-cache;" /etc/apt/apt.conf 2>/dev/null)" != "" ]; then
     print_already
   else
@@ -367,7 +366,6 @@ setup_google_backup() {
   if [ "$(crontab -u pi -l | grep backup-gdrive)" != "" ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     DEBIAN_FRONTEND=noninteractive apt-get install -yq rclone >/dev/null 2>&1 && \
       sudo -u pi mkdir -p /home/pi/.config/rclone
       cp /mnt/$usb_data_device/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
@@ -386,7 +384,6 @@ setup_git_backup() {
   if [ "$(crontab -u pi -l | grep gitbackup)" != "" ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     DEBIAN_FRONTEND=noninteractive apt-get install -yq git >/dev/null 2>&1 && \
       (crontab -u pi -l && echo "0 3 * * * /mnt/$usb_data_device/Ameer/gitbackup/gitbackup.sh") | crontab -u pi - &
     bg_pid=$!
@@ -477,7 +474,6 @@ setup_samba_shares() {
 
 setup_aria2() {
   printf "   \e[34m•\e[0m Installing aria2... "
-  usb_data_device=$(ls /mnt | head -n 1)
   if [ "$(dpkg-query -W -f='${Status}' aria2 2>/dev/null)" = "install ok installed" ]; then
     print_already
   else
@@ -581,7 +577,6 @@ setup_aria2_scheduling() {
 
 setup_aria2_webui() {
   lighttpd_restart_required=false
-  usb_data_device=$(ls /mnt | head -n 1)
   printf "   \e[34m•\e[0m Installing lighttpd... "
   if [ "$(dpkg-query -W -f='${Status}' lighttpd 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -703,7 +698,6 @@ install_tailscale() {
   if [ "$(cat /var/lib/tailscale/tailscaled.state 2>/dev/null)" != "{}" ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     tailscale down --accept-risk=lose-ssh && \
       systemctl stop tailscaled.service && \
       cp /mnt/$usb_data_device/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
@@ -816,7 +810,6 @@ install_plex() {
   if [ -L /var/lib/plexmediaserver/Library ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     systemctl stop plexmediaserver.service && \
       rm -rf /var/lib/plexmediaserver/Library
       ln -s /mnt/$usb_data_device/.data/Plex/Library /var/lib/plexmediaserver/Library && \
@@ -830,7 +823,6 @@ install_plex() {
   if [ "$(grep 'ConditionPathExists' /etc/systemd/system/plexmediaserver.service.d/override.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     mkdir -p /etc/systemd/system/plexmediaserver.service.d && \
       echo -e "[Unit]\nAfter=network.target network-online.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
       systemctl daemon-reload && \
@@ -895,7 +887,6 @@ install_docker() {
   if [ -L /var/lib/docker ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     systemctl stop docker.service 2>/dev/null && \
       rm -rf /var/lib/docker && \
       ln -s /mnt/$usb_data_device/docker/docker /var/lib/docker && \
@@ -909,7 +900,6 @@ install_docker() {
   if [ "$(grep 'ConditionPathExists' /etc/systemd/system/docker.service.d/override.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     mkdir -p /etc/systemd/system/docker.service.d && \
       echo -e "[Unit]\nAfter=network-online.target docker.socket firewalld.service containerd.service time-set.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/docker" > /etc/systemd/system/docker.service.d/override.conf && \
       systemctl daemon-reload && \
@@ -968,7 +958,6 @@ install_keepalived() {
   if [ -f /etc/keepalived/keepalived.conf ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     cp /mnt/$usb_data_device/docker/keepalived/keepalived.conf /etc/keepalived/keepalived.conf && \
       systemctl restart keepalived.service &
     bg_pid=$!
@@ -1008,7 +997,6 @@ install_cups() {
   if [ -L /var/spool/cups ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     rm -rf /var/spool/cups && \
       ln -s /mnt/$usb_data_device/.data/cups /var/spool/cups && \
       systemctl restart cups.service &
@@ -1025,7 +1013,6 @@ setup_cups_ssl() {
   if [ -L /etc/cups/ssl/printer.lan.crt ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     rm /etc/cups/ssl/printer.lan.crt && \
       ln -s /mnt/$usb_data_device/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
       rm /etc/cups/ssl/printer.lan.key && \
@@ -1136,7 +1123,6 @@ setup_scan_server() {
   if [ -L /var/lib/scanservjs/output ]; then
     print_already
   else
-    usb_data_device=$(ls /mnt | head -n 1)
     rm -rf /var/lib/scanservjs/output && \
       ln -s /mnt/$usb_data_device/scans /var/lib/scanservjs/output && \
       systemctl restart scanservjs.service &
@@ -1172,6 +1158,7 @@ install_tailscale
 install_screen
 
 if [ "$HOSTNAME" = "nas1.lan" ]; then
+  usb_data_device="usb1"
   printf "\n  \e[34m○\e[0m Running NAS1 Specific Setup:\n"
   setup_overclock
   setup_google_backup
@@ -1182,6 +1169,7 @@ if [ "$HOSTNAME" = "nas1.lan" ]; then
 fi
 
 if [ "$HOSTNAME" = "nas2.lan" ]; then
+  usb_data_device="usb3"
   printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
   increase_zram
   install_plex
@@ -1191,6 +1179,7 @@ if [ "$HOSTNAME" = "nas2.lan" ]; then
 fi
 
 if [ "$HOSTNAME" = "printer.lan" ]; then
+  usb_data_device="usb8"
   printf "\n  \e[34m○\e[0m Running Print Server Specific Setup:\n"
   install_cups
   setup_cups_ssl
@@ -1205,6 +1194,7 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
+  usb_data_device="hdd1"
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
   install_docker
   setup_docker_caching
