@@ -15,6 +15,7 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1"
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # THINGSPEAK_API_KEY='KEY_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
+# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1'
 #### .secrets.txt
 
 REBOOT_REQUIRED=false
@@ -259,11 +260,11 @@ mount_usb_drives() {
 
 relocate_apt_cache() {
   printf "   \e[34m•\e[0m Relocating apt cache... "
-  if [ "$(grep "Dir::Cache /mnt/$usb_data_device/.data/apt-cache;" /etc/apt/apt.conf 2>/dev/null)" != "" ]; then
+  if [ "$(grep "Dir::Cache /mnt/$USB_DATA_DEVICE/.data/apt-cache;" /etc/apt/apt.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    mkdir -p /mnt/$usb_data_device/.data/apt-cache && \
-      echo "Dir::Cache /mnt/$usb_data_device/.data/apt-cache;" > /etc/apt/apt.conf &
+    mkdir -p /mnt/$USB_DATA_DEVICE/.data/apt-cache && \
+      echo "Dir::Cache /mnt/$USB_DATA_DEVICE/.data/apt-cache;" > /etc/apt/apt.conf &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -368,9 +369,9 @@ setup_google_backup() {
   else
     DEBIAN_FRONTEND=noninteractive apt-get install -yq rclone >/dev/null 2>&1 && \
       sudo -u pi mkdir -p /home/pi/.config/rclone
-      cp /mnt/$usb_data_device/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
+      cp /mnt/$USB_DATA_DEVICE/Ameer/rclone.conf /home/pi/.config/rclone/rclone.conf && \
       chown pi:pi /home/pi/.config/rclone/rclone.conf && \
-      (crontab -u pi -l && echo -e "0 2 * * * /mnt/$usb_data_device/Ameer/backup-gdrive-ameer.sh\n4 2 * * * /mnt/$usb_data_device/Ameer/backup-gdriveshared-ameer.sh\n7 2 * * * /mnt/$usb_data_device/Aani/backup-gdrive-aani.sh\n10 2 * * * /mnt/$usb_data_device/Nimra/backup-gdrive-nimra.sh\n13 2 * * * /mnt/$usb_data_device/Ameer/backup-gphotos-ameer.sh\n16 2 * * * /mnt/$usb_data_device/Aani/backup-gphotos-aani.sh\n19 2 * * * /mnt/$usb_data_device/Nimra/backup-gphotos-nimra.sh") | crontab -u pi - &
+      (crontab -u pi -l && echo -e "0 2 * * * /mnt/$USB_DATA_DEVICE/Ameer/backup-gdrive-ameer.sh\n4 2 * * * /mnt/$USB_DATA_DEVICE/Ameer/backup-gdriveshared-ameer.sh\n7 2 * * * /mnt/$USB_DATA_DEVICE/Aani/backup-gdrive-aani.sh\n10 2 * * * /mnt/$USB_DATA_DEVICE/Nimra/backup-gdrive-nimra.sh\n13 2 * * * /mnt/$USB_DATA_DEVICE/Ameer/backup-gphotos-ameer.sh\n16 2 * * * /mnt/$USB_DATA_DEVICE/Aani/backup-gphotos-aani.sh\n19 2 * * * /mnt/$USB_DATA_DEVICE/Nimra/backup-gphotos-nimra.sh") | crontab -u pi - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -385,7 +386,7 @@ setup_git_backup() {
     print_already
   else
     DEBIAN_FRONTEND=noninteractive apt-get install -yq git >/dev/null 2>&1 && \
-      (crontab -u pi -l && echo "0 3 * * * /mnt/$usb_data_device/Ameer/gitbackup/gitbackup.sh") | crontab -u pi - &
+      (crontab -u pi -l && echo "0 3 * * * /mnt/$USB_DATA_DEVICE/Ameer/gitbackup/gitbackup.sh") | crontab -u pi - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -484,62 +485,62 @@ setup_aria2() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 data folder... "
-  if [ -d /mnt/$usb_data_device/.data/aria2 ]; then
+  if [ -d /mnt/$USB_DATA_DEVICE/.data/aria2 ]; then
     print_already
   else
-    sudo -u pi mkdir -p /mnt/$usb_data_device/.data/aria2 &
+    sudo -u pi mkdir -p /mnt/$USB_DATA_DEVICE/.data/aria2 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 session file... "
-  if [ -f /mnt/$usb_data_device/.data/aria2/session ]; then
+  if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/session ]; then
     print_already
   else
-    sudo -u pi touch /mnt/$usb_data_device/.data/aria2/session &
+    sudo -u pi touch /mnt/$USB_DATA_DEVICE/.data/aria2/session &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 configuration file... "
-  if [ -f /mnt/$usb_data_device/.data/aria2/aria2.conf ]; then
+  if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf ]; then
     print_already
   else
-    echo -e "daemon=true\ndir=/mnt/$usb_data_device/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$usb_data_device/.data/aria2/session\ninput-file=/mnt/$usb_data_device/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$usb_data_device/.data/aria2/hook-complete.sh\non-download-error=/mnt/$usb_data_device/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/aria2.conf > /dev/null &
+    echo -e "daemon=true\ndir=/mnt/$USB_DATA_DEVICE/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$USB_DATA_DEVICE/.data/aria2/session\ninput-file=/mnt/$USB_DATA_DEVICE/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-download-error=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf > /dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 hook-complete file... "
-  if [ -f /mnt/$usb_data_device/.data/aria2/hook-complete.sh ]; then
+  if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-complete.sh > /dev/null && \
-      chmod +x /mnt/$usb_data_device/.data/aria2/hook-complete.sh &
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh > /dev/null && \
+      chmod +x /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 hook-error file... "
-  if [ -f /mnt/$usb_data_device/.data/aria2/hook-error.sh ]; then
+  if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$usb_data_device/.data/aria2/hook-error.sh > /dev/null && \
-      chmod +x /mnt/$usb_data_device/.data/aria2/hook-error.sh &
+    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh > /dev/null && \
+      chmod +x /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
   fi
   printf "   \e[34m•\e[0m Creating aria2 download directory... "
-  if [ -d /mnt/$usb_data_device/aria2 ]; then
+  if [ -d /mnt/$USB_DATA_DEVICE/aria2 ]; then
     print_already
   else
-    sudo -u pi mkdir -p /mnt/$usb_data_device/aria2 &
+    sudo -u pi mkdir -p /mnt/$USB_DATA_DEVICE/aria2 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -549,7 +550,7 @@ setup_aria2() {
   if [ -f /lib/systemd/system/aria2.service ]; then
     print_already
   else
-    echo -e "[Unit]\nDescription=a lightweight multi-protocol & multi-source command-line download utility\nConditionPathExists=/mnt/$usb_data_device/.data/aria2/aria2.conf\nConditionFileIsExecutable=/usr/bin/aria2c\nAfter=network-online.target mnt-$usb_data_device.mount\nDocumentation=man:aria2c(1)\n\n[Service]\nType=forking\nUser=pi\nExecStart=/usr/bin/aria2c --conf-path=/mnt/$usb_data_device/.data/aria2/aria2.conf\nRestart=always\nRestartSec=1\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/aria2.service && \
+    echo -e "[Unit]\nDescription=a lightweight multi-protocol & multi-source command-line download utility\nConditionPathExists=/mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf\nConditionFileIsExecutable=/usr/bin/aria2c\nAfter=network-online.target mnt-$USB_DATA_DEVICE.mount\nDocumentation=man:aria2c(1)\n\n[Service]\nType=forking\nUser=pi\nExecStart=/usr/bin/aria2c --conf-path=/mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf\nRestart=always\nRestartSec=1\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/aria2.service && \
       systemctl enable aria2.service >/dev/null 2>&1 && \
       systemctl start aria2.service >/dev/null 2>&1 &
     bg_pid=$!
@@ -603,7 +604,7 @@ setup_aria2_webui() {
     print_already
   else
     lighttpd_restart_required=true
-    cat /mnt/$usb_data_device/cert/nas1.pem /mnt/$usb_data_device/cert/nas1.key > /etc/lighttpd/server.pem &
+    cat /mnt/$USB_DATA_DEVICE/cert/nas1.pem /mnt/$USB_DATA_DEVICE/cert/nas1.key > /etc/lighttpd/server.pem &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -630,10 +631,10 @@ setup_aria2_webui() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Downloading aria2 webui... "
-  if [ -d /mnt/$usb_data_device/.data/webui-aria2 ]; then
+  if [ -d /mnt/$USB_DATA_DEVICE/.data/webui-aria2 ]; then
     print_already
   else
-    git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/$usb_data_device/.data/webui-aria2 2>/dev/null &
+    git clone --quiet --depth=1 https://github.com/ziahamza/webui-aria2 /mnt/$USB_DATA_DEVICE/.data/webui-aria2 2>/dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -643,7 +644,7 @@ setup_aria2_webui() {
   if [ -d /var/www/html/webui-aria2 ]; then
     print_already
   else
-    ln -s /mnt/$usb_data_device/.data/webui-aria2/docs /var/www/html/webui-aria2 >/dev/null 2>&1 &
+    ln -s /mnt/$USB_DATA_DEVICE/.data/webui-aria2/docs /var/www/html/webui-aria2 >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -670,6 +671,16 @@ disable_swap() {
 
 
 setup_remote_syslog() {
+  printf "   \e[34m•\e[0m Installing rsyslog... "
+  if [ "$(dpkg-query -W -f='${Status}' rsyslog 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq rsyslog >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
   printf "   \e[34m•\e[0m Setting up remote syslog... "
   if [ "$(grep 'syslogger.lan' /etc/rsyslog.conf 2>/dev/null)" != "" ]; then
     print_already
@@ -700,7 +711,7 @@ install_tailscale() {
   else
     tailscale down --accept-risk=lose-ssh && \
       systemctl stop tailscaled.service && \
-      cp /mnt/$usb_data_device/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
+      cp /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
       systemctl start tailscaled.service && \
       tailscale up &
     bg_pid=$!
@@ -812,7 +823,7 @@ install_plex() {
   else
     systemctl stop plexmediaserver.service && \
       rm -rf /var/lib/plexmediaserver/Library
-      ln -s /mnt/$usb_data_device/.data/Plex/Library /var/lib/plexmediaserver/Library && \
+      ln -s /mnt/$USB_DATA_DEVICE/.data/Plex/Library /var/lib/plexmediaserver/Library && \
       systemctl start plexmediaserver.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -824,7 +835,7 @@ install_plex() {
     print_already
   else
     mkdir -p /etc/systemd/system/plexmediaserver.service.d && \
-      echo -e "[Unit]\nAfter=network.target network-online.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
+      echo -e "[Unit]\nAfter=network.target network-online.target mnt-$USB_DATA_DEVICE.mount\nConditionPathExists=/mnt/$USB_DATA_DEVICE/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
       systemctl daemon-reload && \
       systemctl restart plexmediaserver.service &
     bg_pid=$!
@@ -889,7 +900,7 @@ install_docker() {
   else
     systemctl stop docker.service 2>/dev/null && \
       rm -rf /var/lib/docker && \
-      ln -s /mnt/$usb_data_device/docker/docker /var/lib/docker && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/docker /var/lib/docker && \
       systemctl start docker.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -901,38 +912,7 @@ install_docker() {
     print_already
   else
     mkdir -p /etc/systemd/system/docker.service.d && \
-      echo -e "[Unit]\nAfter=network-online.target docker.socket firewalld.service containerd.service time-set.target mnt-$usb_data_device.mount\nConditionPathExists=/mnt/$usb_data_device/docker" > /etc/systemd/system/docker.service.d/override.conf && \
-      systemctl daemon-reload && \
-      systemctl restart docker.service &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
-setup_docker_caching() {
-  printf "   \e[34m•\e[0m Setting up docker caching proxy... "
-  if [ "$(grep 'Environment' /etc/systemd/system/docker.service.d/http-proxy.conf 2>/dev/null)" != "" ]; then
-    print_already
-  else
-    mkdir -p /etc/systemd/system/docker.service.d && \
-      echo -e "[Service]\nEnvironment=\"HTTPS_PROXY=http://fig.lan:3128/"\" > /etc/systemd/system/docker.service.d/http-proxy.conf && \
-      systemctl daemon-reload && \
-      systemctl restart docker.service &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Installing certificates... "
-  if [ "$(grep "docker_registry_proxy.crt" /etc/ca-certificates.conf 2>/dev/null)" != "" ]; then
-    print_already
-  else
-    curl http://fig.lan:3128/ca.crt > /usr/share/ca-certificates/docker_registry_proxy.crt 2>/dev/null && \
-      echo "docker_registry_proxy.crt" >> /etc/ca-certificates.conf && \
-      update-ca-certificates --fresh >/dev/null 2>&1 && \
+      echo -e "[Unit]\nAfter=network-online.target docker.socket firewalld.service containerd.service time-set.target mnt-$USB_DATA_DEVICE.mount\nConditionPathExists=/mnt/$USB_DATA_DEVICE/docker" > /etc/systemd/system/docker.service.d/override.conf && \
       systemctl daemon-reload && \
       systemctl restart docker.service &
     bg_pid=$!
@@ -958,7 +938,7 @@ install_keepalived() {
   if [ -f /etc/keepalived/keepalived.conf ]; then
     print_already
   else
-    cp /mnt/$usb_data_device/docker/keepalived/keepalived.conf /etc/keepalived/keepalived.conf && \
+    cp /mnt/$USB_DATA_DEVICE/docker/keepalived/keepalived.conf /etc/keepalived/keepalived.conf && \
       systemctl restart keepalived.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -998,7 +978,7 @@ install_cups() {
     print_already
   else
     rm -rf /var/spool/cups && \
-      ln -s /mnt/$usb_data_device/.data/cups /var/spool/cups && \
+      ln -s /mnt/$USB_DATA_DEVICE/.data/cups /var/spool/cups && \
       systemctl restart cups.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -1014,9 +994,9 @@ setup_cups_ssl() {
     print_already
   else
     rm /etc/cups/ssl/printer.lan.crt && \
-      ln -s /mnt/$usb_data_device/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
       rm /etc/cups/ssl/printer.lan.key && \
-      ln -s /mnt/$usb_data_device/docker/tls/printer.key /etc/cups/ssl/printer.lan.key && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.key /etc/cups/ssl/printer.lan.key && \
       systemctl restart cups.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -1124,7 +1104,7 @@ setup_scan_server() {
     print_already
   else
     rm -rf /var/lib/scanservjs/output && \
-      ln -s /mnt/$usb_data_device/scans /var/lib/scanservjs/output && \
+      ln -s /mnt/$USB_DATA_DEVICE/scans /var/lib/scanservjs/output && \
       systemctl restart scanservjs.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -1158,7 +1138,6 @@ install_tailscale
 install_screen
 
 if [ "$HOSTNAME" = "nas1.lan" ]; then
-  usb_data_device="usb1"
   printf "\n  \e[34m○\e[0m Running NAS1 Specific Setup:\n"
   setup_overclock
   setup_google_backup
@@ -1169,17 +1148,14 @@ if [ "$HOSTNAME" = "nas1.lan" ]; then
 fi
 
 if [ "$HOSTNAME" = "nas2.lan" ]; then
-  usb_data_device="usb3"
   printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
   increase_zram
   install_plex
   install_docker
-  setup_docker_caching
   install_keepalived
 fi
 
 if [ "$HOSTNAME" = "printer.lan" ]; then
-  usb_data_device="usb8"
   printf "\n  \e[34m○\e[0m Running Print Server Specific Setup:\n"
   install_cups
   setup_cups_ssl
@@ -1188,16 +1164,13 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   install_avahi
   setup_scan_server
   install_docker
-  setup_docker_caching
   install_keepalived
   prepare_overlayfs
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
-  usb_data_device="hdd1"
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
   install_docker
-  setup_docker_caching
 fi
 
 printf "\n  \e[34m○\e[0m Running post-setup routines:\n"
