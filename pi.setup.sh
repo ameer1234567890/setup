@@ -141,7 +141,11 @@ setup_locale() {
   if [ $(localectl status | grep 'System Locale' | cut -d '=' -f 2) = $LOCALE ]; then
     print_already
   else
-    localectl set-locale $LOCALE >/dev/null 2>&1 &
+    localectl set-locale $LOCALE >/dev/null 2>&1 &&
+      echo "LC_ALL=$LOCALE" >> /etc/environment &&
+      echo "$LOCALE UTF-8" >> /etc/locale.gen &&
+      echo "LANG=$LOCALE" > /etc/locale.conf &&
+      locale-gen $LOCALE >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
