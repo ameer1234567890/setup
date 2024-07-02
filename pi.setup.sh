@@ -29,7 +29,7 @@ cat << "EOF"
     ┛
 
 * Created by: Ameer Dawood
-* This script runs my customized setup process for Raspberry Pi & Orange Pi
+* This script runs my customized setup process for my HomeLab's linux devices
 =============================================================================
 
 EOF
