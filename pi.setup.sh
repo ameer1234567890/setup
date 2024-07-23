@@ -5,7 +5,7 @@ LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
-USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1"
+USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
 #### End of of configurable variables
 
 #### .secrets.txt
@@ -15,7 +15,7 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1"
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # THINGSPEAK_API_KEY='KEY_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
-# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1'
+# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
 #### .secrets.txt
 
 REBOOT_REQUIRED=false
@@ -56,7 +56,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 if [ -e $(dirname -- "$0")/.secrets.txt ]; then source $(dirname -- "$0")/.secrets.txt; fi
 
-if [ -z "$SLACK_WEBHOOK_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$THINGSPEAK_API_KEY" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ]; then
+if [ -z "$SLACK_WEBHOOK_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ]; then
   echo "Some or all of the parameters are empty" >&2
   exit 1
 fi
@@ -353,15 +353,19 @@ setup_overlayroot_notice() {
 
 add_heartbeat() {
   printf "   \e[34m•\e[0m Adding heartbeat... "
-  if [ "$(crontab -u pi -l | grep api.thingspeak.com)" != "" ]; then
-    print_already
+  if [ "$THINGSPEAK_API_KEY" == "" ]; then
+    print_not_required
   else
-    (crontab -u pi -l && \
-      echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(awk '/MemFree/ {print \$2}' /proc/meminfo)&field2=\$(cat /sys/class/thermal/thermal_zone0/temp | sed -r \"s/([0-9]+)([0-9]{3})/\1.\2/\")\"") | crontab -u pi - &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
+    if [ "$(crontab -u pi -l | grep api.thingspeak.com)" != "" ]; then
+      print_already
+    else
+      (crontab -u pi -l && \
+        echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(awk '/MemFree/ {print \$2}' /proc/meminfo)&field2=\$(cat /sys/class/thermal/thermal_zone0/temp | sed -r \"s/([0-9]+)([0-9]{3})/\1.\2/\")\"") | crontab -u pi - &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
   fi
 }
 
@@ -700,28 +704,32 @@ setup_remote_syslog() {
 
 install_tailscale() {
   printf "   \e[34m•\e[0m Installing Tailscale... "
-  if [ "$(dpkg-query -W -f='${Status}' tailscale 2>/dev/null)" = "install ok installed" ]; then
-    print_already
+  if [ ! -f /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state ]; then
+    print_not_required
   else
-    curl -fsSL https://tailscale.com/install.sh | sh >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Setting up Tailscale... "
-  if [ "$(cat /var/lib/tailscale/tailscaled.state 2>/dev/null)" != "{}" ]; then
-    print_already
-  else
-    tailscale down --accept-risk=lose-ssh && \
-      systemctl stop tailscaled.service && \
-      cp /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
-      systemctl start tailscaled.service && \
-      tailscale up &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
+    if [ "$(dpkg-query -W -f='${Status}' tailscale 2>/dev/null)" = "install ok installed" ]; then
+      print_already
+    else
+      curl -fsSL https://tailscale.com/install.sh | sh >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+    printf "   \e[34m•\e[0m Setting up Tailscale... "
+    if [ "$(cat /var/lib/tailscale/tailscaled.state 2>/dev/null)" != "{}" ]; then
+      print_already
+    else
+      tailscale down --accept-risk=lose-ssh && \
+        systemctl stop tailscaled.service && \
+        cp /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
+        systemctl start tailscaled.service && \
+        tailscale up &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
   fi
 }
 
@@ -1174,6 +1182,11 @@ fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
+  install_docker
+fi
+
+if [ "$HOSTNAME" = "apricot.lan" ]; then
+  printf "\n  \e[34m○\e[0m Running Apricot Specific Setup:\n"
   install_docker
 fi
 
