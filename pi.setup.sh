@@ -1126,6 +1126,25 @@ setup_scan_server() {
 }
 
 
+fixup_dns_nameserver () {
+  printf "   \e[34m•\e[0m Fixing up DNS nameserver... "
+  if [ "$(grep 'supersede domain-name-servers 192.168.100.1;' /etc/dhcp/dhclient.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo "supersede domain-name-servers 192.168.100.1;" >> /etc/dhcp/dhclient.conf &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
+if [ "$(systemd-detect-virt)" = "qemu" ]; then
+  printf "\n  \e[34m○\e[0m Running QEMU Specific Setup:\n"
+  fixup_dns_nameserver
+fi
+
 #### Tasks to run
 printf "  \e[34m○\e[0m Running Common Setup:\n"
 update_apt
