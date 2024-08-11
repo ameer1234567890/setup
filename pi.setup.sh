@@ -516,7 +516,7 @@ setup_aria2() {
   if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf ]; then
     print_already
   else
-    echo -e "daemon=true\ndir=/mnt/$USB_DATA_DEVICE/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$USB_DATA_DEVICE/.data/aria2/session\ninput-file=/mnt/$USB_DATA_DEVICE/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-download-error=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true\nseed-ratio=1.0" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf > /dev/null &
+    echo -e "daemon=true\ndir=/mnt/$USB_DATA_DEVICE/aria2\nfile-allocation=prealloc\ncontinue=true\nsave-session=/mnt/$USB_DATA_DEVICE/.data/aria2/session\ninput-file=/mnt/$USB_DATA_DEVICE/.data/aria2/session\nsave-session-interval=10\nforce-save=true\nmax-connection-per-server=10\nenable-rpc=true\nrpc-listen-all=true\nrpc-secret=$ARIA2_RPC_TOKEN\nrpc-listen-port=6800\nrpc-allow-origin-all=true\non-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-bt-download-complete=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh\non-download-error=/mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh\nmax-overall-download-limit=200K\nmax-concurrent-downloads=1\nquiet=true\nseed-time=0" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf > /dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
