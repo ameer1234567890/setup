@@ -13,7 +13,6 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
 # HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan'
 # SLACK_WEBHOOK_KEY='KEY_HERE'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
-# THINGSPEAK_API_KEY='KEY_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
 #### .secrets.txt
@@ -382,6 +381,7 @@ setup_git_backup() {
     assert_status
   fi
 }
+
 
 setup_rsync_daemon() {
   printf "   \e[34m•\e[0m Installing rsync... "
