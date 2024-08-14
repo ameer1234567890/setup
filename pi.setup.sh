@@ -351,25 +351,6 @@ setup_overlayroot_notice() {
 }
 
 
-add_heartbeat() {
-  printf "   \e[34m•\e[0m Adding heartbeat... "
-  if [ "$THINGSPEAK_API_KEY" == "" ]; then
-    print_not_required
-  else
-    if [ "$(crontab -u pi -l | grep api.thingspeak.com)" != "" ]; then
-      print_already
-    else
-      (crontab -u pi -l && \
-        echo "* * * * * curl \"https://api.thingspeak.com/update?api_key=$THINGSPEAK_API_KEY&field1=\$(awk '/MemFree/ {print \$2}' /proc/meminfo)&field2=\$(cat /sys/class/thermal/thermal_zone0/temp | sed -r \"s/([0-9]+)([0-9]{3})/\1.\2/\")\"") | crontab -u pi - &
-      bg_pid=$!
-      show_progress $bg_pid
-      wait $bg_pid
-      assert_status
-    fi
-  fi
-}
-
-
 setup_google_backup() {
   printf "   \e[34m•\e[0m Setting up Google Backup... "
   if [ "$(crontab -u pi -l | grep backup-gdrive)" != "" ]; then
@@ -1160,7 +1141,6 @@ disable_password_login
 setup_passwordless_sudo
 add_zram
 setup_overlayroot_notice
-add_heartbeat
 setup_rsync_daemon
 setup_samba_shares
 disable_swap
