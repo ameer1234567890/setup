@@ -11,10 +11,11 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
 # HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan'
-# SLACK_WEBHOOK_KEY='KEY_HERE'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
+# TELEGRAM_BOT_TOKEN='TOKEN_HERE'
+# TELEGRAM_CHATID='CHATID_HERE'
 #### .secrets.txt
 
 REBOOT_REQUIRED=false
@@ -55,7 +56,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 if [ -e $(dirname -- "$0")/.secrets.txt ]; then source $(dirname -- "$0")/.secrets.txt; fi
 
-if [ -z "$SLACK_WEBHOOK_KEY" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ]; then
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ]; then
   echo "Some or all of the parameters are empty" >&2
   exit 1
 fi
@@ -172,7 +173,7 @@ notify_on_startup() {
   if [ -f /lib/systemd/system/notifyonstartup.service ]; then
     print_already
   else
-    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"NotifyBot\\\", \\\"text\\\": \\\""$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')" rebooted.\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/"$SLACK_WEBHOOK_KEY"\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
+    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST -H 'Content-Type: application/json' -d '{\"chat_id\": \"$TELEGRAM_CHATID\", \"text\": \""$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')" rebooted\", \"disable_notification\": false}' 'https://api.telegram.org/bot"$TELEGRAM_BOT_TOKEN"/sendMessage'\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
       systemctl enable notifyonstartup.service >/dev/null 2>&1 && \
       systemctl start notifyonstartup.service >/dev/null 2>&1 &
     bg_pid=$!
