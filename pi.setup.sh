@@ -508,7 +508,7 @@ setup_aria2() {
   if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download complete: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh > /dev/null && \
+    echo -e "#"'!'"/bin/sh\ncurl -X POST -H 'Content-Type: application/json' -d '{\"chat_id\": \"$TELEGRAM_CHATID\", \"text\": \"✅ Download Complete: '\"$3\"'\", \"disable_notification\": false}' 'https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage'\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh > /dev/null && \
       chmod +x /mnt/$USB_DATA_DEVICE/.data/aria2/hook-complete.sh &
     bg_pid=$!
     show_progress $bg_pid
@@ -519,7 +519,7 @@ setup_aria2() {
   if [ -f /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh ]; then
     print_already
   else
-    echo -e "#!/bin/sh\ncurl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"#general\\\", \\\"username\\\": \\\"aria2\\\", \\\"text\\\": \\\"Download error: \$3\\\", \\\"icon_emoji\\\": \\\":slack:\\\"}\" https://hooks.slack.com/services/$SLACK_WEBHOOK_KEY" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh > /dev/null && \
+    echo -e "#"'!'"/bin/sh\ncurl -X POST -H 'Content-Type: application/json' -d '{\"chat_id\": \"$TELEGRAM_CHATID\", \"text\": \"❌ Download Error: '\"$3\"'\", \"disable_notification\": false}' 'https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage'\nrm \"\$3.aria2\"" | sudo -u pi tee /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh > /dev/null && \
       chmod +x /mnt/$USB_DATA_DEVICE/.data/aria2/hook-error.sh &
     bg_pid=$!
     show_progress $bg_pid
