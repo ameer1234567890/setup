@@ -19,6 +19,7 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
 #### .secrets.txt
 
 REBOOT_REQUIRED=false
+SAMBA_VFS_MODULES_REQUIRED=false
 
 clear
 cat << "EOF"
@@ -267,8 +268,10 @@ mount_usb_drives() {
     fs_type="$(sudo blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
-    if [ "$fs_type" != "btrfs" ]; then
+    if [ "$(blkid | grep $drive)" = "" ]; then
       print_notexist
+    elif [ "$fs_type" != "btrfs" ]; then
+      print_not_required
     elif [ "$(crontab -u pi -l | grep 'sudo btrfs scrub start /mnt/'$drive)" != "" ]; then
       print_already
     else
@@ -484,19 +487,49 @@ setup_samba_shares() {
   fi
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up samba share for $drive... "
+    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="${fs_type#*TYPE=\"}"
+    fs_type="${fs_type%%\"*}"
+    if [ "$fs_type" = "btrfs" ]; then
+      SAMBA_VFS_MODULES_REQUIRED=true
+    fi
     if [ "$(blkid | grep $drive)" = "" ]; then
       print_notexist
     elif [ "$(grep /mnt/$drive /etc/samba/smb.conf)" != "" ]; then
       print_already
     else
-      echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    public = yes\n    writable = yes\n    browsable = yes\n    guest ok = yes\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi" >> /etc/samba/smb.conf && \
+      if [ "$fs_type" = "btrfs" ]; then
+        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    public = yes\n    writable = yes\n    browsable = yes\n    guest ok = yes\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi\n    vfs objects = shadow_copy2\n    shadow:format = @GMT_%Y.%m.%d-%H.%M.%S\n    shadow:sort = desc\n    shadow:snapdir = .snapshots\n" >> /etc/samba/smb.conf && \
+          systemctl restart smbd.service &
+        bg_pid=$!
+        show_progress $bg_pid
+        wait $bg_pid
+        assert_status
+      else
+        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    public = yes\n    writable = yes\n    browsable = yes\n    guest ok = yes\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi" >> /etc/samba/smb.conf && \
+          systemctl restart smbd.service &
+        bg_pid=$!
+        show_progress $bg_pid
+        wait $bg_pid
+        assert_status
+      fi
+    fi
+  done
+  printf "   \e[34m•\e[0m Installing samba vfs modules... "
+  if [ $SAMBA_VFS_MODULES_REQUIRED = true ]; then
+    if [ "$(dpkg-query -W -f='${Status}' samba-vfs-modules 2>/dev/null)" = "install ok installed" ]; then
+      print_already
+    else
+      DEBIAN_FRONTEND=noninteractive apt-get install -yq samba-vfs-modules >/dev/null 2>&1 && \
         systemctl restart smbd.service &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
       assert_status
     fi
-  done
+  else
+    print_not_required
+  fi
 }
 
 
