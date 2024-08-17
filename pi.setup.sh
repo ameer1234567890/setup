@@ -19,7 +19,6 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
 #### .secrets.txt
 
 REBOOT_REQUIRED=false
-SAMBA_VFS_MODULES_REQUIRED=false
 
 clear
 cat << "EOF"
@@ -475,6 +474,7 @@ setup_rsync_daemon() {
 
 
 setup_samba_shares() {
+  SAMBA_VFS_MODULES_REQUIRED=false
   printf "   \e[34m•\e[0m Installing samba... "
   if [ "$(dpkg-query -W -f='${Status}' samba 2>/dev/null)" = "install ok installed" ]; then
     print_already
