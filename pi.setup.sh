@@ -261,6 +261,21 @@ mount_usb_drives() {
       wait $bg_pid
       assert_status
     fi
+    printf "   \e[34m•\e[0m Setting up data scrubbing (for btrfs): $drive... "
+    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="${fs_type#*TYPE=\"}"
+    fs_type="${fs_type%%\"*}"
+    if [ "$fs_type" != "btrfs" ]; then
+      print_notexist
+    elif [ "$(crontab -u pi -l | grep 'sudo btrfs scrub start /mnt/'$drive)" != "" ]; then
+      print_already
+    else
+      (crontab -u pi -l && echo "0 0 * * * sudo btrfs scrub start /mnt/$drive") | crontab -u pi - &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
   done
 }
 
