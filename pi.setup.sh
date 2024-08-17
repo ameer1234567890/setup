@@ -250,9 +250,12 @@ mount_usb_drives() {
     else
       mkdir -p /mnt/$drive && \
       touch /mnt/$drive/USB_NOT_MOUNTED && \
-      echo "LABEL=$drive  /mnt/$drive  ext4  defaults,nofail,noatime  0  0" >> /etc/fstab && \
-      mount -a >/dev/null 2>&1 && \
-      chown pi:pi /mnt/$drive &
+      fs_type="$(sudo blkid | grep $drive | head -1)"
+      fs_type="${fs_type#*TYPE=\"}"
+      fs_type="${fs_type%%\"*}"
+      echo "LABEL=$drive  /mnt/$drive  $fs_type  defaults,nofail,noatime  0  0" >> /etc/fstab && \
+        mount -a >/dev/null 2>&1 && \
+        chown pi:pi /mnt/$drive &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
