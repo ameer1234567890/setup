@@ -243,6 +243,9 @@ setup_apt-cacher-ng() {
 mount_usb_drives() {
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Mounting USB drive: $drive... "
+    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="${fs_type#*TYPE=\"}"
+    fs_type="${fs_type%%\"*}"
     if [ "$(blkid | grep $drive)" = "" ]; then
       print_notexist
     elif [ "$(mount | grep /mnt/$drive)" != "" ] || [ "$(grep /mnt/$drive /etc/fstab)" != "" ]; then
@@ -250,9 +253,6 @@ mount_usb_drives() {
     else
       mkdir -p /mnt/$drive && \
       touch /mnt/$drive/USB_NOT_MOUNTED && \
-      fs_type="$(sudo blkid | grep $drive | head -1)"
-      fs_type="${fs_type#*TYPE=\"}"
-      fs_type="${fs_type%%\"*}"
       echo "LABEL=$drive  /mnt/$drive  $fs_type  defaults,nofail,noatime  0  0" >> /etc/fstab && \
         mount -a >/dev/null 2>&1 && \
         chown pi:pi /mnt/$drive &
@@ -262,9 +262,6 @@ mount_usb_drives() {
       assert_status
     fi
     printf "   \e[34m•\e[0m Setting up data scrubbing (for btrfs): $drive... "
-    fs_type="$(sudo blkid | grep $drive | head -1)"
-    fs_type="${fs_type#*TYPE=\"}"
-    fs_type="${fs_type%%\"*}"
     if [ "$fs_type" != "btrfs" ]; then
       print_notexist
     elif [ "$(crontab -u pi -l | grep 'sudo btrfs scrub start /mnt/'$drive)" != "" ]; then
