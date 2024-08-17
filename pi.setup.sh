@@ -261,7 +261,12 @@ mount_usb_drives() {
       wait $bg_pid
       assert_status
     fi
+  done
+  for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up data scrubbing (for btrfs): $drive... "
+    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="${fs_type#*TYPE=\"}"
+    fs_type="${fs_type%%\"*}"
     if [ "$fs_type" != "btrfs" ]; then
       print_notexist
     elif [ "$(crontab -u pi -l | grep 'sudo btrfs scrub start /mnt/'$drive)" != "" ]; then
@@ -273,7 +278,12 @@ mount_usb_drives() {
       wait $bg_pid
       assert_status
     fi
+  done
+  for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up snapshots (for btrfs): $drive... "
+    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="${fs_type#*TYPE=\"}"
+    fs_type="${fs_type%%\"*}"
     if [ "$fs_type" != "btrfs" ]; then
       print_notexist
     elif [ "$(crontab -u pi -l | grep 'sudo btrfs subvolume snapshot /mnt/'$drive' /mnt/'$drive'/.snapshots/@GMT_`date +%Y.%m.%d-%H.%M.%S`')" != "" ]; then
