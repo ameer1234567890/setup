@@ -288,10 +288,10 @@ mount_usb_drives() {
     fs_type="${fs_type%%\"*}"
     if [ "$fs_type" != "btrfs" ]; then
       print_notexist
-    elif [ "$(crontab -u pi -l | grep 'sudo btrfs subvolume snapshot /mnt/'$drive' /mnt/'$drive'/.snapshots/@GMT_`date -u +%Y.%m.%d-%H.%M.%S`')" != "" ]; then
+    elif [ "$(crontab -u pi -l | grep 'sudo btrfs subvolume snapshot /mnt/'$drive' /mnt/'$drive'/.snapshots/@GMT')" != "" ]; then
       print_already
     else
-      (crontab -u pi -l && echo "0 1 * * * sudo btrfs subvolume snapshot /mnt/$drive /mnt/$drive/.snapshots/@GMT_\`date -u +%Y.%m.%d-%H.%M.%S\`") | crontab -u pi - &
+      (crontab -u pi -l && echo "30 0 * * * sudo btrfs subvolume snapshot /mnt/$drive /mnt/$drive/.snapshots/@GMT_\`date -u +\\%Y.\\%m.\\%d-\\%H.\\%M.\\%S\`") | crontab -u pi - &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
