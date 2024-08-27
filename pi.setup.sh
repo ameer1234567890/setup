@@ -198,7 +198,7 @@ notify_on_startup() {
 
 setup_overclock() {
   printf "   \e[34m•\e[0m Setting up overclock... "
-  if [ $(raspi-config nonint get_config_var arm_freq /boot/config.txt) = $ARM_FREQUENCY ]; then
+  if [ $(raspi-config nonint get_config_var arm_freq /boot/firmware/config.txt) = $ARM_FREQUENCY ]; then
     print_already
   else
     raspi-config nonint do_overclock $OVERCLOCK >/dev/null 2>&1 &
