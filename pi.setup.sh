@@ -5,7 +5,19 @@ LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
-USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb7 usb8 usb9 hdd1 mmc1"
+USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 mmc1"
+declare -A backup_script
+backup_script=( \
+  ["usb1"]="backup.sh" \
+  ["usb2"]="backup.sh" \
+  ["usb3"]="backup.sh" \
+  ["usb4"]="backup-gdrive.sh" \
+  ["usb5"]="backup-gdrive.sh" \
+  ["usb6"]="backup-gdrive.sh" \
+  ["usb8"]="backup.sh" \
+  ["hdd1"]="backup.sh" \
+  ["mmc1"]="backup.sh" \
+)
 #### End of of configurable variables
 
 #### .secrets.txt
@@ -292,6 +304,21 @@ mount_usb_drives() {
       print_already
     else
       (crontab -u pi -l && echo "30 0 * * * sudo btrfs subvolume snapshot /mnt/$drive /mnt/$drive/.snapshots/@GMT_\`date -u +\\%Y.\\%m.\\%d-\\%H.\\%M.\\%S\`") | crontab -u pi - &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  done
+  for drive in $USB_DRIVES; do
+    printf "   \e[34m•\e[0m Setting up backup jobs: $drive... "
+    script_file="${backup_script[$drive]}"
+    if [ "$(blkid | grep $drive)" = "" ]; then
+      print_notexist
+    elif [ "$(crontab -u pi -l | grep '/mnt/'$drive'/'$script_file)" != "" ]; then
+      print_already
+    else
+      (crontab -u pi -l && echo "0 "${drive: -1}" * * * sudo /mnt/$drive/$script_file") | crontab -u pi - &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
