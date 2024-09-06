@@ -275,7 +275,7 @@ mount_usb_drives() {
     fi
   done
   for drive in $USB_DRIVES; do
-    printf "   \e[34m•\e[0m Setting up data scrubbing (for btrfs): $drive... "
+    printf "   \e[34m•\e[0m Setting up btrfs data scrubbing: $drive... "
     fs_type="$(sudo blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
@@ -294,7 +294,7 @@ mount_usb_drives() {
     fi
   done
   for drive in $USB_DRIVES; do
-    printf "   \e[34m•\e[0m Setting up snapshots (for btrfs): $drive... "
+    printf "   \e[34m•\e[0m Setting up btrfs snapshots: $drive... "
     fs_type="$(sudo blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
