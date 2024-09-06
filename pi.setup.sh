@@ -240,7 +240,7 @@ setup_apt-cacher-ng() {
     if [ -f /etc/apt/apt.conf.d/00proxy ]; then
       print_already
     else
-      echo -e "Acquire::http::Proxy \"http://nas2.lan:3142\";\nAcquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
+      echo -e "#Acquire::http::Proxy \"http://nas2.lan:3142\";\n#Acquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
