@@ -122,7 +122,7 @@ update_apt() {
   # diff_seconds=$(expr $(date +'%s') - $(stat -c %Y '/var/cache/apt'))
   # half_an_hour=18000 # in seconds * 1000
   # if [ $diff_seconds -lt $half_an_hour ]; then
-  if [ -z "$(find -H /var/lib/apt/lists -maxdepth 0 -mmin -30)" ]; then
+  if [ -z "$(find -H /var/lib/apt/lists -maxdepth 0 -mmin 30)" ]; then
     print_already
   else
     DEBIAN_FRONTEND=noninteractive apt-get update >/dev/null 2>&1 &
