@@ -796,7 +796,7 @@ install_tailscale() {
       assert_status
     fi
     printf "   \e[34m•\e[0m Setting up Tailscale... "
-    if [ "$(cat /var/lib/tailscale/tailscaled.state 2>/dev/null)" != "{}" ]; then
+    if [ "$(cat /var/lib/tailscale/tailscaled.state >/dev/null 2>&1)" != "{}" ]; then
       print_already
     else
       tailscale down --accept-risk=lose-ssh && \
