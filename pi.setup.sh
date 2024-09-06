@@ -252,6 +252,20 @@ setup_apt-cacher-ng() {
 }
 
 
+setup_cron() {
+  printf "   \e[34m•\e[0m Setting up cron... "
+  if [ -f /var/spool/cron/crontabs/pi ]; then
+    print_already
+  else
+    (echo "") | crontab -u pi - &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 mount_usb_drives() {
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Mounting USB drive: $drive... "
@@ -1233,6 +1247,7 @@ setup_timezone
 notify_on_startup
 setup_ssh_keyfile
 setup_apt-cacher-ng
+setup_cron
 mount_usb_drives
 relocate_apt_cache
 disable_password_login
