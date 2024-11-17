@@ -363,7 +363,7 @@ disable_password_login() {
     print_already
   else
     echo -e "PasswordAuthentication no\nMatch address 192.168.100.0/24\n    PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
-      systemctl restart sshd.service &
+      systemctl restart ssh.service &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
