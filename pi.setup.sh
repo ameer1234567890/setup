@@ -786,7 +786,8 @@ setup_remote_syslog() {
   if [ "$(grep 'syslogger.lan' /etc/rsyslog.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo "*.* @syslogger.lan" >> /etc/rsyslog.conf &
+    echo "*.* @syslogger.lan" >> /etc/rsyslog.conf &&
+    systemctl restart rsyslog.service &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
