@@ -956,8 +956,13 @@ install_docker() {
   if [ -f /etc/apt/keyrings/docker.gpg ]; then
     print_already
   else
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-      echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null &
+    if [ $(cat /etc/os-release | grep Ubuntu) ]; then
+      distro="ubuntu"
+    else
+      distro="debian"
+    fi
+    curl -fsSL https://download.docker.com/linux/$distro/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+      echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$distro "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
