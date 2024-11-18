@@ -1101,7 +1101,7 @@ setup_cups_ssl() {
   else
     rm /etc/cups/ssl/printer.lan.crt 2>/dev/null && \
       ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
-      rm /etc/cups/ssl/printer.lan.key && \
+      rm /etc/cups/ssl/printer.lan.key 2>/dev/null && \
       ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.key /etc/cups/ssl/printer.lan.key && \
       systemctl restart cups.service &
     bg_pid=$!
