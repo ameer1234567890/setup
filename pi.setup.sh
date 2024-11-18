@@ -817,7 +817,7 @@ install_tailscale() {
       tailscale down --accept-risk=lose-ssh && \
         systemctl stop tailscaled.service && \
         cp /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state /var/lib/tailscale/tailscaled.state && \
-        systemctl start tailscaled.service && \
+        systemctl start tailscaled.service >/dev/null 2>&1 && \
         tailscale up &
       bg_pid=$!
       show_progress $bg_pid
