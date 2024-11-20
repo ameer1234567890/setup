@@ -297,10 +297,10 @@ mount_usb_drives() {
       print_notexist
     elif [ "$fs_type" != "btrfs" ]; then
       print_not_required
-    elif [ "$(crontab -u pi -l | grep 'sudo btrfs scrub start /mnt/'$drive)" != "" ]; then
+    elif [ "$(crontab -u pi -l | grep 'sudo /mnt/'$drive'/scrub.sh')" != "" ]; then
       print_already
     else
-      (crontab -u pi -l && echo "0 0 * * * sudo btrfs scrub start /mnt/$drive") | crontab -u pi - &
+      (crontab -u pi -l && echo "0 0 * * * sudo /mnt/$drive/scrub.sh") | crontab -u pi - &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
