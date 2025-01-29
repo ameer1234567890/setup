@@ -823,6 +823,19 @@ install_tailscale() {
       wait $bg_pid
       assert_status
     fi
+    printf "   \e[34m•\e[0m Fixing up Tailscale log level... "
+    if [ "$(grep 'LogLevelMax' /etc/systemd/system/tailscaled.service.d/override.conf 2>/dev/null)" != "" ]; then
+      print_already
+    else
+      mkdir -p /etc/systemd/system/tailscaled.service.d && \
+        echo -e "[Service]\nLogLevelMax=notice" > /etc/systemd/system/tailscaled.service.d/override.conf && \
+        systemctl daemon-reload && \
+        systemctl restart tailscaled.service &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
   fi
 }
 
