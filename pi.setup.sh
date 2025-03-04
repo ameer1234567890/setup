@@ -1113,7 +1113,7 @@ install_cups() {
 
 setup_cups_ssl() {
   printf "   \e[34m•\e[0m Setting up cups ssl certificates... "
-  if [ -L /etc/cups/ssl/printer.lan.crt ]; then
+  if [ -L /etc/cups/ssl/printer.lan.crt ] && [ -L /etc/cups/ssl/printer.lan.key ]; then
     print_already
   else
     rm /etc/cups/ssl/printer.lan.crt 2>/dev/null; \
