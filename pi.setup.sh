@@ -783,10 +783,10 @@ setup_remote_syslog() {
     assert_status
   fi
   printf "   \e[34m•\e[0m Setting up remote syslog... "
-  if [ "$(grep 'syslogger.lan' /etc/rsyslog.conf 2>/dev/null)" != "" ]; then
+  if [ "$(grep 'fig.lan' /etc/rsyslog.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo "*.* @syslogger.lan" >> /etc/rsyslog.conf &&
+    echo "*.* @fig.lan" >> /etc/rsyslog.conf &&
     systemctl restart rsyslog.service &
     bg_pid=$!
     show_progress $bg_pid
