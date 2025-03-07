@@ -18,6 +18,17 @@ backup_script=( \
   ["hdd1"]="backup.sh" \
   ["mmc1"]="backup.sh" \
 )
+backup_schedule=( \
+  ["usb1"]="30 2 * * *" \
+  ["usb2"]="40 0 * * *" \
+  ["usb3"]="50 0 * * *" \
+  ["usb4"]="10 1 * * *" \
+  ["usb5"]="20 1 * * *" \
+  ["usb6"]="30 1 * * *" \
+  ["usb8"]="30 0 * * *" \
+  ["hdd1"]="10 0 * * *" \
+  ["mmc1"]="20 0 * * *" \
+)
 #### End of of configurable variables
 
 #### .secrets.txt
@@ -332,7 +343,7 @@ mount_usb_drives() {
     elif [ "$(crontab -u pi -l | grep '/mnt/'$drive'/'$script_file)" != "" ]; then
       print_already
     else
-      (crontab -u pi -l && echo "0 "${drive: -1}" * * * sudo /mnt/$drive/$script_file") | crontab -u pi - &
+      (crontab -u pi -l && echo "${backup_schedule[$drive]} sudo /mnt/$drive/$script_file") | crontab -u pi - &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
