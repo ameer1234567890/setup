@@ -196,7 +196,7 @@ notify_on_startup() {
   if [ -f /lib/systemd/system/notifyonstartup.service ]; then
     print_already
   else
-    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST -H 'Content-Type: application/json' -d '{\"chat_id\": \"$TELEGRAM_CHATID\", \"text\": \""$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')" rebooted\", \"disable_notification\": false}' 'https://api.telegram.org/bot"$TELEGRAM_BOT_TOKEN"/sendMessage'\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
+    echo -e "[Unit]\nDescription=Notify on system startup\nAfter=network-online.target\n\n[Service]\nUser=pi\nExecStart=curl -X POST -H 'Content-Type: application/json' -d '{\"chat_id\": \"$TELEGRAM_CHATID\", \"text\": \""$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')" rebooted\", \"disable_notification\": true}' 'https://api.telegram.org/bot"$TELEGRAM_BOT_TOKEN"/sendMessage'\nRestartSec=5\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/notifyonstartup.service && \
       systemctl enable notifyonstartup.service >/dev/null 2>&1 && \
       systemctl start notifyonstartup.service >/dev/null 2>&1 &
     bg_pid=$!
