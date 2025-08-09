@@ -373,7 +373,7 @@ disable_password_login() {
   if [ "$(grep "^PasswordAuthentication no" /etc/ssh/sshd_config)" != "" ]; then
     print_already
   else
-    echo -e "PasswordAuthentication no\nMatch address 192.168.100.0/24\n    PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
+    echo -e "PasswordAuthentication no\nMatch address 192.168.88.0/24\n    PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
       systemctl restart ssh.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -494,7 +494,7 @@ setup_rsync_daemon() {
     elif [ "$(grep /mnt/$drive /etc/rsyncd.conf)" != "" ]; then
       print_already
     else
-      echo -e "[$drive]\npath = /mnt/$drive\ncomment = $drive\nlist = yes\nhosts allow = 192.168.100.1/24,127.0.0.1,100.82.10.102" >> /etc/rsyncd.conf && \
+      echo -e "[$drive]\npath = /mnt/$drive\ncomment = $drive\nlist = yes\nhosts allow = 192.168.88.1/24,127.0.0.1,100.82.10.102" >> /etc/rsyncd.conf && \
         systemctl restart rsync.service &
       bg_pid=$!
       show_progress $bg_pid
@@ -1250,10 +1250,10 @@ setup_scan_server() {
 
 fixup_dns_nameserver () {
   printf "   \e[34m•\e[0m Fixing up DNS nameserver... "
-  if [ "$(grep 'supersede domain-name-servers 192.168.100.1;' /etc/dhcp/dhclient.conf 2>/dev/null)" != "" ]; then
+  if [ "$(grep 'supersede domain-name-servers 192.168.88.1;' /etc/dhcp/dhclient.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo "supersede domain-name-servers 192.168.100.1;" >> /etc/dhcp/dhclient.conf &
+    echo "supersede domain-name-servers 192.168.88.1;" >> /etc/dhcp/dhclient.conf &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
