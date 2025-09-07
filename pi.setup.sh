@@ -33,7 +33,7 @@ backup_schedule=( \
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan'
+# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan/apricot.lan'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
@@ -56,6 +56,7 @@ cat << "EOF"
 =============================================================================
 
 EOF
+
 
 kill_tools() {
   tools="apt apt-get dpkg tar wget git"
@@ -101,6 +102,39 @@ print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
 print_available() { printf "\e[36mAvailable!\e[0m\n"; }
 print_unavailable() { printf "\e[91mUnavailable!\e[0m\n"; }
 print_notexist() { printf "\e[36mDoes not Exist!\e[0m\n"; }
+
+
+read -r -d "" usb_checker_script << EOF
+#!/bin/bash
+
+TELEGRAM_CHATID="$TELEGRAM_CHATID"
+TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN"
+EOF
+
+usb_checker_script+=$(cat << "EOF"
+
+USB_DRIVES="$(grep usb /etc/fstab | cut -d= -f2 | cut -d' ' -f1)"
+
+for drive in $USB_DRIVES; do
+  if [ "$(ls /mnt/$drive/check_mount.sh)" ] && [ "$(ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
+    echo "$drive OK"
+  else
+    sudo mount -a
+    if [ "$(ls /mnt/$drive/check_mount.sh)" ] && [ "$(ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
+      curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "'$drive' Remounted", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
+    else
+      if [ "$(who | grep pts)" ]; then
+        wall "$drive down! Not rebooting since ssh session exists!"
+      else
+        wall "Rebooting since ssh session does not exist!"
+        curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "Rebooting '$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')' due to IO error in '$drive'", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
+        curl -X POST -H 'Content-Type: application/json' -d '{"seconds": "5"}' 'http://fig.lan:8123/api/webhook/'$(echo $HOSTNAME | cut -d . -f 1)'reboot'
+      fi
+    fi
+  fi
+done
+EOF
+)
 
 
 show_progress() {
@@ -807,6 +841,41 @@ setup_remote_syslog() {
 }
 
 
+setup_usb_checker() {
+  usb_checker_script_location="/home/pi/checker.sh"
+  printf "   \e[34m•\e[0m Adding USB checker... "
+  if [ -f "$usb_checker_script_location" ]; then
+    print_already
+  else
+    if [ "$(grep usb /etc/fstab)" ]; then
+      echo "$usb_checker_script" > "$usb_checker_script_location" && \
+        chown pi:pi "$usb_checker_script_location" && \
+        chmod +x "$usb_checker_script_location" &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    else
+      print_not_required
+    fi
+  fi
+  printf "   \e[34m•\e[0m Setting up USB checker task... "
+  if [ "$(crontab -u pi -l | grep $usb_checker_script_location)" != "" ]; then
+    print_already
+  else
+    if [ "$(grep usb /etc/fstab)" ]; then
+      (crontab -u pi -l && echo "* * * * * $usb_checker_script_location") | crontab -u pi - &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    else
+      print_not_required
+    fi
+  fi
+}
+
+
 install_tailscale() {
   printf "   \e[34m•\e[0m Installing Tailscale... "
   if [ ! -f /mnt/$USB_DATA_DEVICE/.data/tailscale/tailscaled.state ]; then
@@ -1287,6 +1356,7 @@ setup_rsync_daemon
 setup_samba_shares
 disable_swap
 setup_remote_syslog
+setup_usb_checker
 install_tailscale
 install_screen
 
