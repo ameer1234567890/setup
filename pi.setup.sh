@@ -1319,10 +1319,11 @@ setup_scan_server() {
 
 fixup_dns_nameserver () {
   printf "   \e[34m•\e[0m Fixing up DNS nameserver... "
-  if [ "$(grep 'supersede domain-name-servers 192.168.88.11;' /etc/dhcp/dhclient.conf 2>/dev/null)" != "" ]; then
+  if [ "$(grep 'prepend domain-name-servers 192.168.88.11;' /etc/dhcp/dhclient.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo "supersede domain-name-servers 192.168.88.11;" >> /etc/dhcp/dhclient.conf &
+    echo "prepend domain-name-servers 192.168.88.11;" >> /etc/dhcp/dhclient.conf && \
+      echo "prepend domain-name-servers 192.168.88.13;" >> /etc/dhcp/dhclient.conf &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
