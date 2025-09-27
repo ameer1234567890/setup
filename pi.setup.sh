@@ -314,7 +314,7 @@ setup_cron() {
 mount_usb_drives() {
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Mounting USB drive: $drive... "
-    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="$(blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
     if [ "$(blkid | grep $drive)" = "" ]; then
@@ -335,7 +335,7 @@ mount_usb_drives() {
   done
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up btrfs data scrubbing: $drive... "
-    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="$(blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
     if [ "$(blkid | grep $drive)" = "" ]; then
@@ -354,7 +354,7 @@ mount_usb_drives() {
   done
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up btrfs snapshots: $drive... "
-    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="$(blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
     if [ "$fs_type" != "btrfs" ]; then
@@ -573,7 +573,7 @@ setup_samba_shares() {
   fi
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up samba share for $drive... "
-    fs_type="$(sudo blkid | grep $drive | head -1)"
+    fs_type="$(blkid | grep $drive | head -1)"
     fs_type="${fs_type#*TYPE=\"}"
     fs_type="${fs_type%%\"*}"
     if [ "$fs_type" = "btrfs" ]; then
