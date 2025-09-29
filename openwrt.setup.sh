@@ -542,7 +542,7 @@ setup_nlbwmon() {
 
 install_additionals() {
   printf "   \e[34m•\e[0m Installing additionals... \n"
-  pkgs="screen htop nano openssh-sftp-server curl iperf3 luci-app-attendedsysupgrade"
+  pkgs="screen htop nano openssh-sftp-server curl iperf3 luci-app-attendedsysupgrade bind-dig"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
     if [ "$(opkg status $pkg)" != "" ]; then
