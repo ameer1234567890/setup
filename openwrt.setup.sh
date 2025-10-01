@@ -453,7 +453,16 @@ setup_aria2() {
   if [ "$(uci get aria2.main.enabled 2>/dev/null)" = "1" ]; then
     print_already
   else
-    uci set aria2.main.enabled='1' && \
+    if [ ! -f /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf.main ]; then
+      uci set aria2.main.enabled='1'
+      uci set aria2.main.dir='/mnt/'$USB_DATA_DEVICE'/aria2'
+      /etc/init.d/aria2 restart
+      mkdir -p /mnt/$USB_DATA_DEVICE/.data/aria2
+      cp /var/etc/aria2/aria2.conf.main /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf.main
+    fi
+    uci set aria2.main.config_dir='/mnt/'$USB_DATA_DEVICE'/.data/aria2' && \
+      /etc/init.d/aria2 restart && \
+      uci set aria2.main.enabled='1' && \
       uci set aria2.main.dir='/mnt/'$USB_DATA_DEVICE'/aria2' && \
       uci set aria2.main.user='root' && \
       uci set aria2.main.max_concurrent_downloads='1' && \
@@ -464,6 +473,8 @@ setup_aria2() {
       uci set aria2.main.check_certificate='false' && \
       uci set aria2.main.file_allocation='prealloc' && \
       uci commit aria2 && \
+      sed -i 's/input-file=\/var\/etc\/aria2\/aria2.session.main/input-file=\/mnt\/usb11\/.data\/aria2\/aria2.session.mains/g' /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf.main && \
+      sed -i 's/save-session=\/var\/etc\/aria2\/aria2.session.main/save-session=\/mnt\/usb11\/.data\/aria2\/aria2.session.mains/g' /mnt/$USB_DATA_DEVICE/.data/aria2/aria2.conf.main && \
       /etc/init.d/aria2 restart &
     bg_pid=$!
     show_progress $bg_pid
