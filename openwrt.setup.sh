@@ -436,7 +436,7 @@ setup_rsync_daemon() {
   if [ "$(grep /mnt/$USB_DATA_DEVICE /etc/rsyncd.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo -e "[$USB_DATA_DEVICE]\npath = /mnt/$USB_DATA_DEVICE\ncomment = $USB_DATA_DEVICE\nlist = yes\nhosts allow = 192.168.1.1/24,127.0.0.1" >> /etc/rsyncd.conf && \
+    echo -e "pid file = /var/run/rsyncd.pid\nlog file = /var/log/rsyncd.log\nlock file = /var/run/rsync.lock\nuse chroot = no\nuid = root\ngid = root\nread only = no\n\n[$USB_DATA_DEVICE]\npath = /mnt/$USB_DATA_DEVICE\ncomment = $USB_DATA_DEVICE\nlist = yes\nhosts allow = 192.168.1.1/24,127.0.0.1" >> /etc/rsyncd.conf && \
       sed -i 's/exit 0//g' /etc/rc.local && \
       echo -e "rsync --daemon --config=/etc/rsyncd.conf --port=873" >> /etc/rc.local && \
       echo -e "\nexit 0" >> /etc/rc.local && \
