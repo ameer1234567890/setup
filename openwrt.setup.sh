@@ -216,6 +216,21 @@ setup_ssh_keyfile() {
 }
 
 
+extend_luci_session_time() {
+  printf "   \e[34m•\e[0m Extending luci session time... "
+  if [ "$(uci get luci.sauth.sessiontime 2>/dev/null)" = "2592000" ]; then
+    print_already
+  else
+    uci set luci.sauth.sessiontime='2592000' && \
+      uci commit luci &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 configure_wifi() {
   printf "   \e[34m•\e[0m Configuring Wifi... "
   if [ "$(uci get wireless.default_radio0.ssid)" = $WIFI_NAME ]; then
@@ -598,6 +613,7 @@ setup_timezone
 notify_on_startup
 change_default_shell
 setup_ssh_keyfile
+extend_luci_session_time
 configure_wifi
 configure_usb_storage
 configure_extroot
