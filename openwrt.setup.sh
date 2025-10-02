@@ -247,7 +247,7 @@ configure_usb_storage() {
     print_already
   else
     printf "   \e[34m•\e[0m Configuring USB storage... \n"
-    pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4"
+    pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
     for pkg in $pkgs; do
       printf "     \e[34m○\e[0m Installing $pkg... "
       if [ "$(opkg status $pkg)" != "" ]; then
@@ -260,18 +260,9 @@ configure_usb_storage() {
         assert_status
       fi
     done
-    printf "   \e[34m•\e[0m Installing required tools... "
-    if [ "$(opkg status blkid)" != "" ]; then
-      print_already
-    else
-      opkg install blkid >/dev/null 2>&1 &
-      bg_pid=$!
-      show_progress $bg_pid
-      wait $bg_pid
-      assert_status
-    fi
     printf "   \e[34m•\e[0m Configuring mount... "
-    device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
+    # device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
+    device="sda1"
     block detect | uci import fstab && \
       uci set fstab.@mount[0].enabled='1' && \
       uci set fstab.@global[0].anon_mount='1' && \
