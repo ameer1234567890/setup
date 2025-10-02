@@ -352,8 +352,8 @@ configure_swap() {
   if [ -f /mnt/$USB_DATA_DEVICE/swap ]; then
     print_already
   else
-    dd if=/dev/zero of=/mnt/$USB_DATA_DEVICE/swap bs=1M count=2048 && \
-      mkswap /mnt/$USB_DATA_DEVICE/swap &
+    dd if=/dev/zero of=/mnt/$USB_DATA_DEVICE/swap bs=1M count=2048 >/dev/null 2>&1 && \
+      mkswap /mnt/$USB_DATA_DEVICE/swap >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
