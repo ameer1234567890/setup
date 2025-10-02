@@ -377,6 +377,32 @@ configure_swap() {
 }
 
 
+disable_rebind_protection() {
+  printf "   \e[34m•\e[0m Disabling rebind protections... "
+  if [ "$(uci get dhcp.@dnsmasq[0].rebind_protection 2>/dev/null)" = "0" ]; then
+    print_already
+  else
+    uci delete dhcp.@dnsmasq[0].rebind_localhost 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].nonwildcard 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].boguspriv 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].filterwin2k 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].filter_aaaa 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].filter_a 2>/dev/null; \
+      uci del dhcp.@dnsmasq[0].nonegcache 2>/dev/null; \
+      uci set dhcp.@dnsmasq[0].rebind_protection='0' && \
+      uci set dhcp.@dnsmasq[0].localservice='0' && \
+      uci del dhcp.@dnsmasq[0].server 2>/dev/null; \
+      uci add_list dhcp.@dnsmasq[0].server='/*.lan/192.168.88.11' && \
+      uci commit dhcp && \
+      /etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 setup_samba_shares() {
   printf "   \e[34m•\e[0m Installing samba... "
   if [ "$(opkg status luci-app-samba4)" != "" ]; then
@@ -608,6 +634,7 @@ configure_usb_storage
 configure_extroot
 preserve_opkg_lists
 configure_swap
+disable_rebind_protection
 setup_samba_shares
 setup_rsync_daemon
 setup_aria2
