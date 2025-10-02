@@ -576,7 +576,7 @@ install_additionals() {
 
 install_externals() {
   printf "   \e[34m•\e[0m Installing externals... \n"
-  files="$(ls /mnt/$USB_DATA_DEVICE/ipk/*ipk)"
+  files="$(ls /mnt/$USB_DATA_DEVICE/ipk/*ipk 2>/dev/null)"
   for file in $files; do
     tar -zxf $file ./control.tar.gz
     tar -zxf control.tar.gz ./control
