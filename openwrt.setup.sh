@@ -134,6 +134,20 @@ setup_hostname() {
 
 
 setup_timezone() {
+  printf "   \e[34m•\e[0m Installing required tools... \n"
+  pkgs="curl"
+  for pkg in $pkgs; do
+    printf "     \e[34m○\e[0m Installing $pkg... "
+    if [ "$(opkg status $pkg)" != "" ]; then
+      print_already
+    else
+      opkg install $pkg >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  done
   printf "   \e[34m•\e[0m Setting up timezone... "
   if [ "$(uci get system.@system[0].zonename 2>/dev/null)" = $TIMEZONE ]; then
     print_already
