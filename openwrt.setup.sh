@@ -262,7 +262,7 @@ configure_usb_storage() {
     done
     printf "   \e[34m•\e[0m Configuring mount... "
     # device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
-    device="sda1"
+    device="/dev/sda1"
     block detect | uci import fstab && \
       uci set fstab.@mount[0].enabled='1' && \
       uci set fstab.@global[0].anon_mount='1' && \
@@ -270,7 +270,7 @@ configure_usb_storage() {
       uci commit fstab && \
       sed -i 's/exit 0//g' /etc/rc.local && \
       echo -e "mount $device /mnt/$USB_DATA_DEVICE" >> /etc/rc.local && \
-      echo -e "\nexit 0" >> /etc/rc.local &
+      echo -e "\nexit 0" >> /etc/rc.local && \
       /etc/init.d/fstab boot &
     bg_pid=$!
     show_progress $bg_pid
