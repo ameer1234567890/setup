@@ -338,7 +338,8 @@ preserve_opkg_lists() {
   if [ "$(grep /usr/lib/opkg/lists /etc/opkg.conf)" != "" ]; then
     print_already
   else
-    sed -i -e "/^lists_dir\s/s:/var/opkg-lists$:/usr/lib/opkg/lists:" /etc/opkg.conf &
+    sed -i -e "/^lists_dir\s/s:/var/opkg-lists$:/usr/lib/opkg/lists:" /etc/opkg.conf && \
+      opkg update &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
