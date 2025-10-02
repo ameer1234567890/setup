@@ -275,8 +275,7 @@ configure_usb_storage() {
       fi
     done
     printf "   \e[34m•\e[0m Configuring mount... "
-    # device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
-    device="/dev/sda1"
+    device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
     block detect | uci import fstab && \
       uci set fstab.@mount[0].enabled='1' && \
       uci set fstab.@global[0].anon_mount='1' && \
@@ -295,12 +294,11 @@ configure_usb_storage() {
 
 
 configure_extroot() {
-  if [ "$(df | grep /overlay$ | grep mtd)" = "" ]; then
-    printf "   \e[34m•\e[0m Configuring extroot... "
+  printf "   \e[34m•\e[0m Configuring extroot... "
+  device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
+  if [ "$(df | grep /overlay$ | grep $device)" != "" ]; then
     print_already
   else
-    printf "   \e[34m•\e[0m Configuring extroot... "
-    device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
     eval $(block info $device | grep -o -e 'UUID="\S*"') && \
       eval $(block info | grep -o -e 'MOUNT="\S*/overlay"') && \
       uci -q delete fstab.extroot; \
@@ -324,6 +322,7 @@ configure_extroot() {
       read -r opt
       if [ "$opt" = "Y" ] || [ "$opt" = "y" ] || [ "$opt" = "yes" ] || [ "$opt" = "YES" ] || [ "$opt" = "Yes" ]; then
         echo "Rebooting now..."
+        echo "Re-run the script to continue after reboot!"
         reboot
       else
         echo "Exiting now... Re-run the script to continue!"
