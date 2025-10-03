@@ -300,38 +300,42 @@ configure_usb_storage() {
 
 configure_extroot() {
   printf "   \e[34m•\e[0m Configuring extroot... "
-  device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
-  if [ "$(df | grep /overlay$ | grep $device)" != "" ]; then
-    print_already
+  if [ "$(df | grep $USB_DATA_DEVICE)" = "" ]; then
+    print_notexist
   else
-    eval $(block info $device | grep -o -e 'UUID="\S*"') && \
-      eval $(block info | grep -o -e 'MOUNT="\S*/overlay"') && \
-      uci -q delete fstab.extroot; \
-      uci set fstab.extroot="mount" && \
-      uci set fstab.extroot.uuid="$UUID" && \
-      uci set fstab.extroot.target="$MOUNT" && \
-      uci commit fstab && \
-      ORIG="$(block info | sed -n -e '/MOUNT="\S*\/overlay"/s/:\s.*$//p')" && \
-      uci -q delete fstab.rwm; \
-      uci set fstab.rwm="mount" && \
-      uci set fstab.rwm.device="$ORIG" && \
-      uci set fstab.rwm.target="/rwm" && \
-      uci commit fstab && \
-      tar -C $MOUNT -cf - . | tar -C /mnt/$USB_DATA_DEVICE -xf - &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-    if [ "$?" = "0" ]; then
-      printf "\n\e[33mReboot required! Do you want to reboot now? (Y/N) \e[0m\n"
-      read -r opt
-      if [ "$opt" = "Y" ] || [ "$opt" = "y" ] || [ "$opt" = "yes" ] || [ "$opt" = "YES" ] || [ "$opt" = "Yes" ]; then
-        echo "Rebooting now..."
-        echo "Re-run the script to continue after reboot!"
-        reboot
-      else
-        echo "Exiting now... Re-run the script to continue!"
-        exit 0
+    device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
+    if [ "$(df | grep /overlay$ | grep $device)" != "" ]; then
+      print_already
+    else
+      eval $(block info $device | grep -o -e 'UUID="\S*"') && \
+        eval $(block info | grep -o -e 'MOUNT="\S*/overlay"') && \
+        uci -q delete fstab.extroot; \
+        uci set fstab.extroot="mount" && \
+        uci set fstab.extroot.uuid="$UUID" && \
+        uci set fstab.extroot.target="$MOUNT" && \
+        uci commit fstab && \
+        ORIG="$(block info | sed -n -e '/MOUNT="\S*\/overlay"/s/:\s.*$//p')" && \
+        uci -q delete fstab.rwm; \
+        uci set fstab.rwm="mount" && \
+        uci set fstab.rwm.device="$ORIG" && \
+        uci set fstab.rwm.target="/rwm" && \
+        uci commit fstab && \
+        tar -C $MOUNT -cf - . | tar -C /mnt/$USB_DATA_DEVICE -xf - &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+      if [ "$?" = "0" ]; then
+        printf "\n\e[33mReboot required! Do you want to reboot now? (Y/N) \e[0m\n"
+        read -r opt
+        if [ "$opt" = "Y" ] || [ "$opt" = "y" ] || [ "$opt" = "yes" ] || [ "$opt" = "YES" ] || [ "$opt" = "Yes" ]; then
+          echo "Rebooting now..."
+          echo "Re-run the script to continue after reboot!"
+          reboot
+        else
+          echo "Exiting now... Re-run the script to continue!"
+          exit 0
+        fi
       fi
     fi
   fi
