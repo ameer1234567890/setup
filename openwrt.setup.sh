@@ -256,39 +256,44 @@ configure_wifi() {
 
 
 configure_usb_storage() {
-  if [ "$(mount | grep /mnt/$USB_DATA_DEVICE)" != "" ]; then
+  if [ "$(ls /dev/sd* 2>/dev/null)" = "" ]; then
     printf "   \e[34m•\e[0m Configuring USB storage... "
-    print_already
+    print_notexist
   else
-    printf "   \e[34m•\e[0m Configuring USB storage... \n"
-    pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
-    for pkg in $pkgs; do
-      printf "     \e[34m○\e[0m Installing $pkg... "
-      if [ "$(opkg status $pkg)" != "" ]; then
-        print_already
-      else
-        opkg install $pkg >/dev/null 2>&1 &
-        bg_pid=$!
-        show_progress $bg_pid
-        wait $bg_pid
-        assert_status
-      fi
-    done
-    printf "   \e[34m•\e[0m Configuring mount... "
-    device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
-    block detect | uci import fstab && \
-      uci set fstab.@mount[0].enabled='1' && \
-      uci set fstab.@global[0].anon_mount='1' && \
-      uci set fstab.@mount[0].target='/mnt/'$USB_DATA_DEVICE && \
-      uci commit fstab && \
-      sed -i 's/exit 0//g' /etc/rc.local && \
-      echo -e "mount $device /mnt/$USB_DATA_DEVICE" >> /etc/rc.local && \
-      echo -e "\nexit 0" >> /etc/rc.local && \
-      /etc/init.d/fstab boot &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
+    if [ "$(mount | grep /mnt/$USB_DATA_DEVICE)" != "" ]; then
+      printf "   \e[34m•\e[0m Configuring USB storage... "
+      print_already
+    else
+      printf "   \e[34m•\e[0m Configuring USB storage... \n"
+      pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
+      for pkg in $pkgs; do
+        printf "     \e[34m○\e[0m Installing $pkg... "
+        if [ "$(opkg status $pkg)" != "" ]; then
+          print_already
+        else
+          opkg install $pkg >/dev/null 2>&1 &
+          bg_pid=$!
+          show_progress $bg_pid
+          wait $bg_pid
+          assert_status
+        fi
+      done
+      printf "   \e[34m•\e[0m Configuring mount... "
+      device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
+      block detect | uci import fstab && \
+        uci set fstab.@mount[0].enabled='1' && \
+        uci set fstab.@global[0].anon_mount='1' && \
+        uci set fstab.@mount[0].target='/mnt/'$USB_DATA_DEVICE && \
+        uci commit fstab && \
+        sed -i 's/exit 0//g' /etc/rc.local && \
+        echo -e "mount $device /mnt/$USB_DATA_DEVICE" >> /etc/rc.local && \
+        echo -e "\nexit 0" >> /etc/rc.local && \
+        /etc/init.d/fstab boot &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
   fi
 }
 
