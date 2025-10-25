@@ -369,6 +369,8 @@ configure_extroot() {
         uci set fstab.rwm.device="$ORIG" && \
         uci set fstab.rwm.target="/rwm" && \
         uci commit fstab && \
+        rm -rf /mnt/$USB_DATA_DEVICE/upper && \
+        rm -rf /mnt/$USB_DATA_DEVICE/work && \
         tar -C $MOUNT -cf - . | tar -C /mnt/$USB_DATA_DEVICE -xf - &
       bg_pid=$!
       show_progress $bg_pid
