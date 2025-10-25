@@ -316,8 +316,22 @@ configure_usb_storage() {
       assert_status
     fi
   fi
+  printf "   \e[34m•\e[0m Installing required tools... \n"
+  pkgs="blkid"
+  for pkg in $pkgs; do
+    printf "     \e[34m○\e[0m Installing $pkg... "
+    if [ "$(opkg status $pkg)" != "" ]; then
+      print_already
+    else
+      opkg install $pkg >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  done
   drive="$USB_DATA_DEVICE"
-  printf "   \e[34m•\e[0m Setting up backup jobs: $drive... "
+  printf "   \e[34m•\e[0m Setting up backup job for $drive... "
   script_file="${backup_script[$drive]}"
   if [ "$(blkid | grep $drive)" = "" ]; then
     print_notexist
