@@ -383,7 +383,7 @@ preserve_opkg_lists() {
     print_already
   else
     sed -i -e "/^lists_dir\s/s:/var/opkg-lists$:/usr/lib/opkg/lists:" /etc/opkg.conf && \
-      opkg update &
+      opkg update >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
