@@ -4,6 +4,13 @@
 TIMEZONE='Asia/Karachi'
 TIMEZONE_D='PKT-5'
 WIFI_NAME='Mango'
+declare -A backup_script
+backup_script=( \
+  ["usb11"]="backup.sh" \
+)
+backup_schedule=( \
+  ["usb11"]="0 3 * * *" \
+)
 #### End of of configurable variables
 
 #### .secrets.txt
@@ -255,6 +262,20 @@ configure_wifi() {
 }
 
 
+setup_cron() {
+  printf "   \e[34m•\e[0m Setting up cron... "
+  if [ -f /etc/crontabs/root ]; then
+    print_already
+  else
+    (echo "") | crontab - &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 configure_usb_storage() {
   if [ "$(ls /dev/sd* 2>/dev/null)" = "" ]; then
     printf "   \e[34m•\e[0m Configuring USB storage... "
@@ -294,6 +315,20 @@ configure_usb_storage() {
       wait $bg_pid
       assert_status
     fi
+  fi
+  drive="$USB_DATA_DEVICE"
+  printf "   \e[34m•\e[0m Setting up backup jobs: $drive... "
+  script_file="${backup_script[$drive]}"
+  if [ "$(blkid | grep $drive)" = "" ]; then
+    print_notexist
+  elif [ "$(crontab -l | grep '/mnt/'$drive'/'$script_file)" != "" ]; then
+    print_already
+  else
+    (crontab -l && echo "${backup_schedule[$drive]} sudo /mnt/$drive/$script_file") | crontab - &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
   fi
 }
 
@@ -639,6 +674,7 @@ notify_on_startup
 change_default_shell
 setup_ssh_keyfile
 configure_wifi
+setup_cron
 configure_usb_storage
 configure_extroot
 preserve_opkg_lists
