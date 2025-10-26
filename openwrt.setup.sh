@@ -663,7 +663,7 @@ install_additionals() {
 
 install_externals() {
   printf "   \e[34m•\e[0m Installing externals... \n"
-  files="$(ls /mnt/$USB_DATA_DEVICE/ipk/*ipk 2>/dev/null)"
+  files="$(ls /mnt/$USB_DATA_DEVICE/ipk/*.ipk 2>/dev/null)"
   for file in $files; do
     mkdir /tmp/zucchini
     tar -zxf $file -C /tmp/zucchini ./control.tar.gz
