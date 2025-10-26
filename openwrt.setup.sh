@@ -383,6 +383,7 @@ configure_extroot() {
           echo "Rebooting now..."
           echo "Re-run the script to continue after reboot!"
           reboot
+          sleep 10
         else
           echo "Exiting now... Re-run the script to continue!"
           exit 0
