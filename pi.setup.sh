@@ -81,7 +81,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 if [ -e $(dirname -- "$0")/.secrets.txt ]; then source $(dirname -- "$0")/.secrets.txt; fi
 
-if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ]; then
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ] || [ -z "$SAMBA_PASSWORD" ]; then
   echo "Some or all of the parameters are empty" >&2
   exit 1
 fi
@@ -572,6 +572,16 @@ setup_samba_shares() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Adding samba user... "
+  if [ "$(pdbedit -L | grep ^pi:)" != "" ]; then
+    print_already
+  else
+    echo -e "$SAMBA_PASSWORD\n$SAMBA_PASSWORD" | smbpasswd -s -a pi >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
   for drive in $USB_DRIVES; do
     printf "   \e[34m•\e[0m Setting up samba share for $drive... "
     fs_type="$(blkid | grep $drive | head -1)"
@@ -586,14 +596,14 @@ setup_samba_shares() {
       print_already
     else
       if [ "$fs_type" = "btrfs" ]; then
-        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    public = yes\n    writable = yes\n    browsable = yes\n    guest ok = yes\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi\n    vfs objects = shadow_copy2\n    shadow:format = @GMT_%Y.%m.%d-%H.%M.%S\n    shadow:sort = desc\n    shadow:snapdir = .snapshots\n" >> /etc/samba/smb.conf && \
+        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    writable = yes\n    browsable = yes\n    guest ok = no\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi\n    vfs objects = shadow_copy2\n    shadow:format = @GMT_%Y.%m.%d-%H.%M.%S\n    shadow:sort = desc\n    shadow:snapdir = .snapshots\n" >> /etc/samba/smb.conf && \
           systemctl restart smbd.service &
         bg_pid=$!
         show_progress $bg_pid
         wait $bg_pid
         assert_status
       else
-        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    public = yes\n    writable = yes\n    browsable = yes\n    guest ok = yes\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi" >> /etc/samba/smb.conf && \
+        echo -e "[$drive]\n    path = /mnt/$drive\n    read only = no\n    writable = yes\n    browsable = yes\n    guest ok = no\n    create mask = 0755\n    directory mask = 0777\n    force user = pi\n    force group = pi" >> /etc/samba/smb.conf && \
           systemctl restart smbd.service &
         bg_pid=$!
         show_progress $bg_pid
