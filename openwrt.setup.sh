@@ -476,6 +476,16 @@ setup_samba_shares() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Adding samba user... "
+  if [ "$(pdbedit -L | grep ^root:)" != "" ]; then
+    print_already
+  else
+    echo -e "$SAMBA_PASSWORD\n$SAMBA_PASSWORD" | smbpasswd -s -a root >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
   printf "   \e[34m•\e[0m Configuring samba... "
   if [ "$(uci get samba4.@sambashare[0].path 2>/dev/null)" = "/mnt/$USB_DATA_DEVICE" ]; then
     print_already
@@ -484,12 +494,12 @@ setup_samba_shares() {
       uci set samba4.@sambashare[0].name=$USB_DATA_DEVICE && \
       uci set samba4.@sambashare[0].path='/mnt/'$USB_DATA_DEVICE && \
       uci set samba4.@sambashare[0].read_only='no' && \
-      uci set samba4.@sambashare[0].guest_ok='yes' && \
+      uci set samba4.@sambashare[0].guest_ok='no' && \
       uci set samba4.@sambashare[0].create_mask='0666' && \
       uci set samba4.@sambashare[0].dir_mask='0777' && \
       uci set samba4.@sambashare[0].force_root='1' && \
       uci commit samba4 && \
-      echo -e "[$USB_DATA_DEVICE]\n  path = /mnt/$USB_DATA_DEVICE\n  force user = root\n  force group = root\n  create mask = 0666\n  directory mask = 0777\n  read only = no\n  guest ok = yes" >> /etc/samba/smb.conf && \
+      sed -i 's/\sinvalid users = root/        #invalid users = root/g' /etc/samba/smb.conf.template && \
       /etc/init.d/samba4 restart &
     bg_pid=$!
     show_progress $bg_pid
