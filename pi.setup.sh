@@ -39,6 +39,7 @@ backup_schedule=( \
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
 # TELEGRAM_BOT_TOKEN='TOKEN_HERE'
 # TELEGRAM_CHATID='CHATID_HERE'
+# SAMBA_PASSWORD='PASSWORD_HERE'
 #### .secrets.txt
 
 REBOOT_REQUIRED=false

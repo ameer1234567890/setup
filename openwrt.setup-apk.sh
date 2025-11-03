@@ -22,6 +22,7 @@ backup_schedule=( \
 # TELEGRAM_BOT_TOKEN='TOKEN_HERE'
 # TELEGRAM_CHATID='CHATID_HERE'
 # WIFI_KEY='KEY_HERE'
+# SAMBA_PASSWORD='PASSWORD_HERE'
 #### .secrets.txt
 
 clear
