@@ -9,7 +9,7 @@ USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 mmc1"
 declare -A backup_script
 backup_script=( \
   ["usb1"]="backup.sh" \
-  ["usb2"]="backup-gdrive.sh" \
+  ["usb2"]="backup-terabox.sh" \
   ["usb3"]="backup.sh" \
   ["usb4"]="backup-gdrive.sh" \
   ["usb5"]="backup-gdrive.sh" \
