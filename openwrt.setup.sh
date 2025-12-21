@@ -540,7 +540,7 @@ setup_rsync_daemon() {
 
 setup_aria2() {
   printf "   \e[34m•\e[0m Installing required packages for aria2... \n"
-  pkgs="luci-app-aria2 webui-aria2"
+  pkgs="luci-app-aria2 ariang"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
     if [ "$(opkg status $pkg)" != "" ]; then
