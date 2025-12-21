@@ -278,6 +278,21 @@ setup_cron() {
 
 
 configure_usb_storage() {
+  printf "   \e[34m•\e[0m Installing packages required for USB storage... \n"
+  pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
+  for pkg in $pkgs; do
+    printf "     \e[34m○\e[0m Installing $pkg... "
+    if [ "$(opkg status $pkg)" != "" ]; then
+      print_already
+    else
+      opkg install $pkg >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  done
+
   if [ "$(ls /dev/sd* 2>/dev/null)" = "" ]; then
     printf "   \e[34m•\e[0m Configuring USB storage... "
     print_notexist
@@ -286,20 +301,6 @@ configure_usb_storage() {
       printf "   \e[34m•\e[0m Configuring USB storage... "
       print_already
     else
-      printf "   \e[34m•\e[0m Configuring USB storage... \n"
-      pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
-      for pkg in $pkgs; do
-        printf "     \e[34m○\e[0m Installing $pkg... "
-        if [ "$(opkg status $pkg)" != "" ]; then
-          print_already
-        else
-          opkg install $pkg >/dev/null 2>&1 &
-          bg_pid=$!
-          show_progress $bg_pid
-          wait $bg_pid
-          assert_status
-        fi
-      done
       printf "   \e[34m•\e[0m Configuring mount... "
       device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
       block detect | uci import fstab && \
@@ -454,7 +455,7 @@ disable_rebind_protection() {
       uci set dhcp.@dnsmasq[0].rebind_protection='0' && \
       uci set dhcp.@dnsmasq[0].localservice='0' && \
       uci del dhcp.@dnsmasq[0].server 2>/dev/null; \
-      uci add_list dhcp.@dnsmasq[0].server='/*.lan/192.168.88.11' && \
+      uci add_list dhcp.@dnsmasq[0].server='/*.lan/192.168.88.1' && \
       uci commit dhcp && \
       /etc/init.d/dnsmasq restart >/dev/null 2>&1 &
     bg_pid=$!
