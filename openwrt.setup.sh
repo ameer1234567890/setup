@@ -340,7 +340,7 @@ configure_usb_storage() {
   elif [ "$(crontab -l | grep '/mnt/'$drive'/'$script_file)" != "" ]; then
     print_already
   else
-    (crontab -l && echo "${backup_schedule[$drive]} sudo /mnt/$drive/$script_file") | crontab - &
+    (crontab -l && echo "${backup_schedule[$drive]} /mnt/$drive/$script_file") | crontab - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
