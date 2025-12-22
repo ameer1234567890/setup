@@ -975,7 +975,9 @@ setup_overlayfs() {
     if [ "$(grep '^overlayroot="tmpfs:swap=1,recurse=0"' /etc/overlayroot.conf)" != "" ]; then
       print_already
     else
-      sed -i 's/^overlayroot=""/overlayroot="tmpfs:swap=1,recurse=0"/g' /etc/overlayroot.conf &
+      sed -i 's/^overlayroot=""/overlayroot="tmpfs:swap=1,recurse=0"/g' /etc/overlayroot.conf && \
+        mkdir -p /etc/systemd/system.conf.d && \
+        echo "DefaultEnvironment=\"LIBMOUNT_FORCE_MOUNT2=always\"" > /etc/systemd/system.conf.d/overlayfs.conf &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
