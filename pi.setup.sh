@@ -1106,7 +1106,7 @@ install_docker() {
   if [ "$(grep 'docker:.*:pi' /etc/group 2>/dev/null)" != "" ]; then
     print_already
   else
-    usermod -aG docker pi >/dev/null 2>&1 &
+    /usr/sbin/usermod -aG docker pi >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
