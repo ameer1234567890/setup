@@ -1140,6 +1140,19 @@ install_docker() {
     wait $bg_pid
     assert_status
   fi
+  printf "   \e[34m•\e[0m Configuring fuse-overlayfs for docker... "
+  if [ "$(dpkg-query -W -f='${Status}' fuse-overlayfs 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq fuse-overlayfs >/dev/null 2>&1 && \
+      mkdir -p /etc/docker && \
+      echo '{ "storage-driver": "fuse-overlayfs" }' > /etc/docker/daemon.json && \
+      systemctl restart docker.service &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
 }
 
 
