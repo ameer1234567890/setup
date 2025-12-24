@@ -20,6 +20,7 @@ backup_script=( \
   ["mmc1"]="backup.sh" \
 )
 
+declare -A backup_schedule
 backup_schedule=( \
   ["usb1"]="30 2 * * *" \
   ["usb2"]="40 0 * * *" \
