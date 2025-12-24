@@ -5,7 +5,7 @@ LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
-USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 mmc1"
+USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 hdd2 mmc1"
 declare -A backup_script
 backup_script=( \
   ["usb1"]="backup.sh" \
@@ -16,8 +16,10 @@ backup_script=( \
   ["usb6"]="backup-terabox.sh" \
   ["usb8"]="backup.sh" \
   ["hdd1"]="backup.sh" \
+  ["hdd2"]="backup.sh" \
   ["mmc1"]="backup.sh" \
 )
+
 backup_schedule=( \
   ["usb1"]="30 2 * * *" \
   ["usb2"]="40 0 * * *" \
@@ -27,16 +29,17 @@ backup_schedule=( \
   ["usb6"]="30 1 * * *" \
   ["usb8"]="30 0 * * *" \
   ["hdd1"]="10 0 * * *" \
+  ["hdd2"]="50 23 * * *" \
   ["mmc1"]="20 0 * * *" \
 )
 #### End of of configurable variables
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan/apricot.lan'
+# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan/avocado.lan/apricot.lan'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
-# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|mmc1'
+# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|hdd2|mmc1'
 # TELEGRAM_BOT_TOKEN='TOKEN_HERE'
 # TELEGRAM_CHATID='CHATID_HERE'
 # SAMBA_PASSWORD='PASSWORD_HERE'
@@ -1406,6 +1409,11 @@ fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
+  install_docker
+fi
+
+if [ "$HOSTNAME" = "avocado.lan" ]; then
+  printf "\n  \e[34m○\e[0m Running Avocado Specific Setup:\n"
   install_docker
 fi
 
