@@ -981,7 +981,7 @@ setup_overlayfs() {
     else
       sed -i 's/^overlayroot=""/overlayroot="tmpfs:swap=1,recurse=0"/g' /etc/overlayroot.conf && \
         mkdir -p /etc/systemd/system.conf.d && \
-        echo "DefaultEnvironment=\"LIBMOUNT_FORCE_MOUNT2=always\"" > /etc/systemd/system.conf.d/overlayfs.conf &
+        echo -e "[Manager]\nDefaultEnvironment=\"LIBMOUNT_FORCE_MOUNT2=always\"" > /etc/systemd/system.conf.d/overlayfs.conf &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
