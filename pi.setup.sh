@@ -130,6 +130,7 @@ for drive in $USB_DRIVES; do
     else
       if [ "$(who | grep pts)" ]; then
         wall "$drive down! Not rebooting since ssh session exists!"
+        curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "'$(echo $drive | tr [:lower:] [:upper:])' Down. Not rebooting since ssh session exists!", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
       else
         wall "Rebooting since ssh session does not exist!"
         curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "Rebooting '$(echo $HOSTNAME | cut -d . -f 1 | tr '[:lower:]' '[:upper:]')' due to IO error in '$drive'", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
