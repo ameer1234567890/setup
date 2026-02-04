@@ -128,7 +128,7 @@ for drive in $USB_DRIVES; do
     if [ "$(ls /mnt/$drive/check_mount.sh)" ] && [ "$(ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ] && [ "$(ls -l /mnt/$drive 2>&1 | grep 'Input/output error')" = "" ]; then
       curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "'$drive' Remounted", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
     else
-      if [ "$(who | grep pts)" ]; then
+      if [ "$(who | grep pts | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}')" ]; then
         wall "$drive down! Not rebooting since ssh session exists!"
         curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "'$(echo $drive | tr [:lower:] [:upper:])' Down. Not rebooting since ssh session exists!", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
       else
