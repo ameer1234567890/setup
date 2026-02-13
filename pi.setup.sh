@@ -278,6 +278,16 @@ setup_ssh_keyfile() {
 
 
 setup_apt-cacher-ng() {
+  printf "   \e[34m•\e[0m Installing curl... "
+  if [ "$(dpkg-query -W -f='${Status}' curl 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq curl >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
   proxy_available=false
   printf "   \e[34m•\e[0m Checking proxy availability... "
   if [ "$(curl -I http://nas2.lan:3142 2> /dev/null | grep '406 Usage Information')" != "" ]; then
