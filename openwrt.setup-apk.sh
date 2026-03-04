@@ -62,7 +62,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 if [ -e $(dirname -- "$0")/.secrets.txt ]; then source $(dirname -- "$0")/.secrets.txt; fi
 
-if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ] || [ -z $WIFI_KEY ]; then
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ] || [ -z $WIFI_KEY ] || [ -z "$SAMBA_PASSWORD" ]; then
   echo "Some or all of the parameters are empty" >&2
   exit 1
 fi
@@ -278,6 +278,21 @@ setup_cron() {
 
 
 configure_usb_storage() {
+  printf "   \e[34m•\e[0m Installing packages required for USB storage... \n"
+  pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
+  for pkg in $pkgs; do
+    printf "     \e[34m○\e[0m Installing $pkg... "
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
+      print_already
+    else
+      apk add $pkg >/dev/null 2>&1 &
+      bg_pid=$!
+      show_progress $bg_pid
+      wait $bg_pid
+      assert_status
+    fi
+  done
+
   if [ "$(ls /dev/sd* 2>/dev/null)" = "" ]; then
     printf "   \e[34m•\e[0m Configuring USB storage... "
     print_notexist
@@ -286,20 +301,6 @@ configure_usb_storage() {
       printf "   \e[34m•\e[0m Configuring USB storage... "
       print_already
     else
-      printf "   \e[34m•\e[0m Configuring USB storage... \n"
-      pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
-      for pkg in $pkgs; do
-        printf "     \e[34m○\e[0m Installing $pkg... "
-        if [ "$(apk info | grep ^$pkg$)" != "" ]; then
-          print_already
-        else
-          apk add $pkg >/dev/null 2>&1 &
-          bg_pid=$!
-          show_progress $bg_pid
-          wait $bg_pid
-          assert_status
-        fi
-      done
       printf "   \e[34m•\e[0m Configuring mount... "
       device="$(blkid | grep $USB_DATA_DEVICE | head -1 | cut -d':' -f1)"
       block detect | uci import fstab && \
@@ -339,7 +340,7 @@ configure_usb_storage() {
   elif [ "$(crontab -l | grep '/mnt/'$drive'/'$script_file)" != "" ]; then
     print_already
   else
-    (crontab -l && echo "${backup_schedule[$drive]} sudo /mnt/$drive/$script_file") | crontab - &
+    (crontab -l && echo "${backup_schedule[$drive]} /mnt/$drive/$script_file") | crontab - &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -539,7 +540,7 @@ setup_rsync_daemon() {
 
 setup_aria2() {
   printf "   \e[34m•\e[0m Installing required packages for aria2... \n"
-  pkgs="luci-app-aria2 webui-aria2"
+  pkgs="luci-app-aria2 ariang"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
     if [ "$(apk info | grep ^$pkg$)" != "" ]; then
