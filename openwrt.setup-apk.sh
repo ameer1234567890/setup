@@ -692,6 +692,26 @@ install_externals() {
 }
 
 
+add_firewall_rule_wan_to_lan() {
+  printf "   \e[34m•\e[0m Adding Firewall Rule - WAN to LAN... "
+  if [ "$(uci show firewall | grep -B1 "name='Allow-WAN-to-LAN'" | head -n 1 | awk -F '[][]' '{print $2}')" != "" ]; then
+    print_already
+  else
+    uci add firewall rule > /dev/null && \
+      uci set firewall.@rule[-1].src='wan' && \
+      uci set firewall.@rule[-1].name='Allow-WAN-to-LAN' && \
+      uci set firewall.@rule[-1].dest_port='80 22' && \
+      uci set firewall.@rule[-1].target='ACCEPT' && \
+      uci commit && \
+      /etc/init.d/firewall restart &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 update_apk
 setup_hostname
 setup_timezone
@@ -712,6 +732,7 @@ setup_adblock
 setup_nlbwmon
 install_additionals
 install_externals
+add_firewall_rule_wan_to_lan
 
 
 echo "" # just an empty line before we end
