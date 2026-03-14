@@ -455,7 +455,7 @@ disable_rebind_protection() {
       uci set dhcp.@dnsmasq[0].rebind_protection='0' && \
       uci set dhcp.@dnsmasq[0].localservice='0' && \
       uci del dhcp.@dnsmasq[0].server 2>/dev/null; \
-      uci add_list dhcp.@dnsmasq[0].server='/*.lan/192.168.88.11' && \
+      uci add_list dhcp.@dnsmasq[0].server='/*.lan/192.168.88.1' && \
       uci commit dhcp && \
       /etc/init.d/dnsmasq restart >/dev/null 2>&1 &
     bg_pid=$!
