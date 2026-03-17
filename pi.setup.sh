@@ -1428,13 +1428,13 @@ if [ "$HOSTNAME" = "printer.lan" ]; then
   install_avahi
   setup_scan_server
   install_docker
-  install_keepalived
   prepare_overlayfs
 fi
 
 if [ "$HOSTNAME" = "fig.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
   install_docker
+  install_keepalived
 fi
 
 if [ "$HOSTNAME" = "avocado.lan" ]; then
