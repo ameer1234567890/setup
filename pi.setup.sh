@@ -120,12 +120,16 @@ usb_checker_script+=$(cat << "EOF"
 
 USB_DRIVES="$(grep usb /etc/fstab | cut -d= -f2 | cut -d' ' -f1)"
 
+shopt -s expand_aliases
+alias to_ls='timeout -k 5s 3s ls'
+alias to_cat='timeout -k 5s 3s cat'
+
 for drive in $USB_DRIVES; do
-  if [ "$(ls /mnt/$drive/check_mount.sh)" ] && [ "$(ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ] && [ "$(ls -l /mnt/$drive 2>&1 | grep 'Input/output error')" = "" ] && [ "$(cat /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
+  if [ "$(to_ls /mnt/$drive/check_mount.sh)" ] && [ "$(to_ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ] && [ "$(to_ls -l /mnt/$drive 2>&1 | grep 'Input/output error')" = "" ] && [ "$(to_cat /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
     echo "$drive OK"
   else
     sudo mount -a
-    if [ "$(ls /mnt/$drive/check_mount.sh)" ] && [ "$(ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ] && [ "$(ls -l /mnt/$drive 2>&1 | grep 'Input/output error')" = "" ] && [ "$(cat /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
+    if [ "$(to_ls /mnt/$drive/check_mount.sh)" ] && [ "$(to_ls -l /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ] && [ "$(to_ls -l /mnt/$drive 2>&1 | grep 'Input/output error')" = "" ] && [ "$(to_cat /mnt/$drive/check_mount.sh 2>&1 | grep 'Input/output error')" = "" ]; then
       curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'$TELEGRAM_CHATID'", "text": "'$drive' Remounted", "disable_notification": true}' 'https://api.telegram.org/bot'$TELEGRAM_BOT_TOKEN'/sendMessage'
     else
       if [ "$(who | grep pts | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}')" ]; then
