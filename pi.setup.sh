@@ -1376,6 +1376,20 @@ fixup_dns_nameserver () {
 }
 
 
+disable_sleep_on_lid_close () {
+  printf "   \e[34m•\e[0m Disabling sleep on lid close... "
+  if [ "$(grep 'HandleLidSwitch=ignore' /etc/systemd/logind.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo "HandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\nHandleLidSwitchDocked=ignore" >> /etc/systemd/logind.conf &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 if [ "$(systemd-detect-virt)" = "qemu" ]; then
   printf "  \e[34m○\e[0m Running QEMU Specific Setup:\n"
   fixup_dns_nameserver
@@ -1439,11 +1453,13 @@ if [ "$HOSTNAME" = "fig.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Fig Specific Setup:\n"
   install_docker
   install_keepalived
+  disable_sleep_on_lid_close
 fi
 
 if [ "$HOSTNAME" = "avocado.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Avocado Specific Setup:\n"
   install_docker
+  disable_sleep_on_lid_close
 fi
 
 if [ "$HOSTNAME" = "apricot.lan" ]; then
