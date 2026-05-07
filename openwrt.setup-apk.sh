@@ -729,9 +729,9 @@ setup_samba_shares
 setup_rsync_daemon
 setup_aria2
 setup_adblock
-setup_nlbwmon
+# setup_nlbwmon
 install_additionals
-install_externals
+# install_externals
 add_firewall_rule_wan_to_lan
 
 
