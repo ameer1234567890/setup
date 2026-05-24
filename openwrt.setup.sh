@@ -41,7 +41,7 @@ EOF
 
 
 kill_tools() {
-  tools="opkg tar"
+  tools="apk tar"
   printf "\n\n User cancelled!\n"
   for tool in $tools; do
     if [ "$(pidof "$tool")" != "" ]; then
@@ -62,7 +62,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 if [ -e $(dirname -- "$0")/.secrets.txt ]; then source $(dirname -- "$0")/.secrets.txt; fi
 
-if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ] || [ -z $WIFI_KEY ]; then
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHATID" ] || [ -z "$ARIA2_RPC_TOKEN" ] || [ -z "$SSH_PUBLIC_KEY" ] || [ -z "$HOSTNAME" ] || [ -z $WIFI_KEY ] || [ -z "$SAMBA_PASSWORD" ]; then
   echo "Some or all of the parameters are empty" >&2
   exit 1
 fi
@@ -81,7 +81,7 @@ assert_status() {
 
 
 print_already() { printf "\e[36mAlready Done!\e[0m\n"; }
-print_opkg_busy() { printf "\e[91mopkg Busy!\e[0m\n"; }
+print_apk_busy() { printf "\e[91mapk Busy!\e[0m\n"; }
 print_not_required() { printf "\e[36mNot Required!\e[0m\n"; }
 print_available() { printf "\e[36mAvailable!\e[0m\n"; }
 print_unavailable() { printf "\e[91mUnavailable!\e[0m\n"; }
@@ -113,16 +113,16 @@ show_progress() {
 }
 
 
-update_opkg() {
-  printf "   \e[34m•\e[0m Running opkg update... "
-  if [ -f /var/opkg-lists/openwrt_base ] || [ -f /usr/lib/opkg/lists/openwrt_base ]; then
-    print_already
-  else
-    opkg update >/dev/null 2>&1 &
+update_apk() {
+  printf "   \e[34m•\e[0m Running apk update... "
+  if [ -z "$(ls /var/cache/apk 2>/dev/null)" ]; then
+    apk update >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
     assert_status
+  else
+    print_already
   fi
 }
 
@@ -146,10 +146,10 @@ setup_timezone() {
   pkgs="curl"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $pkg >/dev/null 2>&1 &
+      apk add $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -205,10 +205,10 @@ change_default_shell() {
   if [ "$SHELL" = "/bin/bash" ]; then
     print_already
   else
-    if [ "$(opkg status bash)" != "" ]; then
+    if [ "$(apk info | grep ^bash$)" != "" ]; then
       print_already
     else
-      opkg install bash >/dev/null 2>&1 &
+      apk add bash >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -282,10 +282,10 @@ configure_usb_storage() {
   pkgs="kmod-usb-storage kmod-usb-storage-uas kmod-usb3 usbutils block-mount e2fsprogs kmod-fs-ext4 blkid"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $pkg >/dev/null 2>&1 &
+      apk add $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -322,10 +322,10 @@ configure_usb_storage() {
   pkgs="blkid"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $pkg >/dev/null 2>&1 &
+      apk add $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -396,21 +396,6 @@ configure_extroot() {
 }
 
 
-preserve_opkg_lists() {
-  printf "   \e[34m•\e[0m Configuring persistence of opkg lists... "
-  if [ "$(grep /usr/lib/opkg/lists /etc/opkg.conf)" != "" ]; then
-    print_already
-  else
-    sed -i -e "/^lists_dir\s/s:/var/opkg-lists$:/usr/lib/opkg/lists:" /etc/opkg.conf && \
-      opkg update >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
 configure_swap() {
   printf "   \e[34m•\e[0m Creating swap file... "
   if [ -f /mnt/$USB_DATA_DEVICE/swap ]; then
@@ -468,10 +453,10 @@ disable_rebind_protection() {
 
 setup_samba_shares() {
   printf "   \e[34m•\e[0m Installing samba... "
-  if [ "$(opkg status luci-app-samba4)" != "" ]; then
+  if [ "$(apk info | grep ^luci-app-samba4$)" != "" ]; then
     print_already
   else
-    opkg install luci-app-samba4 >/dev/null 2>&1 &
+    apk add luci-app-samba4 >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -512,10 +497,10 @@ setup_samba_shares() {
 
 setup_rsync_daemon() {
   printf "   \e[34m•\e[0m Installing rsync... "
-  if [ "$(opkg status rsync)" != "" ]; then
+  if [ "$(apk info | grep ^rsync$)" != "" ]; then
     print_already
   else
-    opkg install rsync >/dev/null 2>&1 &
+    apk add rsync >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -543,10 +528,10 @@ setup_aria2() {
   pkgs="luci-app-aria2 ariang"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $pkg >/dev/null 2>&1 &
+      apk add $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -594,10 +579,10 @@ setup_adblock() {
   pkgs="luci-app-adblock-fast gawk grep sed coreutils-sort"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install --force-overwrite $pkg >/dev/null 2>&1 &
+      apk add --force-overwrite $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -629,41 +614,15 @@ setup_adblock() {
 }
 
 
-setup_nlbwmon() {
-  printf "   \e[34m•\e[0m Installing nlbwmon... "
-  if [ "$(opkg status luci-app-nlbwmon)" != "" ]; then
-    print_already
-  else
-    opkg install luci-app-nlbwmon >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Configuring nlbwmon... "
-  if [ "$(uci get nlbwmon.@nlbwmon[0].commit_interval 2>/dev/null)" = "10m" ]; then
-    print_already
-  else
-    uci set nlbwmon.@nlbwmon[0].commit_interval='10m' && \
-      uci commit nlbwmon && \
-      /etc/init.d/nlbwmon restart &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
 install_additionals() {
   printf "   \e[34m•\e[0m Installing additionals... \n"
-  pkgs="screen htop nano openssh-sftp-server curl iperf3 luci-app-attendedsysupgrade bind-dig mc"
+  pkgs="screen htop nano openssh-sftp-server curl iperf3 bind-dig mc"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $pkg >/dev/null 2>&1 &
+      apk add $pkg >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -675,18 +634,14 @@ install_additionals() {
 
 install_externals() {
   printf "   \e[34m•\e[0m Installing externals... \n"
-  files="$(ls /mnt/$USB_DATA_DEVICE/ipk/*.ipk 2>/dev/null)"
+  files="$(ls /mnt/$USB_DATA_DEVICE/apk/*.apk 2>/dev/null)"
   for file in $files; do
-    mkdir /tmp/zucchini
-    tar -zxf $file -C /tmp/zucchini ./control.tar.gz
-    tar -zxf /tmp/zucchini/control.tar.gz -C /tmp/zucchini ./control
-    pkg="$(cat /tmp/zucchini/control | grep Package | cut -d' ' -f2)"
-    rm -rf /tmp/zucchini
+    pkg="$(basename $file | sed 's/^\([a-z0-9.+-]\+\)-[0-9].*/\1/')"
     printf "     \e[34m○\e[0m Installing $pkg... "
-    if [ "$(opkg status $pkg)" != "" ]; then
+    if [ "$(apk info | grep ^$pkg$)" != "" ]; then
       print_already
     else
-      opkg install $file >/dev/null 2>&1 &
+      apk add --allow-untrusted $file >/dev/null 2>&1 &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -696,7 +651,27 @@ install_externals() {
 }
 
 
-update_opkg
+add_firewall_rule_wan_to_lan() {
+  printf "   \e[34m•\e[0m Adding Firewall Rule - WAN to LAN... "
+  if [ "$(uci show firewall | grep -B1 "name='Allow-WAN-to-LAN'" | head -n 1 | awk -F '[][]' '{print $2}')" != "" ]; then
+    print_already
+  else
+    uci add firewall rule > /dev/null && \
+      uci set firewall.@rule[-1].src='wan' && \
+      uci set firewall.@rule[-1].name='Allow-WAN-to-LAN' && \
+      uci set firewall.@rule[-1].dest_port='80 22' && \
+      uci set firewall.@rule[-1].target='ACCEPT' && \
+      uci commit && \
+      /etc/init.d/firewall restart &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
+update_apk
 setup_hostname
 setup_timezone
 notify_on_startup
@@ -706,16 +681,15 @@ configure_wifi
 setup_cron
 configure_usb_storage
 configure_extroot
-preserve_opkg_lists
 configure_swap
 disable_rebind_protection
 setup_samba_shares
 setup_rsync_daemon
 setup_aria2
 setup_adblock
-setup_nlbwmon
 install_additionals
 install_externals
+add_firewall_rule_wan_to_lan
 
 
 echo "" # just an empty line before we end
