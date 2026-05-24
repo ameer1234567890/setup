@@ -396,21 +396,6 @@ configure_extroot() {
 }
 
 
-preserve_apk_lists() {
-  printf "   \e[34m•\e[0m Configuring persistence of opkg lists... "
-  if [ "$(grep /usr/lib/opkg/lists /etc/opkg.conf)" != "" ]; then
-    print_already
-  else
-    sed -i -e "/^lists_dir\s/s:/var/opkg-lists$:/usr/lib/opkg/lists:" /etc/opkg.conf && \
-      apk update >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
 configure_swap() {
   printf "   \e[34m•\e[0m Creating swap file... "
   if [ -f /mnt/$USB_DATA_DEVICE/swap ]; then
@@ -629,32 +614,6 @@ setup_adblock() {
 }
 
 
-setup_nlbwmon() {
-  printf "   \e[34m•\e[0m Installing nlbwmon... "
-  if [ "$(apk info | grep ^luci-app-nlbwmon$)" != "" ]; then
-    print_already
-  else
-    apk add luci-app-nlbwmon >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Configuring nlbwmon... "
-  if [ "$(uci get nlbwmon.@nlbwmon[0].commit_interval 2>/dev/null)" = "10m" ]; then
-    print_already
-  else
-    uci set nlbwmon.@nlbwmon[0].commit_interval='10m' && \
-      uci commit nlbwmon && \
-      /etc/init.d/nlbwmon restart &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
 install_additionals() {
   printf "   \e[34m•\e[0m Installing additionals... \n"
   pkgs="screen htop nano openssh-sftp-server curl iperf3 bind-dig mc"
@@ -722,16 +681,14 @@ configure_wifi
 setup_cron
 configure_usb_storage
 configure_extroot
-# preserve_apk_lists
 configure_swap
 disable_rebind_protection
 setup_samba_shares
 setup_rsync_daemon
 setup_aria2
 setup_adblock
-# setup_nlbwmon
 install_additionals
-# install_externals
+install_externals
 add_firewall_rule_wan_to_lan
 
 
