@@ -657,7 +657,7 @@ setup_nlbwmon() {
 
 install_additionals() {
   printf "   \e[34m•\e[0m Installing additionals... \n"
-  pkgs="screen htop nano openssh-sftp-server curl iperf3 luci-app-attendedsysupgrade bind-dig mc"
+  pkgs="screen htop nano openssh-sftp-server curl iperf3 bind-dig mc"
   for pkg in $pkgs; do
     printf "     \e[34m○\e[0m Installing $pkg... "
     if [ "$(apk info | grep ^$pkg$)" != "" ]; then
