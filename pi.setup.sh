@@ -1010,72 +1010,6 @@ setup_overlayfs() {
 }
 
 
-install_plex() {
-  printf "   \e[34m•\e[0m Adding plex repository... "
-  if [ -f /usr/share/keyrings/plex-archive-keyring.gpg ]; then
-    print_already
-  else
-    curl https://downloads.plex.tv/plex-keys/PlexSign.key 2>/dev/null | gpg --dearmor | tee /usr/share/keyrings/plex-archive-keyring.gpg >/dev/null && \
-      echo "deb [signed-by=/usr/share/keyrings/plex-archive-keyring.gpg] https://downloads.plex.tv/repo/deb public main" | tee /etc/apt/sources.list.d/plexmediaserver.list >/dev/null &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-    if [ $? = 0 ]; then
-      repo_added=true
-    else
-      repo_added=false
-    fi
-  fi
-  printf "   \e[34m•\e[0m Running apt update... "
-  if [ ! $repo_added ]; then
-    print_not_required
-  else
-    DEBIAN_FRONTEND=noninteractive apt-get update >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Installing plexmediaserver... "
-  if [ "$(dpkg-query -W -f='${Status}' plexmediaserver 2>/dev/null)" = "install ok installed" ]; then
-    print_already
-  else
-    DEBIAN_FRONTEND=noninteractive apt-get install -yq plexmediaserver >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Creating symlinks to external storage... "
-  if [ -L /var/lib/plexmediaserver/Library ]; then
-    print_already
-  else
-    systemctl stop plexmediaserver.service && \
-      rm -rf /var/lib/plexmediaserver/Library
-      ln -s /mnt/$USB_DATA_DEVICE/.data/Plex/Library /var/lib/plexmediaserver/Library && \
-      systemctl start plexmediaserver.service &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-  printf "   \e[34m•\e[0m Fixing up systemd unit for plex... "
-  if [ "$(grep 'ConditionPathExists' /etc/systemd/system/plexmediaserver.service.d/override.conf 2>/dev/null)" != "" ]; then
-    print_already
-  else
-    mkdir -p /etc/systemd/system/plexmediaserver.service.d && \
-      echo -e "[Unit]\nAfter=network.target network-online.target mnt-$USB_DATA_DEVICE.mount\nConditionPathExists=/mnt/$USB_DATA_DEVICE/.data/Plex" > /etc/systemd/system/plexmediaserver.service.d/override.conf && \
-      systemctl daemon-reload && \
-      systemctl restart plexmediaserver.service &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
-}
-
-
 install_docker() {
   printf "   \e[34m•\e[0m Adding docker repository... "
   if [ -f /etc/apt/keyrings/docker.gpg ]; then
@@ -1432,7 +1366,6 @@ fi
 if [ "$HOSTNAME" = "nas2.lan" ]; then
   printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
   increase_zram
-  install_plex
   install_docker
   install_keepalived
 fi
