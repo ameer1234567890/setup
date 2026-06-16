@@ -37,7 +37,7 @@ backup_schedule=( \
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='nas1.lan/nas2.lan/printer.lan/fig.lan/avocado.lan/apricot.lan'
+# HOSTNAME='guava.lan/nas2.lan/printer.lan/fig.lan/avocado.lan/apricot.lan'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|hdd2|mmc1'
@@ -780,7 +780,7 @@ setup_aria2_webui() {
     print_already
   else
     lighttpd_restart_required=true
-    cat /mnt/$USB_DATA_DEVICE/cert/nas1.pem /mnt/$USB_DATA_DEVICE/cert/nas1.key > /etc/lighttpd/server.pem &
+    cat /mnt/$USB_DATA_DEVICE/cert/guava.pem /mnt/$USB_DATA_DEVICE/cert/guava.key > /etc/lighttpd/server.pem &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -1353,8 +1353,8 @@ setup_usb_checker
 install_tailscale
 install_screen
 
-if [ "$HOSTNAME" = "nas1.lan" ]; then
-  printf "\n  \e[34m○\e[0m Running NAS1 Specific Setup:\n"
+if [ "$HOSTNAME" = "guava.lan" ]; then
+  printf "\n  \e[34m○\e[0m Running Guava Specific Setup:\n"
   setup_overclock
   setup_google_backup
   setup_git_backup
