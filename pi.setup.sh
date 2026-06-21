@@ -37,7 +37,7 @@ backup_schedule=( \
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='guava.lan/nas2.lan/printer.lan/fig.lan/avocado.lan/apricot.lan'
+# HOSTNAME='guava.lan/peach.lan/coconut.lan/fig.lan/avocado.lan/apricot.lan'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
 # USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|hdd2|mmc1'
@@ -294,7 +294,7 @@ setup_apt-cacher-ng() {
   fi
   proxy_available=false
   printf "   \e[34m•\e[0m Checking proxy availability... "
-  if [ "$(curl -I http://nas2.lan:3142 2> /dev/null | grep '406 Usage Information')" != "" ]; then
+  if [ "$(curl -I http://peach.lan:3142 2> /dev/null | grep '406 Usage Information')" != "" ]; then
     proxy_available=true
     print_available
   else
@@ -305,7 +305,7 @@ setup_apt-cacher-ng() {
     if [ -f /etc/apt/apt.conf.d/00proxy ]; then
       print_already
     else
-      echo -e "#Acquire::http::Proxy \"http://nas2.lan:3142\";\n#Acquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
+      echo -e "#Acquire::http::Proxy \"http://peach.lan:3142\";\n#Acquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1172,13 +1172,13 @@ install_cups() {
 
 setup_cups_ssl() {
   printf "   \e[34m•\e[0m Setting up cups ssl certificates... "
-  if [ -L /etc/cups/ssl/printer.lan.crt ] && [ -L /etc/cups/ssl/printer.lan.key ]; then
+  if [ -L /etc/cups/ssl/coconut.lan.crt ] && [ -L /etc/cups/ssl/coconut.lan.key ]; then
     print_already
   else
-    rm /etc/cups/ssl/printer.lan.crt 2>/dev/null; \
-      rm /etc/cups/ssl/printer.lan.key 2>/dev/null; \
-      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.crt /etc/cups/ssl/printer.lan.crt && \
-      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.key /etc/cups/ssl/printer.lan.key && \
+    rm /etc/cups/ssl/coconut.lan.crt 2>/dev/null; \
+      rm /etc/cups/ssl/coconut.lan.key 2>/dev/null; \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.crt /etc/cups/ssl/coconut.lan.crt && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.key /etc/cups/ssl/coconut.lan.key && \
       systemctl restart cups.service &
     bg_pid=$!
     show_progress $bg_pid
@@ -1363,14 +1363,14 @@ if [ "$HOSTNAME" = "guava.lan" ]; then
   setup_aria2_webui
 fi
 
-if [ "$HOSTNAME" = "nas2.lan" ]; then
+if [ "$HOSTNAME" = "peach.lan" ]; then
   printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
   increase_zram
   install_docker
   install_keepalived
 fi
 
-if [ "$HOSTNAME" = "printer.lan" ]; then
+if [ "$HOSTNAME" = "coconut.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Print Server Specific Setup:\n"
   install_cups
   setup_cups_ssl
