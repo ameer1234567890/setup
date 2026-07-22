@@ -1177,8 +1177,8 @@ setup_cups_ssl() {
   else
     rm /etc/cups/ssl/coconut.lan.crt 2>/dev/null; \
       rm /etc/cups/ssl/coconut.lan.key 2>/dev/null; \
-      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.crt /etc/cups/ssl/coconut.lan.crt && \
-      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/printer.key /etc/cups/ssl/coconut.lan.key && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/coconut.crt /etc/cups/ssl/coconut.lan.crt && \
+      ln -s /mnt/$USB_DATA_DEVICE/docker/tls/coconut.key /etc/cups/ssl/coconut.lan.key && \
       systemctl restart cups.service &
     bg_pid=$!
     show_progress $bg_pid
