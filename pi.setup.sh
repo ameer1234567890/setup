@@ -933,12 +933,12 @@ install_tailscale() {
       wait $bg_pid
       assert_status
     fi
-    printf "   \e[34m•\e[0m Fixing up Tailscale log level... "
+    printf "   \e[34m•\e[0m Fixing up Tailscale log level & disabling Magic DNS... "
     if [ "$(grep 'LogLevelMax' /etc/systemd/system/tailscaled.service.d/override.conf 2>/dev/null)" != "" ]; then
       print_already
     else
       mkdir -p /etc/systemd/system/tailscaled.service.d && \
-        echo -e "[Service]\nLogLevelMax=notice" > /etc/systemd/system/tailscaled.service.d/override.conf && \
+        echo -e "[Service]\nLogLevelMax=notice\nExecStartPost=/usr/bin/tailscale set --accept-dns=false" > /etc/systemd/system/tailscaled.service.d/override.conf && \
         systemctl daemon-reload && \
         systemctl restart tailscaled.service &
       bg_pid=$!
