@@ -103,12 +103,13 @@ show_progress() {
       6 ) printf "  ⠧\b\b\b" ;;
       7 ) printf "  ⠇\b\b\b" ;;
       8 ) printf "  ⠏\b\b\b" ;;
+      9 ) printf "  ⠋\b\b\b" ;;
     esac
     progress_state=$(( progress_state + 1 ))
-    if [ $progress_state -gt 8 ]; then
+    if [ $progress_state -gt 9 ]; then
       progress_state=0
     fi
-    sleep 1
+    read -t 0.2
   done
 }
 
