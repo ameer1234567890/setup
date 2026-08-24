@@ -5,7 +5,7 @@ LOCALE='en_US.UTF-8'
 TIMEZONE='Indian/Maldives'
 ARM_FREQUENCY=1000
 OVERCLOCK='Turbo'
-USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 hdd2 mmc1"
+USB_DRIVES="usb1 usb2 usb3 usb4 usb5 usb6 usb8 hdd1 hdd2 mmc1 cloud1"
 declare -A backup_script
 backup_script=( \
   ["usb1"]="backup.sh" \
@@ -32,15 +32,16 @@ backup_schedule=( \
   ["hdd1"]="10 0 * * *" \
   ["hdd2"]="50 23 * * *" \
   ["mmc1"]="20 0 * * *" \
+  ["cloud1"]="50 6 * * *" \
 )
 #### End of of configurable variables
 
 #### .secrets.txt
 # Create a file named .secrets.txt in the below format (without hashes)
-# HOSTNAME='guava.lan/peach.lan/coconut.lan/fig.lan/avocado.lan/apricot.lan'
+# HOSTNAME='guava.lan/peach.lan/coconut.lan/fig.lan/avocado.lan/apricot.lan/cherry.lan'
 # ARIA2_RPC_TOKEN='TOKEN_HERE'
 # SSH_PUBLIC_KEY='KEY_HERE'
-# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|hdd2|mmc1'
+# USB_DATA_DEVICE='usb1|usb3|usb8|hdd1|hdd2|mmc1|cloud1'
 # TELEGRAM_BOT_TOKEN='TOKEN_HERE'
 # TELEGRAM_CHATID='CHATID_HERE'
 # SAMBA_PASSWORD='PASSWORD_HERE'
@@ -1364,14 +1365,14 @@ if [ "$HOSTNAME" = "guava.lan" ]; then
 fi
 
 if [ "$HOSTNAME" = "peach.lan" ]; then
-  printf "\n  \e[34m○\e[0m Running NAS2 Specific Setup:\n"
+  printf "\n  \e[34m○\e[0m Running Peach Specific Setup:\n"
   increase_zram
   install_docker
   install_keepalived
 fi
 
 if [ "$HOSTNAME" = "coconut.lan" ]; then
-  printf "\n  \e[34m○\e[0m Running Print Server Specific Setup:\n"
+  printf "\n  \e[34m○\e[0m Running Coconut Specific Setup:\n"
   install_cups
   setup_cups_ssl
   install_ppds
@@ -1397,6 +1398,11 @@ fi
 
 if [ "$HOSTNAME" = "apricot.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Apricot Specific Setup:\n"
+  install_docker
+fi
+
+if [ "$HOSTNAME" = "cherry.lan" ]; then
+  printf "\n  \e[34m○\e[0m Running Cherry Specific Setup:\n"
   install_docker
 fi
 
