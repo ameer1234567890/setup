@@ -1316,7 +1316,44 @@ disable_sleep_on_lid_close () {
   if [ "$(grep 'HandleLidSwitch=ignore' /etc/systemd/logind.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo "HandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\nHandleLidSwitchDocked=ignore" >> /etc/systemd/logind.conf &
+    echo -e "HandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\nHandleLidSwitchDocked=ignore" >> /etc/systemd/logind.conf &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
+setup_fail2ban () {
+  printf "   \e[34m•\e[0m Installing fail2ban... "
+  if [ "$(dpkg-query -W -f='${Status}' fail2ban 2>/dev/null)" = "install ok installed" ]; then
+    print_already
+  else
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq fail2ban >/dev/null 2>&1 && \
+      systemctl enable --now fail2ban >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Configuring sshd jail... "
+  if [ "$(grep 'enabled = true' /etc/fail2ban/jail.d/sshd.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo -e "[sshd]\nenabled = true\nport    = ssh\nlogpath = %(sshd_log)s\nbackend = %(sshd_backend)s" > /etc/fail2ban/jail.d/sshd.conf &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Configuring lubelogger jail... "
+  if [ "$(grep 'enabled = true' /etc/fail2ban/jail.d/lubelogger.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo -e "[lubelogger]\nenabled = true\nport    = 8383\nfilter  = lubelogger\nbackend = systemd\njournalmatch = SYSLOG_IDENTIFIER=lubelogger\naction = iptables-allports[chain="DOCKER-USER"]" > /etc/fail2ban/jail.d/lubelogger.conf && \
+      echo -e "[Definition]\nfailregex = ^.*Failed Login for .* from (?:::ffff:)?<HOST>$\nignoreregex =" > /etc/fail2ban/filter.d/lubelogger.conf && \
+      systemctl restart fail2ban.service &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -1404,6 +1441,7 @@ fi
 if [ "$HOSTNAME" = "cherry.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Cherry Specific Setup:\n"
   install_docker
+  setup_fail2ban
 fi
 
 printf "\n  \e[34m○\e[0m Running post-setup routines:\n"
