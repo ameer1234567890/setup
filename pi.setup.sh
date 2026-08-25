@@ -1341,7 +1341,8 @@ setup_fail2ban () {
   if [ "$(grep 'enabled = true' /etc/fail2ban/jail.d/sshd.conf 2>/dev/null)" != "" ]; then
     print_already
   else
-    echo -e "[sshd]\nenabled = true\nport    = ssh\nlogpath = %(sshd_log)s\nbackend = %(sshd_backend)s" > /etc/fail2ban/jail.d/sshd.conf &
+    echo -e "[sshd]\nenabled = true\nport    = ssh\nlogpath = %(sshd_log)s\nbackend = %(sshd_backend)s" > /etc/fail2ban/jail.d/sshd.conf && \
+      fail2ban-client reload >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
@@ -1353,7 +1354,31 @@ setup_fail2ban () {
   else
     echo -e "[lubelogger]\nenabled = true\nport    = 8383\nfilter  = lubelogger\nbackend = systemd\njournalmatch = SYSLOG_IDENTIFIER=lubelogger\naction = iptables-allports[chain="DOCKER-USER"]" > /etc/fail2ban/jail.d/lubelogger.conf && \
       echo -e "[Definition]\nfailregex = ^.*Failed Login for .* from (?:::ffff:)?<HOST>$\nignoreregex =" > /etc/fail2ban/filter.d/lubelogger.conf && \
-      systemctl restart fail2ban.service &
+      fail2ban-client reload >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Configuring sknerus jail... "
+  if [ "$(grep 'enabled = true' /etc/fail2ban/jail.d/sknerus.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo -e "[sknerus]\nenabled = true\nport    = 5006\nfilter  = sknerus\nbackend = systemd\njournalmatch = SYSLOG_IDENTIFIER=sknerus\naction = iptables-allports[chain="DOCKER-USER"]" > /etc/fail2ban/jail.d/sknerus.conf && \
+      echo -e "[Definition]\nfailregex = ^.*Login for user '.*' from IP '<HOST>' rejected:.*$\nignoreregex =" > /etc/fail2ban/filter.d/sknerus.conf && \
+      fail2ban-client reload >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+  printf "   \e[34m•\e[0m Configuring fail2ban-ui jail... "
+  if [ "$(grep 'enabled = true' /etc/fail2ban/jail.d/fail2ban-ui.conf 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    echo -e "[fail2ban-ui]\nenabled = true\nport    = 8080\nfilter  = fail2ban-ui\nbackend = systemd\njournalmatch = SYSLOG_IDENTIFIER=fail2ban-ui\naction = iptables-allports[chain="DOCKER-USER"]" > /etc/fail2ban/jail.d/fail2ban-ui.conf && \
+      echo -e "[Definition]\nfailregex = ^.*Login for user '.*' from IP '<HOST>' rejected:.*$\nignoreregex =" > /etc/fail2ban/filter.d/fail2ban-ui.conf && \
+      fail2ban-client reload >/dev/null 2>&1 &
     bg_pid=$!
     show_progress $bg_pid
     wait $bg_pid
