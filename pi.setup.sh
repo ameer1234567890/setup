@@ -1090,6 +1090,10 @@ install_docker() {
     wait $bg_pid
     assert_status
   fi
+}
+
+
+configure_fuse_for_docker() {
   printf "   \e[34m•\e[0m Configuring fuse-overlayfs for docker... "
   if [ "$(dpkg-query -W -f='${Status}' fuse-overlayfs 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -1387,6 +1391,22 @@ setup_fail2ban () {
 }
 
 
+trust_root_cert () {
+  printf "   \e[34m•\e[0m Adding trusted root cert... "
+  if [ "$(openssl crl2pkcs7 -nocrl -certfile /etc/ssl/certs/ca-certificates.crt | openssl pkcs7 -print_certs -noout | grep -i "Gadhamoo Root CA" 2>/dev/null)" != "" ]; then
+    print_already
+  else
+    mkdir /usr/local/share/ca-certificates/custom-ca && \
+      cp /mnt/$USB_DATA_DEVICE/docker/tls/rootCA.pem /usr/local/share/ca-certificates/custom-ca/rootCA.crt && \
+      update-ca-certificates >/dev/null 2>&1 &
+    bg_pid=$!
+    show_progress $bg_pid
+    wait $bg_pid
+    assert_status
+  fi
+}
+
+
 if [ "$(systemd-detect-virt)" = "qemu" ]; then
   printf "  \e[34m○\e[0m Running QEMU Specific Setup:\n"
   fixup_dns_nameserver
@@ -1415,6 +1435,7 @@ setup_remote_syslog
 setup_usb_checker
 install_tailscale
 install_screen
+trust_root_cert
 
 if [ "$HOSTNAME" = "guava.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Guava Specific Setup:\n"
@@ -1455,6 +1476,7 @@ fi
 if [ "$HOSTNAME" = "avocado.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Avocado Specific Setup:\n"
   install_docker
+  configure_fuse_for_docker
   disable_sleep_on_lid_close
 fi
 
@@ -1466,6 +1488,7 @@ fi
 if [ "$HOSTNAME" = "cherry.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Cherry Specific Setup:\n"
   install_docker
+  configure_fuse_for_docker
   setup_fail2ban
 fi
 
