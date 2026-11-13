@@ -1194,16 +1194,16 @@ setup_cups_ssl() {
 
 
 install_ppds() {
-  printf "   \e[34m•\e[0m Installing hplip... "
-  if [ "$(dpkg-query -W -f='${Status}' hplip 2>/dev/null)" = "install ok installed" ]; then
-    print_already
-  else
-    DEBIAN_FRONTEND=noninteractive apt-get install -yq hplip >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
+  # printf "   \e[34m•\e[0m Installing hplip... "
+  # if [ "$(dpkg-query -W -f='${Status}' hplip 2>/dev/null)" = "install ok installed" ]; then
+  #   print_already
+  # else
+  #   DEBIAN_FRONTEND=noninteractive apt-get install -yq hplip >/dev/null 2>&1 &
+  #   bg_pid=$!
+  #   show_progress $bg_pid
+  #   wait $bg_pid
+  #   assert_status
+  # fi
   printf "   \e[34m•\e[0m Installing gutenprint... "
   if [ "$(dpkg-query -W -f='${Status}' printer-driver-gutenprint 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -1228,16 +1228,16 @@ add_printers() {
     wait $bg_pid
     assert_status
   fi
-  printf "   \e[34m•\e[0m Adding HP HP Deskjet 2528... "
-  if [ "$(lpstat -v 2>/dev/null | grep HP_Deskjet_2528)" != "" ]; then
-    print_already
-  else
-    lpadmin -p HP_Deskjet_2528 -D 'HP Deskjet 2528' -E -v 'usb://HP/Deskjet%202520%20series?serial=CN99P1H104069R&interface=1' -m 'hplip:0/ppd/hplip/HP/hp-deskjet_2520_series.ppd' -o PageSize=A4 >/dev/null 2>&1 &
-    bg_pid=$!
-    show_progress $bg_pid
-    wait $bg_pid
-    assert_status
-  fi
+  # printf "   \e[34m•\e[0m Adding HP Deskjet 2528... "
+  # if [ "$(lpstat -v 2>/dev/null | grep HP_Deskjet_2528)" != "" ]; then
+  #   print_already
+  # else
+  #   lpadmin -p HP_Deskjet_2528 -D 'HP Deskjet 2528' -E -v 'usb://HP/Deskjet%202520%20series?serial=CN99P1H104069R&interface=1' -m 'hplip:0/ppd/hplip/HP/hp-deskjet_2520_series.ppd' -o PageSize=A4 >/dev/null 2>&1 &
+  #   bg_pid=$!
+  #   show_progress $bg_pid
+  #   wait $bg_pid
+  #   assert_status
+  # fi
 }
 
 
