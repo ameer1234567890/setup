@@ -282,7 +282,7 @@ setup_ssh_keyfile() {
 }
 
 
-setup_apt-cacher-ng() {
+install_curl() {
   printf "   \e[34m•\e[0m Installing curl... "
   if [ "$(dpkg-query -W -f='${Status}' curl 2>/dev/null)" = "install ok installed" ]; then
     print_already
@@ -293,20 +293,24 @@ setup_apt-cacher-ng() {
     wait $bg_pid
     assert_status
   fi
+}
+
+
+configure_homelab_cache() {
   proxy_available=false
   printf "   \e[34m•\e[0m Checking proxy availability... "
-  if [ "$(curl -I http://peach.lan:3142 2> /dev/null | grep '406 Usage Information')" != "" ]; then
+  if [ "$(curl -I http://peach.lan 2> /dev/null | grep '501 Unsupported method')" != "" ]; then
     proxy_available=true
     print_available
   else
     print_unavailable
   fi
-  printf "   \e[34m•\e[0m Setting up apt-cacher-ng... "
+  printf "   \e[34m•\e[0m Configuring homelab-cache ... "
   if [ $proxy_available = true ]; then
     if [ -f /etc/apt/apt.conf.d/00proxy ]; then
       print_already
     else
-      echo -e "#Acquire::http::Proxy \"http://peach.lan:3142\";\n#Acquire::https::Proxy \"false\";" > /etc/apt/apt.conf.d/00proxy &
+      echo -e "192.168.88.11 registry-1.docker.io ghcr.io quay.io gcr.io registry.k8s.io mcr.microsoft.com deb.debian.org security.debian.org archive.ubuntu.com security.ubuntu.com ports.ubuntu.com download.docker.com pkgs.tailscale.com archive.raspberrypi.com github.armbian.com netcup-02.armbian.com ftp.debian.org" >> /etc/hosts &
       bg_pid=$!
       show_progress $bg_pid
       wait $bg_pid
@@ -1420,7 +1424,9 @@ setup_locale
 setup_timezone
 notify_on_startup
 setup_ssh_keyfile
-setup_apt-cacher-ng
+install_curl
+trust_root_cert
+configure_homelab_cache
 setup_cron
 mount_usb_drives
 relocate_apt_cache
@@ -1435,7 +1441,6 @@ setup_remote_syslog
 setup_usb_checker
 install_tailscale
 install_screen
-trust_root_cert
 
 if [ "$HOSTNAME" = "guava.lan" ]; then
   printf "\n  \e[34m○\e[0m Running Guava Specific Setup:\n"
